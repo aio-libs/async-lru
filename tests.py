@@ -37,6 +37,7 @@ def test_basic_alru_cache(loop):
     )
     assert cached_coro.cache_info() == expected
     assert len(cached_coro.cache) == len(input_data)
+    assert len(cached_coro.coros) == 0
     assert ret == input_data
 
     cached_coro.cache_clear()
@@ -52,6 +53,7 @@ def test_basic_alru_cache(loop):
     )
     assert cached_coro.cache_info() == expected
     assert len(cached_coro.cache) == 1
+    assert len(cached_coro.coros) == 0
     assert ret == input_data
 
     cached_coro.cache_clear()
@@ -67,6 +69,7 @@ def test_basic_alru_cache(loop):
     )
     assert cached_coro.cache_info() == expected
     assert len(cached_coro.cache) == 3
+    assert len(cached_coro.coros) == 0
     assert ret == input_data
 
 
@@ -84,6 +87,7 @@ def test_coros_waiting_same_value(loop):
     ret = loop.run_until_complete(asyncio.gather(*coros, loop=loop))
 
     assert check_list == [7, ]
+    assert len(cached_coro.coros) == 0
     assert ret == input_data
 
 
@@ -96,7 +100,44 @@ def test_removing_lru_keys(loop):
 
     expected = {3, 4, 5}
     assert set(cached_coro.cache) == expected
+    assert len(cached_coro.coros) == 0
     assert ret == input_data
+
+
+def test_lru_cache_wait_closed(loop):
+    cached_coro = alru_cache(fn=_coro, maxsize=3, loop=loop)
+    input_data = [1, 2, 3, 4, 5]
+    _ = [cached_coro(v) for v in input_data]
+
+    loop.run_until_complete(cached_coro.wait_closed(loop=loop))
+
+    assert cached_coro.closing is False
+
+    expected = _CacheInfo(
+        hits=0,
+        misses=5,
+        maxsize=3,
+        currsize=3,
+    )
+    assert cached_coro.cache_info() == expected
+    assert len(cached_coro.coros) == 0
+
+
+def test_lru_cache_close(loop):
+    cached_coro = alru_cache(fn=_coro, maxsize=3, loop=loop)
+    input_data = [1, 2, 3, 4, 5]
+    _ = [cached_coro(v) for v in input_data]
+
+    cached_coro.close()
+
+    assert cached_coro.closing is True
+
+    with pytest.raises(RuntimeError):
+        cached_coro()
+
+    with pytest.raises(RuntimeError):
+        cached_coro.close()
+
 
 
 def test_alru_cache_none_max_size(loop):
@@ -114,6 +155,7 @@ def test_alru_cache_none_max_size(loop):
     )
     assert cached_coro.cache_info() == expected
     assert len(cached_coro.cache) == len(input_data) / 2
+    assert len(cached_coro.coros) == 0
     assert ret == input_data
 
 
@@ -132,6 +174,7 @@ def test_alru_cache_zero_max_size(loop):
     )
     assert cached_coro.cache_info() == expected
     assert len(cached_coro.cache) == 0
+    assert len(cached_coro.coros) == 0
     assert ret == input_data
 
 
@@ -150,6 +193,8 @@ def test_alru_cache_clear(loop):
     )
     assert cached_coro.cache_info() == expected
     assert len(cached_coro.cache) == len(input_data)
+    assert len(cached_coro.coros) == 0
+    assert ret == input_data
 
     cached_coro.cache_clear()
     expected = _CacheInfo(
@@ -160,7 +205,6 @@ def test_alru_cache_clear(loop):
     )
     assert cached_coro.cache_info() == expected
     assert len(cached_coro.cache) == 0
-    assert ret == input_data
 
 
 def test_alru_cache_invalidate(loop):
@@ -178,6 +222,7 @@ def test_alru_cache_invalidate(loop):
     )
     assert cached_coro.cache_info() == expected
     assert len(cached_coro.cache) == len(input_data)
+    assert len(cached_coro.coros) == 0
     assert ret == input_data
 
     cached_coro.invalidate(1)
@@ -205,4 +250,5 @@ def test_alru_cache_invalidate(loop):
     )
     assert cached_coro.cache_info() == expected
     assert len(cached_coro.cache) == len(input_data)
+    assert len(cached_coro.coros) == 0
     assert ret == input_data
