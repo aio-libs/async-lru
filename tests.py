@@ -139,6 +139,24 @@ def test_lru_cache_close(loop):
         cached_coro.close()
 
 
+def test_lru_cache_close_without_cancel(loop):
+    cached_coro = alru_cache(fn=_coro, maxsize=3, loop=loop)
+    input_data = [1, 2, 3, 4, 5]
+    coros = [cached_coro(v) for v in input_data]
+
+    cached_coro.close(cancel=False)
+
+    assert cached_coro.closing is True
+
+    with pytest.raises(RuntimeError):
+        cached_coro()
+
+    with pytest.raises(RuntimeError):
+        cached_coro.close()
+
+    ret = loop.run_until_complete(asyncio.gather(*coros, loop=loop))
+    assert ret == input_data
+
 
 def test_alru_cache_none_max_size(loop):
     cached_coro = alru_cache(fn=_coro, maxsize=None, loop=loop)
@@ -252,3 +270,24 @@ def test_alru_cache_invalidate(loop):
     assert len(cached_coro.cache) == len(input_data)
     assert len(cached_coro.coros) == 0
     assert ret == input_data
+
+
+def test_lru_cache_for_function(loop):
+    def func(v):
+        return v
+
+    cached_func = alru_cache(fn=func, maxsize=3, loop=loop)
+
+    input_data = [1, 2, 3, 4]
+    ret = [cached_func(v) for v in input_data]
+
+    expected = _CacheInfo(
+        hits=0,
+        misses=4,
+        maxsize=3,
+        currsize=3,
+    )
+    assert cached_func.cache_info() == expected
+    assert len(cached_func.cache) == 3
+    assert len(cached_func.coros) == 0
+    assert [fut.result() for fut in ret] == input_data
