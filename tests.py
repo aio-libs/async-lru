@@ -87,6 +87,18 @@ def test_coros_waiting_same_value(loop):
     assert ret == input_data
 
 
+def test_removing_lru_keys(loop):
+    cached_coro = alru_cache(fn=_coro, maxsize=3, loop=loop)
+
+    input_data = [1, 2, 3, 4, 5]
+    coros = [cached_coro(v) for v in input_data]
+    ret = loop.run_until_complete(asyncio.gather(*coros, loop=loop))
+
+    expected = {3, 4, 5}
+    assert set(cached_coro.cache) == expected
+    assert ret == input_data
+
+
 def test_alru_cache_none_max_size(loop):
     cached_coro = alru_cache(fn=_coro, maxsize=None, loop=loop)
 
