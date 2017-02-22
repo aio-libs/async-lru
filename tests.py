@@ -1,4 +1,5 @@
 import asyncio
+
 import pytest
 
 from async_lru import _CacheInfo, alru_cache
@@ -6,7 +7,8 @@ from async_lru import _CacheInfo, alru_cache
 
 @pytest.fixture(scope='module')
 def loop():
-    loop = asyncio.get_event_loop()
+    asyncio.set_event_loop(None)
+    loop = asyncio.new_event_loop()
 
     try:
         yield loop
@@ -21,11 +23,11 @@ async def _coro(val):
 
 
 def test_alru_cache(loop):
-    cached_coro = alru_cache(fn=_coro, maxsize=3)
+    cached_coro = alru_cache(fn=_coro, maxsize=3, loop=loop)
 
     input_data = [1, 2, 3]
     coros = [cached_coro(v) for v in input_data]
-    loop.run_until_complete(asyncio.gather(*coros))
+    ret = loop.run_until_complete(asyncio.gather(*coros, loop=loop))
 
     expected = _CacheInfo(
         hits=0,
@@ -34,11 +36,13 @@ def test_alru_cache(loop):
         currsize=3,
     )
     assert cached_coro.cache_info() == expected
+    assert len(cached_coro.cache) == len(input_data)
+    assert ret == input_data
 
     cached_coro.cache_clear()
     input_data = [1, 1, 1]
     coros = [cached_coro(v) for v in input_data]
-    loop.run_until_complete(asyncio.gather(*coros))
+    ret = loop.run_until_complete(asyncio.gather(*coros, loop=loop))
 
     expected = _CacheInfo(
         hits=2,
@@ -47,11 +51,13 @@ def test_alru_cache(loop):
         currsize=1,
     )
     assert cached_coro.cache_info() == expected
+    assert len(cached_coro.cache) == 1
+    assert ret == input_data
 
     cached_coro.cache_clear()
-    input_data = [1, 2, 3, 4, 1, 2, 3, 4]
+    input_data = [1, 2, 3, 4] * 2
     coros = [cached_coro(v) for v in input_data]
-    loop.run_until_complete(asyncio.gather(*coros))
+    ret = loop.run_until_complete(asyncio.gather(*coros, loop=loop))
 
     expected = _CacheInfo(
         hits=0,
@@ -60,14 +66,16 @@ def test_alru_cache(loop):
         currsize=3,
     )
     assert cached_coro.cache_info() == expected
+    assert len(cached_coro.cache) == 3
+    assert ret == input_data
 
 
 def test_alru_cache_none_max_size(loop):
-    cached_coro = alru_cache(fn=_coro, maxsize=None)
+    cached_coro = alru_cache(fn=_coro, maxsize=None, loop=loop)
 
     input_data = [1, 2, 3, 4] * 2
     coros = [cached_coro(v) for v in input_data]
-    loop.run_until_complete(asyncio.gather(*coros))
+    ret = loop.run_until_complete(asyncio.gather(*coros, loop=loop))
 
     expected = _CacheInfo(
         hits=4,
@@ -76,15 +84,16 @@ def test_alru_cache_none_max_size(loop):
         currsize=4,
     )
     assert cached_coro.cache_info() == expected
+    assert len(cached_coro.cache) == len(input_data) / 2
+    assert ret == input_data
 
 
-def test_alru_cache_zero_max_size():
-    loop = asyncio.get_event_loop()
-    cached_coro = alru_cache(fn=_coro, maxsize=0)
+def test_alru_cache_zero_max_size(loop):
+    cached_coro = alru_cache(fn=_coro, maxsize=0, loop=loop)
 
     input_data = [1, 2, 3, 4] * 2
     coros = [cached_coro(v) for v in input_data]
-    loop.run_until_complete(asyncio.gather(*coros))
+    ret = loop.run_until_complete(asyncio.gather(*coros, loop=loop))
 
     expected = _CacheInfo(
         hits=0,
@@ -93,15 +102,16 @@ def test_alru_cache_zero_max_size():
         currsize=0,
     )
     assert cached_coro.cache_info() == expected
+    assert len(cached_coro.cache) == 0
+    assert ret == input_data
 
 
-def test_alru_cache_clear():
-    loop = asyncio.get_event_loop()
-    cached_coro = alru_cache(fn=_coro, maxsize=3)
+def test_alru_cache_clear(loop):
+    cached_coro = alru_cache(fn=_coro, maxsize=3, loop=loop)
 
     input_data = [1, 2, 3]
     coros = [cached_coro(v) for v in input_data]
-    loop.run_until_complete(asyncio.gather(*coros))
+    ret = loop.run_until_complete(asyncio.gather(*coros, loop=loop))
 
     expected = _CacheInfo(
         hits=0,
@@ -110,6 +120,7 @@ def test_alru_cache_clear():
         currsize=3,
     )
     assert cached_coro.cache_info() == expected
+    assert len(cached_coro.cache) == len(input_data)
 
     cached_coro.cache_clear()
     expected = _CacheInfo(
@@ -119,15 +130,16 @@ def test_alru_cache_clear():
         currsize=0,
     )
     assert cached_coro.cache_info() == expected
+    assert len(cached_coro.cache) == 0
+    assert ret == input_data
 
 
-def test_alru_cache_invalidate():
-    loop = asyncio.get_event_loop()
-    cached_coro = alru_cache(fn=_coro, maxsize=3)
+def test_alru_cache_invalidate(loop):
+    cached_coro = alru_cache(fn=_coro, maxsize=3, loop=loop)
 
     input_data = [1, 2, 3]
     coros = [cached_coro(v) for v in input_data]
-    loop.run_until_complete(asyncio.gather(*coros))
+    ret = loop.run_until_complete(asyncio.gather(*coros, loop=loop))
 
     expected = _CacheInfo(
         hits=0,
@@ -136,14 +148,25 @@ def test_alru_cache_invalidate():
         currsize=3,
     )
     assert cached_coro.cache_info() == expected
+    assert len(cached_coro.cache) == len(input_data)
+    assert ret == input_data
 
     cached_coro.invalidate(1)
     cached_coro.invalidate(2)
     cached_coro.invalidate(3)
 
+    expected = _CacheInfo(
+        hits=0,
+        misses=3,
+        maxsize=3,
+        currsize=0,
+    )
+    assert cached_coro.cache_info() == expected
+    assert len(cached_coro.cache) == 0
+
     input_data = [1, 2, 3]
     coros = [cached_coro(v) for v in input_data]
-    loop.run_until_complete(asyncio.gather(*coros))
+    ret = loop.run_until_complete(asyncio.gather(*coros, loop=loop))
 
     expected = _CacheInfo(
         hits=0,
@@ -152,3 +175,5 @@ def test_alru_cache_invalidate():
         currsize=3,
     )
     assert cached_coro.cache_info() == expected
+    assert len(cached_coro.cache) == len(input_data)
+    assert ret == input_data
