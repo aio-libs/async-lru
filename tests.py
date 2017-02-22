@@ -22,7 +22,7 @@ async def _coro(val):
     return val
 
 
-def test_alru_cache(loop):
+def test_basic_alru_cache(loop):
     cached_coro = alru_cache(fn=_coro, maxsize=3, loop=loop)
 
     input_data = [1, 2, 3]
@@ -67,6 +67,23 @@ def test_alru_cache(loop):
     )
     assert cached_coro.cache_info() == expected
     assert len(cached_coro.cache) == 3
+    assert ret == input_data
+
+
+def test_coros_waiting_same_value(loop):
+    check_list = []
+
+    async def _coro(v):
+        check_list.append(v)
+        return v
+
+    cached_coro = alru_cache(fn=_coro, maxsize=1, loop=loop)
+
+    input_data = [7, 7, 7, 7, 7]
+    coros = [cached_coro(v) for v in input_data]
+    ret = loop.run_until_complete(asyncio.gather(*coros, loop=loop))
+
+    assert check_list == [7, ]
     assert ret == input_data
 
 
