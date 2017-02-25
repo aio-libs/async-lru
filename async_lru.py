@@ -1,6 +1,8 @@
 import asyncio
-from collections import OrderedDict
+from collections import OrderedDict, namedtuple
 from functools import _make_key, partial, wraps
+
+_CacheInfo = namedtuple('CacheInfo', ['hits', 'misses', 'maxsize', 'currsize'])
 
 
 def get_wrapped_fn(fn):
@@ -61,6 +63,11 @@ def _cache_invalidate(cache, typed, *args, **kwargs):
     return exists
 
 
+def _cache_clear(wrapped):
+    wrapped.hits = wrapped.misses = 0
+    wrapped.cache.clear()
+
+
 @asyncio.coroutine
 def _wait_closed(wrapped, *, loop=None):
     if loop is None:
@@ -107,6 +114,7 @@ def alru_cache(fn=None, maxsize=128, typed=False, *, loop=None):
             key = _make_key(args, kwargs, typed)
 
             if key in wrapped.cache:
+                wrapped.hits += 1
                 wrapped.cache.move_to_end(key)
 
                 return wrapped.cache[key]
@@ -125,6 +133,7 @@ def alru_cache(fn=None, maxsize=128, typed=False, *, loop=None):
                     fut.set_result(ret)
 
                 wrapped.cache[key] = fut
+                wrapped.misses += 1
 
                 if maxsize is not None and len(wrapped.cache) > maxsize:
                     wrapped.cache.popitem(last=False)
@@ -132,10 +141,17 @@ def alru_cache(fn=None, maxsize=128, typed=False, *, loop=None):
                 return fut
 
         wrapped.cache = OrderedDict()
+        wrapped.hits = wrapped.misses = 0
+        wrapped.cache_info = lambda: _CacheInfo(
+            wrapped.hits,
+            wrapped.misses,
+            maxsize,
+            len(wrapped.cache),
+        )
+        wrapped.cache_clear = partial(_cache_clear, wrapped)
         wrapped.coros = set()
         wrapped.closing = False
 
-        wrapped.clear = wrapped.cache.clear
         wrapped.invalidate = partial(_cache_invalidate, wrapped.cache, typed)
         wrapped.close = partial(_close, wrapped)
         wrapped.wait_closed = partial(_wait_closed, wrapped)
