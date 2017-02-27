@@ -1,6 +1,8 @@
-import asyncio
+import asyncio  # noqa # isort:skip
 from collections import OrderedDict, namedtuple
 from functools import _make_key, partial, wraps
+
+__version__ = '0.0.1'
 
 _CacheInfo = namedtuple('CacheInfo', ['hits', 'misses', 'maxsize', 'currsize'])
 
@@ -15,14 +17,14 @@ def get_wrapped_fn(fn):
 def create_future(*, loop):
     try:
         return loop.create_future()
-    except AttributeError:
+    except AttributeError:  # pragma: no cover
         return asyncio.Future(loop=loop)
 
 
 def create_task(*, loop):
     try:
         return loop.create_task
-    except AttributeError:
+    except AttributeError:  # pragma: no cover
         try:
             return partial(asyncio.ensure_future, loop=loop)
         except AttributeError:
@@ -69,21 +71,12 @@ def _cache_clear(wrapped):
 
 
 @asyncio.coroutine
-def _wait_closed(wrapped, *, loop=None):
-    if loop is None:
-        loop = asyncio.get_event_loop()
-
-    try:
-        yield from asyncio.gather(*wrapped.coros, loop=loop)
-    except asyncio.CancelledError:
-        pass
-    finally:
-        wrapped.closing = False
-
-
-def _close(wrapped, cancel=True):
+def _close(wrapped, cancel=False, *, loop=None):
     if wrapped.closing:
         raise RuntimeError('alru_cache is closing')
+
+    if loop is None:
+        loop = asyncio.get_event_loop()
 
     wrapped.closing = True
 
@@ -91,54 +84,91 @@ def _close(wrapped, cancel=True):
         for coro in wrapped.coros:
             coro.cancel()
 
+    ret = yield from asyncio.gather(
+        *wrapped.coros,
+        return_exceptions=True,
+        loop=loop,
+    )
 
-def alru_cache(fn=None, maxsize=128, typed=False, *, loop=None):
+    return ret
+
+
+def alru_cache(
+    fn=None,
+    maxsize=128,
+    typed=False,
+    cls=False,
+    kwargs=False,
+    *, cache_exceptions=True, loop=None
+):
     def wrapper(fn):
         @wraps(fn)
-        def wrapped(*args, **kwargs):
+        def wrapped(*fn_args, **fn_kwargs):
             if wrapped.closing:
                 raise RuntimeError('alru_cache is closed')
 
-            if isinstance(loop, str):
-                self = getattr(get_wrapped_fn(fn), '__self__', None)
-                if self is None:
-                    assert args
-                    self = args[0]
+            key = _make_key(fn_args, fn_kwargs, typed)
 
-                _loop = getattr(self, loop)
+            if key in wrapped.cache:
+                fut = wrapped.cache[key]
+
+                if fut.done():
+                    raised = fut.exception()
+
+                    if raised is None or cache_exceptions:
+                        wrapped.hits += 1
+                        wrapped.cache.move_to_end(key)
+                        return fut
+
+                    wrapped.cache.pop(key)
+                else:
+                    wrapped.hits += 1
+                    wrapped.cache.move_to_end(key)
+                    return fut
+
+            if isinstance(loop, str):
+                assert cls ^ kwargs
+
+                _self = None
+
+                if cls:
+                    _self = getattr(get_wrapped_fn(fn), '__self__', None)
+
+                    if _self is None:
+                        assert fn_args
+                        _self = fn_args[0]
+
+                    _loop = getattr(_self, loop)
+                elif kwargs:
+                    _loop = fn_kwargs[loop]
             elif loop is None:
                 _loop = asyncio.get_event_loop()
             else:
                 _loop = loop
 
-            key = _make_key(args, kwargs, typed)
+            fut = create_future(loop=_loop)
 
-            if key in wrapped.cache:
-                wrapped.hits += 1
-                wrapped.cache.move_to_end(key)
+            if iscoroutinepartial(fn):
+                ret = fn(*fn_args, **fn_kwargs)
 
-                return wrapped.cache[key]
+                coro = create_task(loop=_loop)(ret)
+                coro.add_done_callback(partial(_done_callback, fut))
+
+                wrapped.coros.add(coro)
+                coro.add_done_callback(wrapped.coros.remove)
             else:
-                fut = create_future(loop=_loop)
+                try:
+                    loop.call_soon(fut.set_result, fn(*fn_args, **fn_kwargs))
+                except BaseException as exc:
+                    fut.set_exception(exc)
 
-                ret = fn(*args, **kwargs)
+            wrapped.cache[key] = fut
+            wrapped.misses += 1
 
-                if iscoroutinepartial(fn):
-                    coro = create_task(loop=_loop)(ret)
-                    coro.add_done_callback(partial(_done_callback, fut))
+            if maxsize is not None and len(wrapped.cache) > maxsize:
+                wrapped.cache.popitem(last=False)
 
-                    wrapped.coros.add(coro)
-                    coro.add_done_callback(wrapped.coros.remove)
-                else:
-                    fut.set_result(ret)
-
-                wrapped.cache[key] = fut
-                wrapped.misses += 1
-
-                if maxsize is not None and len(wrapped.cache) > maxsize:
-                    wrapped.cache.popitem(last=False)
-
-                return fut
+            return fut
 
         wrapped.cache = OrderedDict()
         wrapped.hits = wrapped.misses = 0
@@ -154,7 +184,6 @@ def alru_cache(fn=None, maxsize=128, typed=False, *, loop=None):
 
         wrapped.invalidate = partial(_cache_invalidate, wrapped.cache, typed)
         wrapped.close = partial(_close, wrapped)
-        wrapped.wait_closed = partial(_wait_closed, wrapped)
 
         return wrapped
 
