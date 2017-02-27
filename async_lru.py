@@ -7,13 +7,6 @@ __version__ = '0.0.1'
 _CacheInfo = namedtuple('CacheInfo', ['hits', 'misses', 'maxsize', 'currsize'])
 
 
-def get_wrapped_fn(fn):
-    while hasattr(fn, '__wrapped__'):
-        fn = fn.__wrapped__
-
-    return fn
-
-
 def create_future(*, loop):
     try:
         return loop.create_future()
@@ -34,15 +27,19 @@ def create_task(*, loop):
 def iscoroutinepartial(fn):
     # http://bugs.python.org/issue23519
 
-    while True:
-        parent = fn
+    parent = fn
 
-        fn = getattr(parent, 'func', None)
-
-        if fn is None:
-            break
+    while fn is not None:
+        parent, fn = fn, getattr(parent, 'func', None)
 
     return asyncio.iscoroutinefunction(parent)
+
+
+def unpartial(fn):
+    while hasattr(fn, 'func'):
+        fn = fn.func
+
+    return fn
 
 
 def _done_callback(fut, coro):
@@ -87,7 +84,7 @@ def _close(wrapped, cancel=False, *, loop=None):
     ret = yield from asyncio.gather(
         *wrapped.coros,
         return_exceptions=True,
-        loop=loop,
+        loop=loop  # noqa
     )
 
     return ret
@@ -132,7 +129,8 @@ def alru_cache(
                 _self = None
 
                 if cls:
-                    _self = getattr(get_wrapped_fn(fn), '__self__', None)
+                    if _self is None:
+                        _self = getattr(unpartial(fn), '__self__', None)
 
                     if _self is None:
                         assert fn_args
@@ -158,7 +156,7 @@ def alru_cache(
                 coro.add_done_callback(wrapped.coros.remove)
             else:
                 try:
-                    loop.call_soon(fut.set_result, fn(*fn_args, **fn_kwargs))
+                    fut.set_result(fn(*fn_args, **fn_kwargs))
                 except BaseException as exc:
                     fut.set_exception(exc)
 

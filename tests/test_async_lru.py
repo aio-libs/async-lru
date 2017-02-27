@@ -692,32 +692,59 @@ def test_alru_cache_loop_cls(loop):
     assert len(c.coro.coros) == 0
     assert ret == input_data
 
-    # class C:
-    #     def __init__(self, *, loop):
-    #         self.loop = loop
-    #         self.coro = alru_cache(maxsize=3, cls=True, loop='loop')(self._coro)
+    class C:
+        def __init__(self, *, loop):
+            self.loop = loop
+            self.coro = alru_cache(maxsize=3, cls=True, loop='loop')(self._coro)
 
-    #     @asyncio.coroutine
-    #     def _coro(self, val):
-    #         return val
+        @asyncio.coroutine
+        def _coro(self, val):
+            return val
 
-    # c = C(loop=loop)
-    # input_data = [1, 2, 3]
-    # coros = [c.coro(v) for v in input_data]
+    c = C(loop=loop)
+    input_data = [1, 2, 3]
+    coros = [c.coro(v) for v in input_data]
 
-    # ret = yield from asyncio.gather(*coros, loop=loop)
+    ret = yield from asyncio.gather(*coros, loop=loop)
 
-    # expected = _CacheInfo(
-    #     hits=0,
-    #     misses=3,
-    #     maxsize=3,
-    #     currsize=3,
-    # )
+    expected = _CacheInfo(
+        hits=0,
+        misses=3,
+        maxsize=3,
+        currsize=3,
+    )
 
-    # assert c.coro.cache_info() == expected
-    # assert len(c.coro.cache) == len(input_data)
-    # assert len(c.coro.coros) == 0
-    # assert ret == input_data
+    assert c.coro.cache_info() == expected
+    assert len(c.coro.cache) == len(input_data)
+    assert len(c.coro.coros) == 0
+    assert ret == input_data
+
+    class C:
+        def __init__(self, *, loop):
+            self.loop = loop
+            self.coro = alru_cache(maxsize=3, cls=True, loop='loop')(partial(self._coro))
+
+        @asyncio.coroutine
+        def _coro(self, val):
+            return val
+
+    c = C(loop=loop)
+    input_data = [1, 2, 3]
+    coros = [c.coro(v) for v in input_data]
+
+    ret = yield from asyncio.gather(*coros, loop=loop)
+
+    expected = _CacheInfo(
+        hits=0,
+        misses=3,
+        maxsize=3,
+        currsize=3,
+    )
+
+    assert c.coro.cache_info() == expected
+    assert len(c.coro.cache) == len(input_data)
+    assert len(c.coro.coros) == 0
+    assert ret == input_data
 
 @pytest.mark.run_loop
 @asyncio.coroutine
