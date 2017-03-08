@@ -67,15 +67,22 @@ def _cache_clear(wrapped):
     wrapped.cache.clear()
 
 
+def _open(wrapped):
+    if not wrapped.closed:
+        raise RuntimeError('alru_cache is not closed')
+
+    wrapped.closed = False
+
+
 @asyncio.coroutine
 def _close(wrapped, cancel=False, *, loop=None):
-    if wrapped.closing:
-        raise RuntimeError('alru_cache is closing')
+    if wrapped.closed:
+        raise RuntimeError('alru_cache is closed')
 
     if loop is None:
         loop = asyncio.get_event_loop()
 
-    wrapped.closing = True
+    wrapped.closed = True
 
     if cancel:
         for coro in wrapped.coros:
@@ -101,7 +108,7 @@ def alru_cache(
     def wrapper(fn):
         @wraps(fn)
         def wrapped(*fn_args, **fn_kwargs):
-            if wrapped.closing:
+            if wrapped.closed:
                 raise RuntimeError('alru_cache is closed')
 
             key = _make_key(fn_args, fn_kwargs, typed)
@@ -178,10 +185,11 @@ def alru_cache(
         )
         wrapped.cache_clear = partial(_cache_clear, wrapped)
         wrapped.coros = set()
-        wrapped.closing = False
+        wrapped.closed = False
 
         wrapped.invalidate = partial(_cache_invalidate, wrapped.cache, typed)
         wrapped.close = partial(_close, wrapped)
+        wrapped.open = partial(_open, wrapped)
 
         return wrapped
 

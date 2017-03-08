@@ -14,6 +14,7 @@ packaging==16.8
 pep8-naming==0.4.1
 pexpect==4.2.1
 pickleshare==0.7.4
+pluggy==0.4.0
 prompt-toolkit==1.0.13
 ptyprocess==0.5.1
 py==1.4.32
@@ -22,9 +23,10 @@ pyflakes==1.5.0
 Pygments==2.2.0
 pyparsing==2.1.10
 pytest==3.0.6
-pytest-catchlog==1.2.2
 pytest-cov==2.4.0
 simplegeneric==0.8.1
 six==1.10.0
+tox==2.6.0
 traitlets==4.3.2
+virtualenv==15.1.0
 wcwidth==0.1.7
