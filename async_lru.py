@@ -103,7 +103,9 @@ def alru_cache(
     typed=False,
     cls=False,
     kwargs=False,
-    *, cache_exceptions=True, loop=None
+    *,
+    cache_exceptions=True,
+    loop=None
 ):
     def wrapper(fn):
         @wraps(fn)
