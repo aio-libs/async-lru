@@ -91,7 +91,7 @@ def _close(wrapped, cancel=False, *, loop=None):
     ret = yield from asyncio.gather(
         *wrapped.coros,
         return_exceptions=True,
-        loop=loop  # noqa
+        loop=loop
     )
 
     return ret

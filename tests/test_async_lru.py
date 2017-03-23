@@ -327,7 +327,7 @@ def test_alru_cache_close_cancel(loop):
     input_data = [1, 2, 3, 4, 5]
     [coro(v) for v in input_data]
 
-    assert coro.closing is False
+    assert coro.closed is False
 
     assert calls == 0
 
@@ -342,7 +342,7 @@ def test_alru_cache_close_cancel(loop):
 
     yield from coro.close(cancel=True, loop=loop)
 
-    assert coro.closing is True
+    assert coro.closed is True
 
     assert calls == 0
 
@@ -573,7 +573,7 @@ def test_alru_cache_decorator_simple(loop):
     expected = _CacheInfo(
         hits=0,
         misses=3,
-        maxsize=3,
+        maxsize=128,
         currsize=3,
     )
 
