@@ -133,16 +133,13 @@ def alru_cache(
                     return fut
 
             if isinstance(loop, str):
-                assert cls ^ kwargs
-
-                _self = None
+                assert cls ^ kwargs, 'choose self.loop or kwargs["loop"]'
 
                 if cls:
-                    if _self is None:
-                        _self = getattr(unpartial(fn), '__self__', None)
+                    _self = getattr(unpartial(fn), '__self__', None)
 
                     if _self is None:
-                        assert fn_args
+                        assert fn_args, 'seems not unbound function'
                         _self = fn_args[0]
 
                     _loop = getattr(_self, loop)
