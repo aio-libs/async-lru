@@ -40,12 +40,16 @@ Usage
 
 
     async def main():
-        await download('https://www.python.org/')
-        await download('https://www.python.org/')
-        await download('https://www.python.org/')
-        await download('https://www.python.org/')
-        await download('https://www.python.org/')
-        await download('https://www.python.org/')
+        coros = [
+            download('https://www.python.org/'),
+            download('https://www.python.org/'),
+            download('https://www.python.org/'),
+            download('https://www.python.org/'),
+            download('https://www.python.org/'),
+            download('https://www.python.org/'),
+        ]
+
+        await asyncio.gather(*coros)
 
         assert calls == 1
 

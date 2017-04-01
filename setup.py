@@ -28,6 +28,10 @@ setup(
     url='https://github.com/wikibusiness/async_lru',
     description='Simple lru_cache for asyncio',
     long_description=read('README.rst'),
+    extras_require={
+        ':python_version=="3.3"': ['asyncio'],
+    },
+    py_modules=['async_lru'],
     include_package_data=True,
     zip_safe=False,
     classifiers=[
