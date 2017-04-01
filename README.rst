@@ -21,7 +21,43 @@ Usage
 
 .. code-block:: python
 
-    #
+    import asyncio
+
+    import aiohttp
+    from async_lru import alru_cache
+
+    calls = 0
+
+    @alru_cache()
+    async def download(url):
+        global calls
+
+        calls += 1
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                return await response.text()
 
 
-3.3+ and are supported.
+    async def main():
+        await download('https://www.python.org/')
+        await download('https://www.python.org/')
+        await download('https://www.python.org/')
+        await download('https://www.python.org/')
+        await download('https://www.python.org/')
+        await download('https://www.python.org/')
+
+        assert calls == 1
+
+
+    loop = asyncio.get_event_loop()
+
+    loop.run_until_complete(main())
+
+    # closing is optional, but strictly recommended
+    loop.run_until_complete(download.close())
+
+    loop.close()
+
+
+Python 3.3+ is required
