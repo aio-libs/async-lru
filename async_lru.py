@@ -74,8 +74,7 @@ def _open(wrapped):
     wrapped.closed = False
 
 
-@asyncio.coroutine
-def _close(wrapped, cancel=False, *, loop=None):
+def _close(wrapped, cancel=False, return_exceptions=True, *, loop=None):
     if wrapped.closed:
         raise RuntimeError('alru_cache is closed')
 
@@ -88,13 +87,11 @@ def _close(wrapped, cancel=False, *, loop=None):
         for coro in wrapped.coros:
             coro.cancel()
 
-    ret = yield from asyncio.gather(
+    return(asyncio.gather(
         *wrapped.coros,
-        return_exceptions=True,
+        return_exceptions=return_exceptions,
         loop=loop
-    )
-
-    return ret
+    ))
 
 
 def alru_cache(

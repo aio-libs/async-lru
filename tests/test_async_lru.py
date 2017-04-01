@@ -365,6 +365,57 @@ def test_alru_cache_close_cancel(loop):
 
 @pytest.mark.run_loop
 @asyncio.coroutine
+def test_alru_cache_close_return_exceptions(loop):
+    @alru_cache(maxsize=3, loop=loop)
+    @asyncio.coroutine
+    def coro(val):
+        raise ZeroDivisionError
+
+    input_data = [1, 2, 3, 4, 5]
+    [coro(v) for v in input_data]
+
+    expected = _CacheInfo(
+        hits=0,
+        misses=5,
+        maxsize=3,
+        currsize=3,
+    )
+
+    assert coro.cache_info() == expected
+
+    ret = yield from coro.close(cancel=False, return_exceptions=True, loop=loop)
+
+    expected = _CacheInfo(
+        hits=0,
+        misses=5,
+        maxsize=3,
+        currsize=3,
+    )
+
+    assert coro.cache_info() == expected
+
+    for item in ret:
+        assert isinstance(item, ZeroDivisionError)
+
+    coro.open()
+
+    input_data = [1, 2, 3, 4, 5]
+    [coro(v) for v in input_data]
+
+    with pytest.raises(ZeroDivisionError):
+        yield from coro.close(cancel=False, return_exceptions=False, loop=loop)
+
+    coro.open()
+
+    input_data = [1, 2, 3, 4, 5]
+    [coro(v) for v in input_data]
+
+    with pytest.raises(asyncio.CancelledError):
+        yield from coro.close(cancel=True, return_exceptions=False, loop=loop)
+
+
+@pytest.mark.run_loop
+@asyncio.coroutine
 def test_alru_cache_none_max_size(loop):
     @alru_cache(maxsize=None, loop=loop)
     @asyncio.coroutine
