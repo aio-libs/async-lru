@@ -2,7 +2,7 @@ import asyncio  # noqa # isort:skip
 from collections import OrderedDict, namedtuple
 from functools import _make_key, partial, wraps
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 _CacheInfo = namedtuple('CacheInfo', ['hits', 'misses', 'maxsize', 'currsize'])
 
@@ -87,11 +87,19 @@ def _close(wrapped, cancel=False, return_exceptions=True, *, loop=None):
         for coro in wrapped.coros:
             coro.cancel()
 
-    return(asyncio.gather(
+    wait_closed = asyncio.gather(
         *wrapped.coros,
         return_exceptions=return_exceptions,
         loop=loop
-    ))
+    )
+
+    wait_closed.add_done_callback(partial(_closed, wrapped))
+
+    return wait_closed
+
+
+def _closed(wrapped, fut):
+    wrapped.cache_clear()
 
 
 def alru_cache(

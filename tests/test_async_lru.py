@@ -178,9 +178,9 @@ def test_alru_cache_close(loop):
 
     expected = _CacheInfo(
         hits=0,
-        misses=5,
+        misses=0,
         maxsize=3,
-        currsize=3,
+        currsize=0,
     )
 
     assert coro.cache_info() == expected
@@ -222,9 +222,9 @@ def test_alru_cache_open(loop):
 
     expected = _CacheInfo(
         hits=0,
-        misses=3,
+        misses=0,
         maxsize=3,
-        currsize=3,
+        currsize=0,
     )
 
     assert coro.cache_info() == expected
@@ -348,9 +348,9 @@ def test_alru_cache_close_cancel(loop):
 
     expected = _CacheInfo(
         hits=0,
-        misses=5,
+        misses=0,
         maxsize=3,
-        currsize=3,
+        currsize=0,
     )
 
     assert coro.cache_info() == expected
@@ -387,9 +387,9 @@ def test_alru_cache_close_return_exceptions(loop):
 
     expected = _CacheInfo(
         hits=0,
-        misses=5,
+        misses=0,
         maxsize=3,
-        currsize=3,
+        currsize=0,
     )
 
     assert coro.cache_info() == expected
