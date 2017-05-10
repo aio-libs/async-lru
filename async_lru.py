@@ -2,7 +2,7 @@ import asyncio  # noqa # isort:skip
 from collections import OrderedDict, namedtuple
 from functools import _make_key, lru_cache, partial, wraps
 
-__version__ = '0.0.3'
+__version__ = '0.0.4'
 
 _CacheInfo = namedtuple('CacheInfo', ['hits', 'misses', 'maxsize', 'currsize'])
 
