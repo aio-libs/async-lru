@@ -1,6 +1,6 @@
 import asyncio  # noqa # isort:skip
 from collections import OrderedDict, namedtuple
-from functools import _make_key, partial, wraps
+from functools import _make_key, lru_cache, partial, wraps
 
 __version__ = '0.0.2'
 
@@ -24,17 +24,7 @@ def create_task(*, loop):
             return partial(getattr(asyncio, 'async'), loop=loop)
 
 
-def iscoroutinepartial(fn):
-    # http://bugs.python.org/issue23519
-
-    parent = fn
-
-    while fn is not None:
-        parent, fn = fn, getattr(parent, 'func', None)
-
-    return asyncio.iscoroutinefunction(parent)
-
-
+@lru_cache()
 def unpartial(fn):
     while hasattr(fn, 'func'):
         fn = fn.func
@@ -157,7 +147,7 @@ def alru_cache(
 
             fut = create_future(loop=_loop)
 
-            if iscoroutinepartial(fn):
+            if asyncio.iscoroutinefunction(unpartial(fn)):
                 ret = fn(*fn_args, **fn_kwargs)
 
                 coro = create_task(loop=_loop)(ret)
