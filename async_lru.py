@@ -1,6 +1,6 @@
 import asyncio  # noqa # isort:skip
 from collections import OrderedDict, namedtuple
-from functools import _make_key, lru_cache, partial, wraps
+from functools import _make_key, partial, wraps
 
 __version__ = '0.0.4'
 
@@ -24,7 +24,6 @@ def create_task(*, loop):
             return partial(getattr(asyncio, 'async'), loop=loop)
 
 
-@lru_cache()
 def unpartial(fn):
     while hasattr(fn, 'func'):
         fn = fn.func
@@ -103,6 +102,8 @@ def alru_cache(
     loop=None
 ):
     def wrapper(fn):
+        origin = unpartial(fn)
+
         @wraps(fn)
         def wrapped(*fn_args, **fn_kwargs):
             if wrapped.closed:
@@ -131,7 +132,7 @@ def alru_cache(
                 assert cls ^ kwargs, 'choose self.loop or kwargs["loop"]'
 
                 if cls:
-                    _self = getattr(unpartial(fn), '__self__', None)
+                    _self = getattr(origin, '__self__', None)
 
                     if _self is None:
                         assert fn_args, 'seems not unbound function'
@@ -147,7 +148,7 @@ def alru_cache(
 
             fut = create_future(loop=_loop)
 
-            if asyncio.iscoroutinefunction(unpartial(fn)):
+            if asyncio.iscoroutinefunction(origin):
                 ret = fn(*fn_args, **fn_kwargs)
 
                 coro = create_task(loop=_loop)(ret)
