@@ -7,7 +7,7 @@ try:
 except ImportError:
     ensure_future = asyncio.async
 
-__version__ = '0.0.5'
+__version__ = '0.0.6'
 
 _CacheInfo = namedtuple('CacheInfo', ['hits', 'misses', 'maxsize', 'currsize'])
 
