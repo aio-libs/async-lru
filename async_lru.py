@@ -5,7 +5,7 @@ from functools import _make_key, partial, wraps
 try:
     from asyncio import ensure_future
 except ImportError:
-    ensure_future = asyncio.async
+    ensure_future = getattr(asyncio, 'async')
 
 __version__ = '0.0.6'
 
