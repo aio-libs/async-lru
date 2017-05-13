@@ -2,26 +2,24 @@ import asyncio  # noqa # isort:skip
 from collections import OrderedDict, namedtuple
 from functools import _make_key, partial, wraps
 
+try:
+    from asyncio import ensure_future
+except ImportError:
+    ensure_future = asyncio.async
+
 __version__ = '0.0.5'
 
 _CacheInfo = namedtuple('CacheInfo', ['hits', 'misses', 'maxsize', 'currsize'])
 
 
-def create_future(*, loop):
+def create_future(*, loop=None):
+    if loop is None:
+        loop = asyncio.get_event_loop()
+
     try:
         return loop.create_future()
     except AttributeError:  # pragma: no cover
         return asyncio.Future(loop=loop)
-
-
-def create_task(*, loop):
-    try:
-        return loop.create_task
-    except AttributeError:  # pragma: no cover
-        try:
-            return partial(asyncio.ensure_future, loop=loop)
-        except AttributeError:
-            return partial(getattr(asyncio, 'async'), loop=loop)
 
 
 def unpartial(fn):
@@ -151,7 +149,7 @@ def alru_cache(
             if asyncio.iscoroutinefunction(origin):
                 ret = fn(*fn_args, **fn_kwargs)
 
-                coro = create_task(loop=_loop)(ret)
+                coro = ensure_future(ret, loop=_loop)
                 coro.add_done_callback(partial(_done_callback, fut))
 
                 wrapped.coros.add(coro)
