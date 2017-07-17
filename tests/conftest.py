@@ -3,7 +3,7 @@ import asyncio
 import pytest
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def loop(request):
     with pytest.raises(RuntimeError):
         asyncio.get_event_loop()
@@ -14,12 +14,11 @@ def loop(request):
 
     request.addfinalizer(lambda: asyncio.set_event_loop(None))
 
-    try:
-        yield loop
-    finally:
-        loop.call_soon(loop.stop)
-        loop.run_forever()
-        loop.close()
+    yield loop
+
+    loop.call_soon(loop.stop)
+    loop.run_forever()
+    loop.close()
 
 
 @pytest.mark.tryfirst
