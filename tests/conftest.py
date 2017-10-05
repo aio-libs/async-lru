@@ -3,7 +3,6 @@ import gc
 
 import pytest
 
-
 asyncio.set_event_loop(None)
 
 
