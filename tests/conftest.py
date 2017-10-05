@@ -1,19 +1,16 @@
 import asyncio  # noqa # isort:skip
-import os
+import gc
 
 import pytest
 
 
+asyncio.set_event_loop(None)
+
+
 @pytest.fixture
-def loop(request):
-    with pytest.raises(RuntimeError):
-        asyncio.get_event_loop()
-
+def event_loop(request):
     loop = asyncio.new_event_loop()
-
-    loop.set_debug(bool(os.environ.get('PYTHONASYNCIODEBUG')))
-
-    request.addfinalizer(lambda: asyncio.set_event_loop(None))
+    asyncio.set_event_loop(loop)
 
     yield loop
 
@@ -21,30 +18,10 @@ def loop(request):
     loop.run_forever()
     loop.close()
 
-
-@pytest.mark.tryfirst
-def pytest_pycollect_makeitem(collector, name, obj):
-    if collector.funcnamefilter(name):
-        item = pytest.Function(name, parent=collector)
-
-        if 'run_loop' in item.keywords:
-            return list(collector._genfunctions(name, obj))
+    gc.collect()
+    asyncio.set_event_loop(None)
 
 
-@pytest.mark.tryfirst
-def pytest_pyfunc_call(pyfuncitem):
-    if 'run_loop' in pyfuncitem.keywords:
-        funcargs = pyfuncitem.funcargs
-
-        loop = funcargs['loop']
-
-        testargs = {
-            arg: funcargs[arg]
-            for arg in pyfuncitem._fixtureinfo.argnames
-        }
-
-        assert asyncio.iscoroutinefunction(pyfuncitem.obj)
-
-        loop.run_until_complete(pyfuncitem.obj(**testargs))
-
-        return True
+@pytest.fixture
+def loop(event_loop, request):
+    return event_loop
