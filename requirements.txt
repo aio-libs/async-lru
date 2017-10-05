@@ -20,7 +20,7 @@ pyflakes==1.6.0
 Pygments==2.2.0
 pyparsing==2.2.0
 pytest==3.2.3
-pytest-cov==2.4.0
+pytest-cov==2.5.1
 simplegeneric==0.8.1
 six==1.10.0
 tox==2.6.0
