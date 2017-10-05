@@ -51,7 +51,7 @@ def _cache_invalidate(cache, typed, *args, **kwargs):
 
 def _cache_clear(wrapped):
     wrapped.hits = wrapped.misses = 0
-    wrapped.cache.clear()
+    wrapped.cache = {}
 
 
 def _open(wrapped):
