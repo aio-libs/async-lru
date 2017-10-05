@@ -15,8 +15,7 @@ script:
   - echo "$TOXENV"
 
   - tox
-cache:
-  directories:
-    - $HOME/.cache/pip
+cache: pip
 notifications:
   email: false
+  slack: oceanio:qISToAOQglhPzOlbJ3CjNJLF

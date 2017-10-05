@@ -1,9 +1,8 @@
-import asyncio
+import asyncio   # noqa # isort:skip
 import sys
 from functools import partial
 
 import pytest
-
 from async_lru import _CacheInfo, alru_cache
 
 
@@ -232,25 +231,22 @@ def test_alru_cache_open(loop):
     assert ret == input_data
 
 
+def test_alru_cache_no_default_event_loop(loop):
+    asyncio.set_event_loop(None)
+
+    @alru_cache
+    @asyncio.coroutine
+    def coro(val):
+        return val
+
+    with pytest.raises(RuntimeError):
+        coro(1)
+
+
 @pytest.mark.run_loop
 @asyncio.coroutine
-def test_alru_cache_no_event_loop(loop):
-    if sys.version_info < (3, 6):
-        with pytest.raises(RuntimeError):
-            asyncio.get_event_loop()
-
-        @alru_cache
-        @asyncio.coroutine
-        def coro(val):
-            return val
-
-        with pytest.raises(RuntimeError):
-            coro(1)
-
-        with pytest.raises(RuntimeError):
-            yield from coro.close()
-
-        asyncio.set_event_loop(loop)
+def test_alru_cache_default_event_loop(loop):
+    asyncio.set_event_loop(loop)
 
     @alru_cache(maxsize=3, loop=loop)
     @asyncio.coroutine
@@ -383,7 +379,9 @@ def test_alru_cache_close_return_exceptions(loop):
 
     assert coro.cache_info() == expected
 
-    ret = yield from coro.close(cancel=False, return_exceptions=True, loop=loop)
+    close = coro.close(cancel=False, return_exceptions=True, loop=loop)
+
+    ret = yield from close
 
     expected = _CacheInfo(
         hits=0,
@@ -803,7 +801,8 @@ def test_alru_cache_loop_cls(loop):
     class C:
         def __init__(self, *, loop):
             self.loop = loop
-            self.coro = alru_cache(maxsize=3, cls=True, loop='loop')(self._coro)
+            deco = alru_cache(maxsize=3, cls=True, loop='loop')
+            self.coro = deco(self._coro)
 
         @asyncio.coroutine
         def _coro(self, val):
@@ -830,7 +829,8 @@ def test_alru_cache_loop_cls(loop):
     class C:
         def __init__(self, *, loop):
             self.loop = loop
-            self.coro = alru_cache(maxsize=3, cls=True, loop='loop')(partial(self._coro))
+            coro = partial(self._coro)
+            self.coro = alru_cache(maxsize=3, cls=True, loop='loop')(coro)
 
         @asyncio.coroutine
         def _coro(self, val):

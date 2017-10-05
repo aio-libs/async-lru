@@ -1,4 +1,5 @@
-import asyncio
+import asyncio  # noqa # isort:skip
+import os
 
 import pytest
 
@@ -10,7 +11,7 @@ def loop(request):
 
     loop = asyncio.new_event_loop()
 
-    loop.set_debug(True)
+    loop.set_debug(bool(os.environ.get('PYTHONASYNCIODEBUG')))
 
     request.addfinalizer(lambda: asyncio.set_event_loop(None))
 

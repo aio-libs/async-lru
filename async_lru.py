@@ -51,7 +51,7 @@ def _cache_invalidate(cache, typed, *args, **kwargs):
 
 def _cache_clear(wrapped):
     wrapped.hits = wrapped.misses = 0
-    wrapped.cache = {}
+    wrapped.cache = OrderedDict()
 
 
 def _open(wrapped):
