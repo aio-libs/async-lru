@@ -2,7 +2,7 @@ appdirs==1.4.3
 appnope==0.1.0
 coverage==4.4.1
 decorator==4.1.2
-flake8==3.3.0
+flake8==3.4.1
 ipdb==0.10.2
 ipython==5.3.0
 ipython-genutils==0.2.0
