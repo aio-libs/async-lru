@@ -102,6 +102,9 @@ def alru_cache(
     def wrapper(fn):
         origin = unpartial(fn)
 
+        if not asyncio.iscoroutinefunction(origin):
+            raise RuntimeError('Coroutine function is required')
+
         @wraps(fn)
         def wrapped(*fn_args, **fn_kwargs):
             if wrapped.closed:
@@ -146,19 +149,13 @@ def alru_cache(
 
             fut = create_future(loop=_loop)
 
-            if asyncio.iscoroutinefunction(origin):
-                ret = fn(*fn_args, **fn_kwargs)
+            ret = fn(*fn_args, **fn_kwargs)
 
-                coro = ensure_future(ret, loop=_loop)
-                coro.add_done_callback(partial(_done_callback, fut))
+            coro = ensure_future(ret, loop=_loop)
+            coro.add_done_callback(partial(_done_callback, fut))
 
-                wrapped.coros.add(coro)
-                coro.add_done_callback(wrapped.coros.remove)
-            else:
-                try:
-                    fut.set_result(fn(*fn_args, **fn_kwargs))
-                except BaseException as exc:
-                    fut.set_exception(exc)
+            wrapped.coros.add(coro)
+            coro.add_done_callback(wrapped.coros.remove)
 
             wrapped.cache[key] = fut
             wrapped.misses += 1

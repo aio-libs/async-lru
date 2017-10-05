@@ -677,29 +677,11 @@ def test_alru_cache_not_callable(loop):
         alru_cache('foo')
 
 
-@pytest.mark.run_loop
-@asyncio.coroutine
 def test_alru_cache_not_coroutine(loop):
-    @alru_cache(maxsize=3, loop=loop)
-    def not_coro(val):
-        return val
-
-    input_data = [1, 2, 3]
-    coros = [not_coro(v) for v in input_data]
-
-    ret = yield from asyncio.gather(*coros, loop=loop)
-
-    expected = _CacheInfo(
-        hits=0,
-        misses=3,
-        maxsize=3,
-        currsize=3,
-    )
-
-    assert not_coro.cache_info() == expected
-    assert len(not_coro.cache) == len(input_data)
-    assert len(not_coro.coros) == 0
-    assert ret == input_data
+    with pytest.raises(RuntimeError):
+        @alru_cache
+        def not_coro(val):
+            return val
 
 
 @pytest.mark.run_loop
