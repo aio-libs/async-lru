@@ -1,5 +1,4 @@
 import asyncio   # noqa # isort:skip
-import sys
 from functools import partial
 
 import pytest
@@ -592,23 +591,6 @@ def test_alru_cache_decorator(loop):
 @pytest.mark.run_loop
 @asyncio.coroutine
 def test_alru_cache_decorator_simple(loop):
-    if sys.version_info < (3, 6):
-        with pytest.raises(RuntimeError):
-            asyncio.get_event_loop()
-
-        with pytest.raises(RuntimeError):
-            @alru_cache
-            @asyncio.coroutine
-            def coro(val):
-                return val
-
-            input_data = [1, 2, 3]
-            coros = [coro(v) for v in input_data]
-
-            yield from asyncio.gather(*coros, loop=loop)
-
-        asyncio.set_event_loop(loop)
-
     @alru_cache
     @asyncio.coroutine
     def coro(val):
