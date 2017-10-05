@@ -2,6 +2,7 @@ import asyncio   # noqa # isort:skip
 from functools import partial
 
 import pytest
+
 from async_lru import _CacheInfo, alru_cache
 
 pytestmark = pytest.mark.asyncio

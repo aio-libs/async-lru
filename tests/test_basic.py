@@ -1,5 +1,4 @@
 import pytest
-
 from async_lru import alru_cache
 
 
