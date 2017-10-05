@@ -22,7 +22,7 @@ pyparsing==2.2.0
 pytest==3.2.3
 pytest-cov==2.5.1
 simplegeneric==0.8.1
-six==1.10.0
+six==1.11.0
 tox==2.6.0
 traitlets==4.3.2
 virtualenv==15.1.0
