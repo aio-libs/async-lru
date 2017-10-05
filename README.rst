@@ -3,11 +3,14 @@ async_lru
 
 :info: Simple lru cache for asyncio
 
-.. image:: https://img.shields.io/travis/wikibusiness/async_lru.svg
+.. image:: https://travis-ci.org/wikibusiness/async_lru.svg?branch=master
     :target: https://travis-ci.org/wikibusiness/async_lru
 
 .. image:: https://img.shields.io/pypi/v/async_lru.svg
     :target: https://pypi.python.org/pypi/async_lru
+
+.. image:: https://codecov.io/gh/wikibusiness/async_lru/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/wikibusiness/async_lru
 
 Installation
 ------------
