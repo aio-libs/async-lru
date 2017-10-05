@@ -12,7 +12,7 @@ packaging==16.8
 pexpect==4.2.1
 pickleshare==0.7.4
 pluggy==0.5.2
-prompt-toolkit==1.0.13
+prompt-toolkit==1.0.15
 ptyprocess==0.5.1
 py==1.4.33
 pycodestyle==2.3.1
