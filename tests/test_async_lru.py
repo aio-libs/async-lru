@@ -591,7 +591,7 @@ def test_alru_cache_decorator(loop):
 @pytest.mark.run_loop
 @asyncio.coroutine
 def test_alru_cache_decorator_simple(loop):
-    asyncio.set_event_loop(None)
+    asyncio.set_event_loop(loop)
 
     @alru_cache
     @asyncio.coroutine
