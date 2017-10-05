@@ -4,8 +4,9 @@ from functools import partial
 import pytest
 from async_lru import _CacheInfo, alru_cache
 
+pytestmark = pytest.mark.asyncio
 
-@pytest.mark.run_loop
+
 @asyncio.coroutine
 def test_alru_cache_basic(loop):
     @alru_cache(maxsize=4, loop=loop)
@@ -69,7 +70,6 @@ def test_alru_cache_basic(loop):
     assert ret == input_data
 
 
-@pytest.mark.run_loop
 @asyncio.coroutine
 def test_alru_cache_coros_waiting_same_value(loop):
     check_list = []
@@ -99,7 +99,6 @@ def test_alru_cache_coros_waiting_same_value(loop):
     assert ret == 7
 
 
-@pytest.mark.run_loop
 @asyncio.coroutine
 def test_alru_cache_removing_lru_keys(loop):
     @alru_cache(maxsize=3, loop=loop)
@@ -138,7 +137,6 @@ def test_alru_cache_removing_lru_keys(loop):
     assert ret == input_data
 
 
-@pytest.mark.run_loop
 @asyncio.coroutine
 def test_alru_cache_close(loop):
     calls = 0
@@ -191,7 +189,6 @@ def test_alru_cache_close(loop):
         yield from coro.close()
 
 
-@pytest.mark.run_loop
 @asyncio.coroutine
 def test_alru_cache_open(loop):
     @alru_cache(maxsize=3, loop=loop)
@@ -230,48 +227,6 @@ def test_alru_cache_open(loop):
     assert ret == input_data
 
 
-def test_alru_cache_no_default_event_loop(loop):
-    asyncio.set_event_loop(None)
-
-    @alru_cache
-    @asyncio.coroutine
-    def coro(val):
-        return val
-
-    with pytest.raises(RuntimeError):
-        coro(1)
-
-
-@pytest.mark.run_loop
-@asyncio.coroutine
-def test_alru_cache_default_event_loop(loop):
-    asyncio.set_event_loop(loop)
-
-    @alru_cache(maxsize=3, loop=loop)
-    @asyncio.coroutine
-    def coro(val):
-        return val
-
-    input_data = [1, 2, 3, 4, 5]
-    [coro(v) for v in input_data]
-
-    assert coro.closed is False
-
-    expected = _CacheInfo(
-        hits=0,
-        misses=5,
-        maxsize=3,
-        currsize=3,
-    )
-
-    assert coro.cache_info() == expected
-
-    yield from coro.close()
-
-    assert coro.closed is True
-
-
-@pytest.mark.run_loop
 @asyncio.coroutine
 def test_alru_cache_close_wait(loop):
     fut = asyncio.Future(loop=loop)
@@ -305,7 +260,6 @@ def test_alru_cache_close_wait(loop):
     assert fut.done()
 
 
-@pytest.mark.run_loop
 @asyncio.coroutine
 def test_alru_cache_close_cancel(loop):
     calls = 0
@@ -358,7 +312,6 @@ def test_alru_cache_close_cancel(loop):
         yield from coro.close()
 
 
-@pytest.mark.run_loop
 @asyncio.coroutine
 def test_alru_cache_close_return_exceptions(loop):
     @alru_cache(maxsize=3, loop=loop)
@@ -411,7 +364,6 @@ def test_alru_cache_close_return_exceptions(loop):
         yield from coro.close(cancel=True, return_exceptions=False, loop=loop)
 
 
-@pytest.mark.run_loop
 @asyncio.coroutine
 def test_alru_cache_none_max_size(loop):
     @alru_cache(maxsize=None, loop=loop)
@@ -437,7 +389,6 @@ def test_alru_cache_none_max_size(loop):
     assert ret == input_data
 
 
-@pytest.mark.run_loop
 @asyncio.coroutine
 def test_alru_cache_zero_max_size(loop):
     @alru_cache(maxsize=0, loop=loop)
@@ -462,7 +413,6 @@ def test_alru_cache_zero_max_size(loop):
     assert ret == input_data
 
 
-@pytest.mark.run_loop
 @asyncio.coroutine
 def test_alru_cache_clear(loop):
     @alru_cache(maxsize=3, loop=loop)
@@ -500,7 +450,6 @@ def test_alru_cache_clear(loop):
     assert len(coro.cache) == 0
 
 
-@pytest.mark.run_loop
 @asyncio.coroutine
 def test_alru_cache_invalidate(loop):
     @alru_cache(maxsize=3, loop=loop)
@@ -562,7 +511,6 @@ def test_alru_cache_invalidate(loop):
     assert ret == input_data
 
 
-@pytest.mark.run_loop
 @asyncio.coroutine
 def test_alru_cache_decorator(loop):
     @alru_cache(maxsize=3, loop=loop)
@@ -588,7 +536,6 @@ def test_alru_cache_decorator(loop):
     assert ret == input_data
 
 
-@pytest.mark.run_loop
 @asyncio.coroutine
 def test_alru_cache_decorator_simple(loop):
     asyncio.set_event_loop(loop)
@@ -616,7 +563,6 @@ def test_alru_cache_decorator_simple(loop):
     assert ret == input_data
 
 
-@pytest.mark.run_loop
 @asyncio.coroutine
 def test_alru_cache_funcion(loop):
     @asyncio.coroutine
@@ -643,7 +589,6 @@ def test_alru_cache_funcion(loop):
     assert ret == input_data
 
 
-@pytest.mark.run_loop
 @asyncio.coroutine
 def test_alru_cache_funcion_fn(loop):
     @asyncio.coroutine
@@ -670,158 +615,6 @@ def test_alru_cache_funcion_fn(loop):
     assert ret == input_data
 
 
-@pytest.mark.run_loop
-@asyncio.coroutine
-def test_alru_cache_not_callable(loop):
-    with pytest.raises(NotImplementedError):
-        alru_cache('foo')
-
-
-def test_alru_cache_not_coroutine(loop):
-    with pytest.raises(RuntimeError):
-        @alru_cache
-        def not_coro(val):
-            return val
-
-
-@pytest.mark.run_loop
-@asyncio.coroutine
-def test_alru_cache_loop_kwargs(loop):
-    @alru_cache(maxsize=3, kwargs=True, loop='loop')
-    @asyncio.coroutine
-    def coro(val, *, loop):
-        return val
-
-    input_data = [1, 2, 3]
-    coros = [coro(v, loop=loop) for v in input_data]
-
-    ret = yield from asyncio.gather(*coros, loop=loop)
-
-    expected = _CacheInfo(
-        hits=0,
-        misses=3,
-        maxsize=3,
-        currsize=3,
-    )
-
-    assert coro.cache_info() == expected
-    assert len(coro.cache) == len(input_data)
-    assert len(coro.coros) == 0
-    assert ret == input_data
-
-    class C:
-        @alru_cache(maxsize=3, kwargs=True, loop='loop')
-        @asyncio.coroutine
-        def coro(self, val, *, loop):
-            return val
-
-    c = C()
-    input_data = [1, 2, 3]
-    coros = [c.coro(v, loop=loop) for v in input_data]
-
-    ret = yield from asyncio.gather(*coros, loop=loop)
-
-    expected = _CacheInfo(
-        hits=0,
-        misses=3,
-        maxsize=3,
-        currsize=3,
-    )
-
-    assert c.coro.cache_info() == expected
-    assert len(c.coro.cache) == len(input_data)
-    assert len(c.coro.coros) == 0
-    assert ret == input_data
-
-
-@pytest.mark.run_loop
-@asyncio.coroutine
-def test_alru_cache_loop_cls(loop):
-    class C:
-        def __init__(self, *, loop):
-            self.loop = loop
-
-        @alru_cache(maxsize=3, cls=True, loop='loop')
-        @asyncio.coroutine
-        def coro(self, val):
-            return val
-
-    c = C(loop=loop)
-    input_data = [1, 2, 3]
-    coros = [c.coro(v) for v in input_data]
-
-    ret = yield from asyncio.gather(*coros, loop=loop)
-
-    expected = _CacheInfo(
-        hits=0,
-        misses=3,
-        maxsize=3,
-        currsize=3,
-    )
-
-    assert c.coro.cache_info() == expected
-    assert len(c.coro.cache) == len(input_data)
-    assert len(c.coro.coros) == 0
-    assert ret == input_data
-
-    class C:
-        def __init__(self, *, loop):
-            self.loop = loop
-            deco = alru_cache(maxsize=3, cls=True, loop='loop')
-            self.coro = deco(self._coro)
-
-        @asyncio.coroutine
-        def _coro(self, val):
-            return val
-
-    c = C(loop=loop)
-    input_data = [1, 2, 3]
-    coros = [c.coro(v) for v in input_data]
-
-    ret = yield from asyncio.gather(*coros, loop=loop)
-
-    expected = _CacheInfo(
-        hits=0,
-        misses=3,
-        maxsize=3,
-        currsize=3,
-    )
-
-    assert c.coro.cache_info() == expected
-    assert len(c.coro.cache) == len(input_data)
-    assert len(c.coro.coros) == 0
-    assert ret == input_data
-
-    class C:
-        def __init__(self, *, loop):
-            self.loop = loop
-            coro = partial(self._coro)
-            self.coro = alru_cache(maxsize=3, cls=True, loop='loop')(coro)
-
-        @asyncio.coroutine
-        def _coro(self, val):
-            return val
-
-    c = C(loop=loop)
-    input_data = [1, 2, 3]
-    coros = [c.coro(v) for v in input_data]
-
-    ret = yield from asyncio.gather(*coros, loop=loop)
-
-    expected = _CacheInfo(
-        hits=0,
-        misses=3,
-        maxsize=3,
-        currsize=3,
-    )
-
-    assert c.coro.cache_info() == expected
-    assert len(c.coro.cache) == len(input_data)
-    assert len(c.coro.coros) == 0
-    assert ret == input_data
-
-
-@pytest.mark.run_loop
 @asyncio.coroutine
 def test_alru_cache_funcion_partial(loop):
     @asyncio.coroutine
@@ -848,7 +641,6 @@ def test_alru_cache_funcion_partial(loop):
     assert ret == input_data
 
 
-@pytest.mark.run_loop
 @asyncio.coroutine
 def test_alru_cache_exception(loop):
     @alru_cache(maxsize=3, cache_exceptions=True, loop=loop)
@@ -909,40 +701,6 @@ def test_alru_cache_exception(loop):
 
     for fut in coros:
         assert fut is not one_more
-
-    with pytest.raises(ZeroDivisionError):
-        yield from one_more
-
-
-@pytest.mark.run_loop
-@asyncio.coroutine
-def test_alru_cache_not_coroutine_exception(loop):
-    @alru_cache(maxsize=3, loop=loop)
-    def not_coro(val):
-        1/0
-
-    input_data = [1, 1, 1]
-    coros = [not_coro(v) for v in input_data]
-
-    ret = yield from asyncio.gather(*coros, loop=loop, return_exceptions=True)
-
-    expected = _CacheInfo(
-        hits=2,
-        misses=1,
-        maxsize=3,
-        currsize=1,
-    )
-
-    assert not_coro.cache_info() == expected
-    assert len(not_coro.cache) == 1
-    assert len(not_coro.coros) == 0
-    for item in ret:
-        assert isinstance(item, ZeroDivisionError)
-
-    one_more = not_coro(1)
-
-    for fut in coros:
-        assert fut is one_more
 
     with pytest.raises(ZeroDivisionError):
         yield from one_more
