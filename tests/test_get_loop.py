@@ -1,6 +1,7 @@
 import asyncio
 
 import pytest
+
 from async_lru import _get_loop
 
 

@@ -5,6 +5,7 @@ from functools import _make_key, partial
 from unittest import mock
 
 import pytest
+
 from async_lru import (__cache_touch, _cache_clear, _cache_hit, _cache_info,
                        _cache_invalidate, _cache_miss, _close, _close_waited,
                        _done_callback, _open, _wait_closed, create_future)
@@ -154,8 +155,15 @@ def test_cache_clear():
 
 def test_open():
     wrapped = Wrapped()
-
+    wrapped.hits = wrapped.misses = 1
+    wrapped._cache = {}
+    wrapped.tasks = set()
     wrapped.closed = True
+
+    with pytest.raises(RuntimeError):
+        _open(wrapped)
+
+    wrapped.hits = wrapped.misses = 0
 
     _open(wrapped)
 
@@ -243,6 +251,7 @@ async def test_wait_closed(loop):
         assert ret == []
         assert mocked.called_once()
 
+    asyncio.set_event_loop(loop)
     with mock.patch('async_lru._close_waited') as mocked:
         ret = await _wait_closed(
             wrapped,
@@ -251,6 +260,7 @@ async def test_wait_closed(loop):
         )
         assert ret == []
         assert mocked.called_once()
+    asyncio.set_event_loop(None)
 
     fut = create_future(loop=loop)
     fut.set_result(None)

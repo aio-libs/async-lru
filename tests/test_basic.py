@@ -2,6 +2,7 @@ import asyncio
 from functools import partial
 
 import pytest
+
 from async_lru import alru_cache
 
 alru_cache_attrs = [
@@ -33,7 +34,7 @@ def test_alru_cache_not_coroutine(loop):
             return val
 
 
-def test_alru_cache_deco(loop):
+def test_alru_cache_deco(loop, check_lru):
     asyncio.set_event_loop(loop)
 
     @alru_cache
@@ -49,17 +50,12 @@ def test_alru_cache_deco(loop):
 
     assert isinstance(coro._cache, dict)
     assert isinstance(coro.tasks, set)
-    assert len(coro._cache) == 0
-    assert len(coro.tasks) == 0
-    assert not coro.closed
-    assert coro.cache_info() == (0, 0, 128, 0)
-    assert isinstance(coro._cache, dict)
-    assert coro.hits == coro.misses == 0
+    check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
     assert asyncio.iscoroutine(coro())
 
 
-def test_alru_cache_deco_called(loop):
+def test_alru_cache_deco_called(check_lru, loop):
     asyncio.set_event_loop(loop)
 
     @alru_cache()
@@ -75,17 +71,12 @@ def test_alru_cache_deco_called(loop):
 
     assert isinstance(coro._cache, dict)
     assert isinstance(coro.tasks, set)
-    assert len(coro._cache) == 0
-    assert len(coro.tasks) == 0
-    assert not coro.closed
-    assert coro.cache_info() == (0, 0, 128, 0)
-    assert isinstance(coro._cache, dict)
-    assert coro.hits == coro.misses == 0
+    check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
     assert asyncio.iscoroutine(coro())
 
 
-def test_alru_cache_fn_called(loop):
+def test_alru_cache_fn_called(check_lru, loop):
     asyncio.set_event_loop(loop)
 
     async def coro():
@@ -102,11 +93,7 @@ def test_alru_cache_fn_called(loop):
 
     assert isinstance(coro_wrapped._cache, dict)
     assert isinstance(coro_wrapped.tasks, set)
-    assert len(coro_wrapped._cache) == 0
-    assert len(coro_wrapped.tasks) == 0
-    assert not coro_wrapped.closed
-    assert coro_wrapped.cache_info() == (0, 0, 128, 0)
-    assert coro_wrapped.hits == coro_wrapped.misses == 0
+    check_lru(coro_wrapped, hits=0, misses=0, cache=0, tasks=0)
 
     assert asyncio.iscoroutine(coro_wrapped())
 
@@ -127,40 +114,47 @@ def test_alru_cache_origin(loop):
 
 
 @pytest.mark.asyncio
-async def test_alru_cache_close(loop):
-    asyncio.set_event_loop(loop)
+async def test_alru_cache_await_same_result_async(check_lru, loop):
+    calls = 0
+    val = object()
 
-    @alru_cache
+    @alru_cache(loop=loop)
     async def coro():
-        pass
+        nonlocal calls
+        calls += 1
 
-    assert not coro.closed
+        return val
 
-    await coro()
+    coros = [coro() for _ in range(100)]
+    ret = await asyncio.gather(*coros, loop=loop)
+    expected = [val] * 100
+    assert ret == expected
+    check_lru(coro, hits=99, misses=1, cache=1, tasks=0)
 
-    coro.close()
-
-    assert coro.closed
-
-    with pytest.raises(RuntimeError):
-        await coro()
-
-    with pytest.raises(RuntimeError):
-        coro.close()
+    assert calls == 1
+    assert await coro() is val
+    check_lru(coro, hits=100, misses=1, cache=1, tasks=0)
 
 
-def test_alru_cache_open(loop):
-    asyncio.set_event_loop(loop)
+@pytest.mark.asyncio
+async def test_alru_cache_await_same_result_coroutine(check_lru, loop):
+    calls = 0
+    val = object()
 
-    @alru_cache
-    async def coro():
-        pass
+    @alru_cache(loop=loop)
+    @asyncio.coroutine
+    def coro():
+        nonlocal calls
+        calls += 1
 
-    coro.close()
+        return val
 
-    coro.open()
+    coros = [coro() for _ in range(100)]
+    ret = await asyncio.gather(*coros, loop=loop)
+    expected = [val] * 100
+    assert ret == expected
+    check_lru(coro, hits=99, misses=1, cache=1, tasks=0)
 
-    assert not coro.closed
-
-    with pytest.raises(RuntimeError):
-        coro.open()
+    assert calls == 1
+    assert await coro() is val
+    check_lru(coro, hits=100, misses=1, cache=1, tasks=0)

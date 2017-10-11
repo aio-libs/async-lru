@@ -60,6 +60,17 @@ def _open(wrapped):
     if not wrapped.closed:
         raise RuntimeError('alru_cache is not closed')
 
+    was_closed = (
+        wrapped.hits ==
+        wrapped.misses ==
+        len(wrapped.tasks) ==
+        len(wrapped._cache) ==
+        0
+    )
+
+    if not was_closed:
+        raise RuntimeError('alru_cache was not closed correctly')
+
     wrapped.closed = False
 
 
@@ -71,7 +82,7 @@ def _close(wrapped, *, cancel=False, return_exceptions=True, loop=None):
 
     if cancel:
         for task in wrapped.tasks:
-            if not task.done():
+            if not task.done():  # not sure is it possible
                 task.cancel()
 
     return _wait_closed(
@@ -94,7 +105,12 @@ def _wait_closed(wrapped, *, return_exceptions, loop):
 
     wait_closed.add_done_callback(partial(_close_waited, wrapped))
 
-    return (yield from wait_closed)
+    ret = yield from wait_closed
+
+    # hack to get _close_waited callback to be executed
+    yield from asyncio.sleep(0, loop=loop)
+
+    return ret
 
 
 def _close_waited(wrapped, _):
