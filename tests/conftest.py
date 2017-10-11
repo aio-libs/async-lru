@@ -1,5 +1,6 @@
-import asyncio  # noqa # isort:skip
+import asyncio
 import gc
+import os
 
 import pytest
 
@@ -8,8 +9,11 @@ asyncio.set_event_loop(None)
 
 @pytest.fixture
 def event_loop(request):
+    asyncio.set_event_loop(None)
     loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
+    loop.set_debug(bool(os.environ.get('PYTHONASYNCIODEBUG')))
+
+    request.addfinalizer(lambda: asyncio.set_event_loop(None))
 
     yield loop
 
@@ -18,7 +22,6 @@ def event_loop(request):
     loop.close()
 
     gc.collect()
-    asyncio.set_event_loop(None)
 
 
 @pytest.fixture
