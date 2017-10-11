@@ -250,4 +250,4 @@ def alru_cache(
     if callable(fn):
         return wrapper(fn)
 
-    raise NotImplementedError
+    raise NotImplementedError('{} decorating is not supported'.format(fn))
