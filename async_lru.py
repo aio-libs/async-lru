@@ -9,6 +9,8 @@ except ImportError:  # pragma: no cover
 
 __version__ = '0.1.0'
 
+__all__ = ('alru_cache',)
+
 
 def create_future(*, loop):
     try:
@@ -69,7 +71,8 @@ def _close(wrapped, *, cancel=False, return_exceptions=True, loop=None):
 
     if cancel:
         for task in wrapped.tasks:
-            task.cancel()
+            if not task.done():
+                task.cancel()
 
     return _wait_closed(
         wrapped,
@@ -89,12 +92,12 @@ def _wait_closed(wrapped, *, return_exceptions, loop):
         loop=loop
     )
 
-    wait_closed.add_done_callback(partial(__wait_closed, wrapped))
+    wait_closed.add_done_callback(partial(_close_waited, wrapped))
 
     return (yield from wait_closed)
 
 
-def __wait_closed(wrapped, _):
+def _close_waited(wrapped, _):
     wrapped.cache_clear()
 
 
@@ -108,7 +111,11 @@ def _cache_info(wrapped, maxsize):
 
 
 def __cache_touch(wrapped, key, fut, *, loop):
-    wrapped._cache.move_to_end(key)
+    try:
+        wrapped._cache.move_to_end(key)
+    except KeyError:  # not sure is it possible
+        pass
+
     return asyncio.shield(fut, loop=loop)
 
 
