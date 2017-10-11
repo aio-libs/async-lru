@@ -158,3 +158,25 @@ async def test_alru_cache_await_same_result_coroutine(check_lru, loop):
     assert calls == 1
     assert await coro() is val
     check_lru(coro, hits=100, misses=1, cache=1, tasks=0)
+
+
+@pytest.mark.asyncio
+async def test_alru_cache_dict_not_shared(check_lru, loop):
+    async def coro(val):
+        return val
+
+    coro1 = alru_cache(loop=loop)(coro)
+    coro2 = alru_cache(loop=loop)(coro)
+
+    ret1 = await coro1(1)
+    check_lru(coro1, hits=0, misses=1, cache=1, tasks=0)
+
+    ret2 = await coro2(1)
+    check_lru(coro2, hits=0, misses=1, cache=1, tasks=0)
+
+    assert ret1 == ret2
+
+    assert coro1._cache[1].result() == coro2._cache[1].result()
+    assert coro1._cache != coro2._cache
+    assert coro1._cache.keys() == coro2._cache.keys()
+    assert coro1._cache is not coro2._cache
