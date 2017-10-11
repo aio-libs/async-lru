@@ -2,12 +2,12 @@ import asyncio
 
 import pytest
 
-from async_lru import _CacheInfo, _make_key, alru_cache
+from async_lru import _make_key, alru_cache
 
 pytestmark = pytest.mark.asyncio
 
 
-async def test_alru_cache_removing_lru_keys(loop):
+async def test_alru_cache_removing_lru_keys(check_lru, loop):
     @alru_cache(maxsize=3, loop=loop)
     async def coro(val):
         return val
@@ -18,18 +18,20 @@ async def test_alru_cache_removing_lru_keys(loop):
     key2 = _make_key((2,), {}, False)
     key1 = _make_key((1,), {}, False)
 
-    for v in [3, 4, 5]:
+    for i, v in enumerate([3, 4, 5]):
         await coro(v)
-    assert len(coro._cache) == 3
+        check_lru(coro, hits=0, misses=i + 1, cache=i+1, tasks=0, maxsize=3)
+
+    check_lru(coro, hits=0, misses=3, cache=3, tasks=0, maxsize=3)
     assert list(coro._cache) == [key3, key4, key5]
 
     for v in [3, 2, 1]:
         await coro(v)
-    assert len(coro._cache) == 3
+    check_lru(coro, hits=1, misses=5, cache=3, tasks=0, maxsize=3)
     assert list(coro._cache) == [key3, key2, key1]
 
 
-async def test_alru_cache_none_max_size(loop):
+async def test_alru_cache_none_max_size(check_lru, loop):
     @alru_cache(maxsize=None, loop=loop)
     async def coro(val):
         return val
@@ -39,19 +41,11 @@ async def test_alru_cache_none_max_size(loop):
 
     ret = await asyncio.gather(*coros, loop=loop)
 
-    expected = _CacheInfo(
-        hits=4,
-        misses=4,
-        maxsize=None,
-        currsize=4,
-    )
-    assert coro.cache_info() == expected
-    assert len(coro._cache) == len(inputs) // 2
-    assert len(coro.tasks) == 0
+    check_lru(coro, hits=4, misses=4, cache=4, tasks=0, maxsize=None)
     assert ret == inputs
 
 
-async def test_alru_cache_zero_max_size(loop):
+async def test_alru_cache_zero_max_size(check_lru, loop):
     @alru_cache(maxsize=0, loop=loop)
     async def coro(val):
         return val
@@ -61,13 +55,5 @@ async def test_alru_cache_zero_max_size(loop):
 
     ret = await asyncio.gather(*coros, loop=loop)
 
-    expected = _CacheInfo(
-        hits=0,
-        misses=8,
-        maxsize=0,
-        currsize=0,
-    )
-    assert coro.cache_info() == expected
-    assert len(coro._cache) == 0
-    assert len(coro.tasks) == 0
+    check_lru(coro, hits=0, misses=8, cache=0, tasks=0, maxsize=0)
     assert ret == inputs

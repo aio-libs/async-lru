@@ -7,7 +7,7 @@ from async_lru import alru_cache
 pytestmark = pytest.mark.asyncio
 
 
-async def test_cache_close(loop):
+async def test_cache_close(check_lru, loop):
 
     @alru_cache(loop=loop)
     async def coro(val):
@@ -25,22 +25,22 @@ async def test_cache_close(loop):
 
     await asyncio.sleep(0.1, loop=loop)
 
-    assert len(coro.tasks) == 5
+    check_lru(coro, hits=0, misses=5, cache=5, tasks=5)
 
     close = coro.close(loop=loop)
 
     with pytest.raises(RuntimeError):
         await coro(1)
 
-    assert len(coro.tasks) == 5
+    check_lru(coro, hits=0, misses=5, cache=5, tasks=5)
 
     ret_close = await close
 
-    assert len(coro.tasks) == 0
+    check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
     ret_gather = await gather
 
-    assert len(coro.tasks) == 0
+    check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
     assert set(ret_close) == set(ret_gather) == set(inputs)
 
@@ -48,7 +48,7 @@ async def test_cache_close(loop):
         coro.close(loop=loop)
 
 
-async def test_cache_close_cancel_return_exceptions(loop):
+async def test_cache_close_cancel_return_exceptions(check_lru, loop):
     @alru_cache(loop=loop)
     async def coro(val):
         await asyncio.sleep(0.2, loop=loop)
@@ -65,7 +65,11 @@ async def test_cache_close_cancel_return_exceptions(loop):
 
     close = coro.close(cancel=True, loop=loop)
 
+    check_lru(coro, hits=0, misses=5, cache=5, tasks=5)
+
     ret_close = await close
+
+    check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
     for err in ret_close:
         assert isinstance(err, asyncio.CancelledError)
@@ -74,7 +78,7 @@ async def test_cache_close_cancel_return_exceptions(loop):
         await gather
 
 
-async def test_cache_close_cancel_not_return_exceptions(loop):
+async def test_cache_close_cancel_not_return_exceptions(check_lru, loop):
     @alru_cache(loop=loop)
     async def coro(val):
         await asyncio.sleep(0.2, loop=loop)
@@ -91,14 +95,18 @@ async def test_cache_close_cancel_not_return_exceptions(loop):
 
     close = coro.close(cancel=True, return_exceptions=False, loop=loop)
 
+    check_lru(coro, hits=0, misses=5, cache=5, tasks=5)
+
     with pytest.raises(asyncio.CancelledError):
         await close
 
     with pytest.raises(asyncio.CancelledError):
         await gather
 
+    check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
-async def test_cache_close_return_exceptions(loop):
+
+async def test_cache_close_return_exceptions(check_lru, loop):
     @alru_cache(loop=loop)
     async def coro(val):
         await asyncio.sleep(0.2, loop=loop)
@@ -115,16 +123,24 @@ async def test_cache_close_return_exceptions(loop):
 
     close = coro.close(loop=loop)
 
+    check_lru(coro, hits=0, misses=5, cache=5, tasks=5)
+
     with pytest.raises(ZeroDivisionError):
         await gather
 
+    check_lru(coro, hits=0, misses=5, cache=5, tasks=0)
+
     ret_close = await close
+
+    check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
     for err in ret_close:
         assert isinstance(err, ZeroDivisionError)
 
+    check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
-async def test_cache_close_not_return_exceptions(loop):
+
+async def test_cache_close_not_return_exceptions(check_lru, loop):
     @alru_cache(loop=loop)
     async def coro(val):
         await asyncio.sleep(0.2, loop=loop)
@@ -141,10 +157,16 @@ async def test_cache_close_not_return_exceptions(loop):
 
     close = coro.close(return_exceptions=False, loop=loop)
 
+    check_lru(coro, hits=0, misses=5, cache=5, tasks=5)
+
     with pytest.raises(ZeroDivisionError):
         await close
+
+    check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
     ret_gather = await gather
 
     for err in ret_gather:
         assert isinstance(err, ZeroDivisionError)
+
+    check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
