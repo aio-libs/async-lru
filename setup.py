@@ -1,8 +1,11 @@
 import io
 import os
 import re
+import sys
 
 from setuptools import setup
+
+needs_pytest = 'pytest' in set(sys.argv)
 
 
 def get_version():
@@ -31,6 +34,8 @@ setup(
     extras_require={
         ':python_version=="3.3"': ['asyncio'],
     },
+    setup_requires=['pytest-runner'] if needs_pytest else [],
+    tests_require=['pytest', 'pytest-asyncio', 'pytest-cov'],
     py_modules=['async_lru'],
     include_package_data=True,
     zip_safe=False,
