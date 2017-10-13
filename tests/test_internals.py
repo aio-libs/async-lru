@@ -328,71 +328,54 @@ def test_cache_info():
     assert (2, 3, 5, 2) == _cache_info(wrapped, 5)
 
 
-@pytest.mark.asyncio
-async def test__cache_touch(loop):
+def test__cache_touch():
     wrapped = Wrapped()
 
     wrapped._cache = OrderedDict()
     wrapped._cache[1] = 1
     wrapped._cache[2] = 2
-    obj = object()
-    fut = create_future(loop=loop)
-    fut.set_result(obj)
 
-    ret = __cache_touch(wrapped, 1, fut, loop=loop)
-    assert ret._loop is loop
-    assert await ret is obj
+    __cache_touch(wrapped, 1)
     assert list(wrapped._cache) == [2, 1]
 
-    fut = create_future(loop=loop)
-    ret = __cache_touch(wrapped, 1, fut, loop=loop)
-    assert ret._loop is loop
-    ret.cancel()
-    await asyncio.sleep(0, loop=loop)
-    assert not fut.cancelled()
-    assert list(wrapped._cache) == [2, 1]
-
-    asyncio.set_event_loop(loop)
-    fut = create_future(loop=loop)
-    ret = __cache_touch(wrapped, 2, fut, loop=None)
-    assert ret._loop is loop
+    __cache_touch(wrapped, 2)
     assert list(wrapped._cache) == [1, 2]
 
     # test KeyError
-    __cache_touch(wrapped, 100, fut, loop=loop)
+    __cache_touch(wrapped, 100)
 
 
-def test_cache_hit(loop):
+def test_cache_hit():
     wrapped = Wrapped()
-    wrapped.hits = 0
+    wrapped.hits = 1
     wrapped._cache = OrderedDict()
+    wrapped._cache[1] = 1
 
     with mock.patch('async_lru.__cache_touch') as mocked:
-        fut = create_future(loop=loop)
-        _cache_hit(wrapped, 1, fut, loop=loop)
+        _cache_hit(wrapped, 1)
 
         assert mocked.called_once()
-
-    assert wrapped.hits == 1
-
-    _cache_hit(wrapped, 1, fut, loop=loop)
 
     assert wrapped.hits == 2
 
+    _cache_hit(wrapped, 1)
 
-def test_cache_miss(loop):
+    assert wrapped.hits == 3
+
+
+def test_cache_miss():
     wrapped = Wrapped()
-    wrapped.misses = 0
+    wrapped.misses = 1
     wrapped._cache = OrderedDict()
+    wrapped._cache[1] = 1
 
     with mock.patch('async_lru.__cache_touch') as mocked:
-        fut = create_future(loop=loop)
-        _cache_miss(wrapped, 1, fut, loop=loop)
+        _cache_miss(wrapped, 1)
 
         assert mocked.called_once()
 
-    assert wrapped.misses == 1
-
-    _cache_miss(wrapped, 1, fut, loop=loop)
-
     assert wrapped.misses == 2
+
+    _cache_miss(wrapped, 1)
+
+    assert wrapped.misses == 3

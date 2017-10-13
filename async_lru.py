@@ -126,23 +126,21 @@ def _cache_info(wrapped, maxsize):
     )
 
 
-def __cache_touch(wrapped, key, fut, *, loop):
+def __cache_touch(wrapped, key):
     try:
         wrapped._cache.move_to_end(key)
     except KeyError:  # not sure is it possible
         pass
 
-    return asyncio.shield(fut, loop=loop)
 
-
-def _cache_hit(wrapped, key, fut, *, loop):
+def _cache_hit(wrapped, key):
     wrapped.hits += 1
-    return __cache_touch(wrapped, key, fut, loop=loop)
+    __cache_touch(wrapped, key)
 
 
-def _cache_miss(wrapped, key, fut, *, loop):
+def _cache_miss(wrapped, key):
     wrapped.misses += 1
-    return __cache_touch(wrapped, key, fut, loop=loop)
+    __cache_touch(wrapped, key)
 
 
 def _get_loop(cls, kwargs, fn, fn_args, fn_kwargs, *, loop):
@@ -204,14 +202,14 @@ def alru_cache(
 
             if fut is not None:
                 if not fut.done():
-                    ret = _cache_hit(wrapped, key, fut, loop=_loop)
-                    return (yield from ret)
+                    _cache_hit(wrapped, key)
+                    return (yield from asyncio.shield(fut, loop=loop))
 
                 exc = fut._exception
 
                 if exc is None or cache_exceptions:
-                    ret = _cache_hit(wrapped, key, fut, loop=_loop)
-                    return (yield from ret)
+                    _cache_hit(wrapped, key)
+                    return fut.result()
 
                 # exception here and cache_exceptions == False
                 wrapped._cache.pop(key)
@@ -230,8 +228,8 @@ def alru_cache(
             if maxsize is not None and len(wrapped._cache) > maxsize:
                 wrapped._cache.popitem(last=False)
 
-            ret = _cache_miss(wrapped, key, fut, loop=_loop)
-            return (yield from ret)
+            _cache_miss(wrapped, key)
+            return (yield from asyncio.shield(fut, loop=loop))
 
         _cache_clear(wrapped)
         wrapped._origin = _origin
