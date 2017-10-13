@@ -179,13 +179,19 @@ def alru_cache(
         _origin = unpartial(fn)
 
         if not asyncio.iscoroutinefunction(_origin):
-            raise RuntimeError('Coroutine function is required')
+            raise RuntimeError(
+                'Coroutine function is required, got {}'.format(fn))
+
+        # functools.partialmethod support
+        if hasattr(fn, '_make_unbound_method'):
+            fn = fn._make_unbound_method()
 
         @wraps(fn)
         @asyncio.coroutine
         def wrapped(*fn_args, **fn_kwargs):
             if wrapped.closed:
-                raise RuntimeError('alru_cache is closed')
+                raise RuntimeError(
+                    'alru_cache is closed for {}'.format(wrapped))
 
             _loop = _get_loop(
                 cls,
@@ -215,7 +221,6 @@ def alru_cache(
                 wrapped._cache.pop(key)
 
             fut = create_future(loop=_loop)
-
             coro = fn(*fn_args, **fn_kwargs)
             task = ensure_future(coro, loop=_loop)
             task.add_done_callback(partial(_done_callback, fut))
@@ -245,7 +250,7 @@ def alru_cache(
     if fn is None:
         return wrapper
 
-    if callable(fn):
+    if callable(fn) or hasattr(fn, '_make_unbound_method'):
         return wrapper(fn)
 
     raise NotImplementedError('{} decorating is not supported'.format(fn))
