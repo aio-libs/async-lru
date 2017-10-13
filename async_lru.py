@@ -203,7 +203,7 @@ def alru_cache(
             if fut is not None:
                 if not fut.done():
                     _cache_hit(wrapped, key)
-                    return (yield from asyncio.shield(fut, loop=loop))
+                    return (yield from asyncio.shield(fut, loop=_loop))
 
                 exc = fut._exception
 
@@ -229,7 +229,7 @@ def alru_cache(
                 wrapped._cache.popitem(last=False)
 
             _cache_miss(wrapped, key)
-            return (yield from asyncio.shield(fut, loop=loop))
+            return (yield from asyncio.shield(fut, loop=_loop))
 
         _cache_clear(wrapped)
         wrapped._origin = _origin
