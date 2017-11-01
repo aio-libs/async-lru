@@ -26,8 +26,8 @@ def read(*parts):
 setup(
     name='async_lru',
     version=get_version(),
-    author='wikibusiness',
-    author_email='osf@wikibusiness.org',
+    author='OCEAN S.A.',
+    author_email='osf@ocean.io',
     url='https://github.com/wikibusiness/async_lru',
     description='Simple lru_cache for asyncio',
     long_description=read('README.rst'),
