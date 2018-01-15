@@ -1,8 +1,6 @@
 async_lru
 =========
 
-:info: Simple lru cache for asyncio
-
 .. image:: https://travis-ci.org/wikibusiness/async_lru.svg?branch=master
     :target: https://travis-ci.org/wikibusiness/async_lru
 
@@ -11,6 +9,16 @@ async_lru
 
 .. image:: https://codecov.io/gh/wikibusiness/async_lru/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/wikibusiness/async_lru
+
+:info: Simple lru cache for asyncio
+
+Asynchronous "Least Recently Used"-style cache for input/output use.
+For example, using async-lru with resources available via HTTP allows for
+those resources to be downloaded, cached and returned when remote HTTP
+resources are actually available. async-lru helps programmers build a higher
+level view of these network calls for APIs to be built on.
+
+See example below:
 
 Installation
 ------------
@@ -21,6 +29,9 @@ Installation
 
 Usage
 -----
+
+Below: the webpage at "https://www.python.org/" is downloaded (via HTTP) and stored 6 times.
+It is both run once, as a proof that you can control how many times a resource or set of resources are requested, or as many times as needed within a loop using run_until_complete()  
 
 .. code-block:: python
 
