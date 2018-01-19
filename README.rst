@@ -66,5 +66,11 @@ Usage
 
     loop.close()
 
-
 Python 3.3+ is required
+
+Thanks
+------
+
+The library was donated by `Ocean S.A. <https://ocean.io/>`_
+
+Thanks to the company for contribution.
