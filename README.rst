@@ -1,14 +1,16 @@
 async_lru
 =========
 
-.. image:: https://travis-ci.org/wikibusiness/async_lru.svg?branch=master
-    :target: https://travis-ci.org/wikibusiness/async_lru
+:info: Simple lru cache for asyncio
+
+.. image:: https://travis-ci.org/aio-libs/async_lru.svg?branch=master
+    :target: https://travis-ci.org/aio-libs/async_lru
 
 .. image:: https://img.shields.io/pypi/v/async_lru.svg
     :target: https://pypi.python.org/pypi/async_lru
 
-.. image:: https://codecov.io/gh/wikibusiness/async_lru/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/wikibusiness/async_lru
+.. image:: https://codecov.io/gh/aio-libs/async_lru/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/aio-libs/async_lru
 
 :info: Simple lru cache for asyncio
 
@@ -77,5 +79,11 @@ It is both run once, as a proof that you can control how many times a resource o
 
     loop.close()
 
-
 Python 3.3+ is required
+
+Thanks
+------
+
+The library was donated by `Ocean S.A. <https://ocean.io/>`_
+
+Thanks to the company for contribution.
