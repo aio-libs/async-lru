@@ -22,6 +22,8 @@ Installation
 Usage
 -----
 
+This package is 100% port of Python built-in function `functools.lru_cache <https://docs.python.org/3/library/functools.html#functools.lru_cache>`_ for `asyncio <https://docs.python.org/3/library/asyncio.html>`_
+
 .. code-block:: python
 
     import asyncio
@@ -29,40 +31,33 @@ Usage
     import aiohttp
     from async_lru import alru_cache
 
-    calls = 0
 
-    @alru_cache()
-    async def download(url):
-        global calls
-
-        calls += 1
-
+    @alru_cache(maxsize=32)
+    async def get_pep(num):
+        resource = 'http://www.python.org/dev/peps/pep-%04d/' % num
         async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                return await response.text()
+            try:
+                async with session.get(resource) as s:
+                    return await s.read()
+            except aiohttp.ClientError:
+                return 'Not Found'
 
 
     async def main():
-        coros = [
-            download('https://www.python.org/'),
-            download('https://www.python.org/'),
-            download('https://www.python.org/'),
-            download('https://www.python.org/'),
-            download('https://www.python.org/'),
-            download('https://www.python.org/'),
-        ]
+        for n in 8, 290, 308, 320, 8, 218, 320, 279, 289, 320, 9991:
+            pep = await get_pep(n)
+            print(n, len(pep))
 
-        await asyncio.gather(*coros)
+        print(get_pep.cache_info())
+        # CacheInfo(hits=3, misses=8, maxsize=32, currsize=8)
 
-        assert calls == 1
+        # closing is optional, but highly recommended
+        await get_pep.close()
 
 
     loop = asyncio.get_event_loop()
 
     loop.run_until_complete(main())
-
-    # closing is optional, but strictly recommended
-    loop.run_until_complete(download.close())
 
     loop.close()
 
