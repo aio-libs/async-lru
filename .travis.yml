@@ -21,4 +21,3 @@ after_success:
 cache: pip
 notifications:
   email: false
-  slack: oceanio:qISToAOQglhPzOlbJ3CjNJLF
