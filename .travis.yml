@@ -21,3 +21,14 @@ after_success:
 cache: pip
 notifications:
   email: false
+
+deploy:
+  provider: pypi
+  user: hellysmile
+  password:
+    secure: "fUak903kME638wYvLjT9zyl9ANGZleBW5NKscy1EYez/OhahlWeM4BIxbgZTjl+BC/ITPt7G9O7MCuu7lQ74cos1mQOo231tKxqohnVNmFB2P+spxjj2ri3Ws3YeZaCkVrC3Ww70ydAMSA3cfk55hRbM25ZmcfvAOW/ZSVJAv+cWlBk4hqXAmE2gPMChFeSgu/LKWs+gPpIH4w/vlscogLjuNbOtTNnYVj0ml7IuhiBFNE2l5Fn/Qu4eO6eiDXKsPCTYDTETnZ6xA12pEo7GRp84Y3N50LkJE0H6jM6TB6GNSUL0ZLdvTeabBuPneb6Ln0RfgzcUaj1ZbKQ7qp1mBEVB0nUbdfn/52PRTUPb0PDw5bAxwrQWFwSxsNzyau88aJwgmhFajriGtb+erNZ4MGAyMwWKiruvDhj276RAgtm7FtYspW8jKcq2y0B5Yz1v0gdiIyoWMyQD8B2kr1OraGj7HzpmKYp/0jxEi+LbV5GfxGQQDf+ycklL+clQTcxrFKhaOzI2gKqIf9Mz0X23rmwYbpmDsSgr1ceVFboNCJRx+NJJqD5GzJ0ScfC1BF2TEeU52wF+afX2zai6F+KrO/8eLAFq3yYUHEReUNL80Cp4RgRC565NStZzIksEP+8lt1q6T6P3MDOZmZXl9PNhh7n/DjeKpgUxOOWI7/E5INQ="
+  distributions: "sdist upload"
+  on:
+    tags: true
+    all_branches: true
+    python: 3.5
