@@ -9,7 +9,7 @@ needs_pytest = 'pytest' in set(sys.argv)
 
 
 def get_version():
-    regex = r"__version__\s=\s\'(?P<version>[\d\.]+?)\'"
+    regex = r"__version__\s=\s\'(?P<version>[\d\.ab]+?)\'"
 
     path = ('async_lru.py',)
 
