@@ -3,7 +3,7 @@ ipdb==0.11
 ipython==6.5.0
 pytest==3.8.0
 pytest-asyncio==0.9.0
-pytest-cov==2.5.1
+pytest-cov==2.6.0
 pytest-runner==4.2
 tox==3.2.1
 isort==4.3.4
