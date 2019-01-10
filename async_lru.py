@@ -1,6 +1,7 @@
 import asyncio
 from collections import OrderedDict
 from functools import _CacheInfo, _make_key, partial, wraps
+from time import time
 
 try:
     from asyncio import ensure_future
@@ -169,6 +170,7 @@ def alru_cache(
     fn=None,
     maxsize=128,
     typed=False,
+    expiration_time=None,
     *,
     cls=False,
     kwargs=False,
@@ -204,21 +206,42 @@ def alru_cache(
 
             key = _make_key(fn_args, fn_kwargs, typed)
 
-            fut = wrapped._cache.get(key)
+            if wrapped._cache.get(key) is not None:
+                if expiration_time is None:
+                    fut = wrapped._cache.get(key)
 
-            if fut is not None:
-                if not fut.done():
-                    _cache_hit(wrapped, key)
-                    return (yield from asyncio.shield(fut, loop=_loop))
+                    if not fut.done():
+                        _cache_hit(wrapped, key)
+                        return (yield from asyncio.shield(fut, loop=_loop))
 
-                exc = fut._exception
+                    exc = fut._exception
 
-                if exc is None or cache_exceptions:
-                    _cache_hit(wrapped, key)
-                    return fut.result()
+                    if exc is None or cache_exceptions:
+                        _cache_hit(wrapped, key)
+                        return fut.result()
 
-                # exception here and cache_exceptions == False
-                wrapped._cache.pop(key)
+                    # exception here and cache_exceptions == False
+                    wrapped._cache.pop(key)
+
+                else:
+                    fut = wrapped._cache.get(key).get("fut")
+                    fut_time = wrapped._cache.get(key).get("time")
+
+                    if not fut.done():
+                        _cache_hit(wrapped, key)
+                        return (yield from asyncio.shield(fut, loop=_loop))
+
+                    exc = fut._exception
+
+                    if (
+                        exc is None or cache_exceptions
+                    ) and time() - fut_time < expiration_time:
+                        _cache_hit(wrapped, key)
+                        return fut.result()
+
+                    # exception here and cache_exceptions == False
+                    # or result expires
+                    wrapped._cache.pop(key)
 
             fut = create_future(loop=_loop)
             coro = fn(*fn_args, **fn_kwargs)
@@ -228,7 +251,10 @@ def alru_cache(
             wrapped.tasks.add(task)
             task.add_done_callback(wrapped.tasks.remove)
 
-            wrapped._cache[key] = task
+            if expiration_time is None:
+                wrapped._cache[key] = task
+            else:
+                wrapped._cache[key] = {"fut": task, "time": time()}
 
             if maxsize is not None and len(wrapped._cache) > maxsize:
                 wrapped._cache.popitem(last=False)
