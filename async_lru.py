@@ -228,7 +228,7 @@ def alru_cache(
             wrapped.tasks.add(task)
             task.add_done_callback(wrapped.tasks.remove)
 
-            wrapped._cache[key] = task
+            wrapped._cache[key] = fut
 
             if maxsize is not None and len(wrapped._cache) > maxsize:
                 wrapped._cache.popitem(last=False)
