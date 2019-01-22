@@ -10,9 +10,9 @@ from async_lru import (__cache_touch, _cache_clear, _cache_hit, _cache_info,
                        _done_callback, _open, _wait_closed, create_future)
 
 try:
-    from test.test_asyncio import utils as test_utils
-except ImportError:
     from asyncio import test_utils
+except ImportError:
+    from test.test_asyncio import utils as test_utils
 
 
 class Wrapped:
