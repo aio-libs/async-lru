@@ -1,5 +1,4 @@
 import asyncio
-from asyncio import test_utils
 from collections import OrderedDict
 from functools import _make_key, partial
 from unittest import mock
@@ -9,6 +8,11 @@ import pytest
 from async_lru import (__cache_touch, _cache_clear, _cache_hit, _cache_info,
                        _cache_invalidate, _cache_miss, _close, _close_waited,
                        _done_callback, _open, _wait_closed, create_future)
+
+try:
+    from asyncio import test_utils
+except ImportError:
+    from test.test_asyncio import utils as test_utils
 
 
 class Wrapped:

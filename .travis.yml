@@ -1,8 +1,9 @@
-dist: trusty
+dist: xenial
 language: python
 python:
   - "3.5"
   - "3.6"
+  - "3.7"
 install:
   - pip install -U setuptools
   - pip install -U pip
@@ -23,8 +24,8 @@ deploy:
   user: hellysmile
   password:
     secure: "SLZbjWCCtlsS+q3iZ7Ay6l96kASV27e+Ih3Sa6YAQ/u9Vr7pEp6EAiL6IJnBsxgJFU0Msd7mdmouGPQsUp2GTxmrD7O4kmamtVymB0DcKEaUhpQ12+Mo92qi4FcYil7aHa6C+uPynBC2PMgTw+1g2WoDBIrKKQT11/t8xYsl905yM1gpZR25BkpJsrqDoKb+iZTphc7ZB/3TE0RK+W+RrqgAumLmGl9r3t3P8o8hdLiUIMjckMeegM1d1TRHVtnApuyJB2P+LeljKTp1uzS3CEOkKupRzWVh4UDzp5gahsTxGWGg9tueol2VfCn+BxXMCJ0uYDY36IP6zsN4nEtn7Ja8H7f3tZoA1xGNNgfE4yHsf2fECGYb8HivOHIsj/HSOyGrTpKNGfJLg649e+BydVAaaiOuAviag3gw/7Fi7dFZI9hVnbHcPtQfYGbyCNCfJ0O5EI86lEo8V6F7wlnwDcc3M5euunP1+QWgKcGjlnMy3KWFnX3X2vHFHwF/9rPG/WytniPJJS0jdxzpsRKTdYYNhkepVFKQMOu8iE69X7z4VXMRKzBHJ7rO/zu1WiT/jMOhtH88UbP9KGpOgONVtyRlDcbY4FQGPFUKRXfk14WpE4rbmKHrNjdtjgqrtRC/3ZxooVRZwpIDnNifKjGuZpXkHiMWSF65gYc1tP3iH9M="
-  distributions: "sdist"
+  distributions: "sdist bdist_wheel"
   on:
     tags: true
     all_branches: true
-    python: 3.5
+    python: 3.7
