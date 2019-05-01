@@ -173,6 +173,7 @@ def alru_cache(
     cls=False,
     kwargs=False,
     cache_exceptions=True,
+    expires=None,
     loop=None
 ):
     def wrapper(fn):
@@ -224,6 +225,17 @@ def alru_cache(
             coro = fn(*fn_args, **fn_kwargs)
             task = ensure_future(coro, loop=_loop)
             task.add_done_callback(partial(_done_callback, fut))
+
+            if expires is not None:
+                # remove key from cache `expires` seconds after task is done
+                # task instance from add_done_callback is used as pop default
+                task.add_done_callback(
+                    partial(
+                        _loop.call_later,
+                        expires,
+                        partial(wrapped._cache.pop, key)
+                    )
+                )
 
             wrapped.tasks.add(task)
             task.add_done_callback(wrapped.tasks.remove)

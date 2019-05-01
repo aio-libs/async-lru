@@ -63,6 +63,8 @@ This package is 100% port of Python built-in function `functools.lru_cache <http
 
 Python 3.3+ is required
 
+Plus it supports keyword argument `expires` that expire the cached item after certain number of seconds.
+
 Thanks
 ------
 
