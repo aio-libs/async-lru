@@ -56,6 +56,10 @@ def _cache_clear(wrapped):
     wrapped.tasks = set()
 
 
+def _cache_pop(wrapped, key):
+    del wrapped._cache[key]
+
+
 def _open(wrapped):
     if not wrapped.closed:
         raise RuntimeError('alru_cache is not closed')
@@ -241,6 +245,7 @@ def alru_cache(
         wrapped.closed = False
         wrapped.cache_info = partial(_cache_info, wrapped, maxsize)
         wrapped.cache_clear = partial(_cache_clear, wrapped)
+        wrapped.cache_pop = partial(_cache_pop, wrapped)
         wrapped.invalidate = partial(_cache_invalidate, wrapped, typed)
         wrapped.close = partial(_close, wrapped)
         wrapped.open = partial(_open, wrapped)
