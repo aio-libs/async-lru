@@ -1,7 +1,7 @@
 flake8==3.7.7
 ipdb==0.12
 ipython==7.5.0
-pytest==4.4.2
+pytest==4.5.0
 pytest-asyncio==0.10.0
 pytest-cov==2.7.1
 pytest-runner==4.4
