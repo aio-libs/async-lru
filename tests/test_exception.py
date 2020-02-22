@@ -13,13 +13,15 @@ async def test_alru_cache_exception(check_lru, loop):
         1/0
 
     inputs = [1, 1, 1]
-    for index, input in enumerate(inputs):
-        expected_traceback_length = 3 if index == 0 else 2
+    prev_traceback_length = 0
+    for input in inputs:
         try:
             await coro(input)
         except ZeroDivisionError as err:
             traceback_length = len(traceback.extract_tb(err.__traceback__))
-            assert traceback_length == expected_traceback_length
+            if prev_traceback_length > 0:
+                assert traceback_length <= prev_traceback_length
+            prev_traceback_length = traceback_length
         else:
             assert 0
 
@@ -38,7 +40,6 @@ async def test_alru_not_cache_exception(check_lru, loop):
 
     inputs = [1, 1, 1]
     for index, input in enumerate(inputs):
-        expected_traceback_length = 3
         expected_exc_local = index > 0
         try:
             await coro(input)
@@ -46,10 +47,9 @@ async def test_alru_not_cache_exception(check_lru, loop):
             stack_summary = traceback.StackSummary.extract(
                 traceback.walk_tb(err.__traceback__), capture_locals=True
             )
-            assert len(stack_summary) == expected_traceback_length
             exc_local_seen = False
             for frame in stack_summary:
-                if 'exc' in frame.locals:
+                if frame.filename.endswith('/async_lru.py') and 'exc' in frame.locals:
                     exc_local_seen = True
                     assert frame.locals['exc'] == 'None'
             assert expected_exc_local is False or exc_local_seen is True
