@@ -1,7 +1,5 @@
-import asyncio
-import traceback
-
 import pytest
+import traceback
 
 from async_lru import alru_cache
 
@@ -53,7 +51,7 @@ async def test_alru_not_cache_exception(check_lru, loop):
                 if 'exc' in frame.locals:
                     exc_local_seen = True
                     assert frame.locals['exc'] == 'None'
-            assert expected_exc_local == False or exc_local_seen == True
+            assert expected_exc_local is False or exc_local_seen is True
         else:
             assert 0
 
