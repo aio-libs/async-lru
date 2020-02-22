@@ -209,6 +209,9 @@ def alru_cache(
 
             if fut is not None:
                 if not fut.done():
+                    # TODO: fix edge case here that can cause cached
+                    # exceptions to be returned even when
+                    # cache_exceptions is False
                     _cache_hit(wrapped, key)
                     return (yield from asyncio.shield(fut, loop=_loop))
 
@@ -226,9 +229,8 @@ def alru_cache(
                 # exception here and cache_exceptions == False
 
                 # exc must not be referenced by the current frame
-                # or it will be retained if another exception is
-                # raised during the next call to fn() restulting
-                # in a memory leak
+                # or it will be retained on the traceback if another
+                # exception is raised during the next call to fn()
                 exc = None
                 wrapped._cache.pop(key)
 
