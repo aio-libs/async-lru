@@ -1,5 +1,6 @@
-import pytest
 import traceback
+
+import pytest
 
 from async_lru import alru_cache
 
