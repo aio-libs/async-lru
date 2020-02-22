@@ -49,7 +49,8 @@ async def test_alru_not_cache_exception(check_lru, loop):
             )
             exc_local_seen = False
             for frame in stack_summary:
-                if frame.filename.endswith('/async_lru.py') and 'exc' in frame.locals:
+                if (frame.filename.endswith('/async_lru.py') and
+                    'exc' in frame.locals):
                     exc_local_seen = True
                     assert frame.locals['exc'] == 'None'
             assert expected_exc_local is False or exc_local_seen is True
