@@ -1,3 +1,4 @@
+import asyncio
 import traceback
 
 import pytest
@@ -64,3 +65,20 @@ async def test_alru_not_cache_exception(check_lru, loop):
         await coro(1)
 
     check_lru(coro, hits=0, misses=4, cache=1, tasks=0)
+
+
+@pytest.mark.xfail
+async def test_alru_not_cache_exception_edge_case(check_lru, loop):
+    @alru_cache(cache_exceptions=False, loop=loop)
+    async def coro(val):
+        1/0
+
+    inputs = [1, 1, 1]
+    coros = [coro(v) for v in inputs]
+
+    # process all coroutines to trigger edge case of returned cached
+    # exceptions even when cache_exceptions is False
+    await asyncio.gather(*coros, loop=loop, return_exceptions=True)
+
+    # hits should be 0 for this case
+    check_lru(coro, hits=0, misses=3, cache=1, tasks=0)
