@@ -40,20 +40,21 @@ async def test_alru_not_cache_exception(check_lru, loop):
 
     inputs = [1, 1, 1]
     for index, input in enumerate(inputs):
-        expected_exc_local = index > 0
         try:
             await coro(input)
         except ZeroDivisionError as err:
-            stack_summary = traceback.StackSummary.extract(
-                traceback.walk_tb(err.__traceback__), capture_locals=True
-            )
-            exc_local_seen = False
-            for frame in stack_summary:
-                if (frame.filename.endswith('/async_lru.py') and
-                        'exc' in frame.locals):
-                    exc_local_seen = True
-                    assert frame.locals['exc'] == 'None'
-            assert expected_exc_local is False or exc_local_seen is True
+            if index > 0:
+                # find the stack frame of the wrapper that references the
+                # previous exception object and verify that it is released
+                stack_summary = traceback.StackSummary.extract(
+                    traceback.walk_tb(err.__traceback__), capture_locals=True
+                )
+                for frame in stack_summary:
+                    if (frame.filename.endswith('/async_lru.py') and
+                            frame.name == 'wrapped'):
+                        assert 'exc' in frame.locals
+                        assert frame.locals['exc'] == 'None'
+                        break
         else:
             assert 0
 
