@@ -142,8 +142,7 @@ async def test_alru_cache_await_same_result_coroutine(check_lru, loop):
     val = object()
 
     @alru_cache(loop=loop)
-    @asyncio.coroutine
-    def coro():
+    async def coro():
         nonlocal calls
         calls += 1
 

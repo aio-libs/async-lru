@@ -187,8 +187,7 @@ def alru_cache(
             fn = fn._make_unbound_method()
 
         @wraps(fn)
-        @asyncio.coroutine
-        def wrapped(*fn_args, **fn_kwargs):
+        async def wrapped(*fn_args, **fn_kwargs):
             if wrapped.closed:
                 raise RuntimeError(
                     'alru_cache is closed for {}'.format(wrapped))
