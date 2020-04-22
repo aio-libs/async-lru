@@ -92,8 +92,7 @@ def _close(wrapped, *, cancel=False, return_exceptions=True, loop=None):
     )
 
 
-@asyncio.coroutine
-def _wait_closed(wrapped, *, return_exceptions, loop):
+async def _wait_closed(wrapped, *, return_exceptions, loop):
     if loop is None:
         loop = asyncio.get_event_loop()
 
@@ -105,10 +104,10 @@ def _wait_closed(wrapped, *, return_exceptions, loop):
 
     wait_closed.add_done_callback(partial(_close_waited, wrapped))
 
-    ret = yield from wait_closed
+    ret = await wait_closed
 
     # hack to get _close_waited callback to be executed
-    yield from asyncio.sleep(0, loop=loop)
+    await asyncio.sleep(0, loop=loop)
 
     return ret
 
@@ -187,8 +186,7 @@ def alru_cache(
             fn = fn._make_unbound_method()
 
         @wraps(fn)
-        @asyncio.coroutine
-        def wrapped(*fn_args, **fn_kwargs):
+        async def wrapped(*fn_args, **fn_kwargs):
             if wrapped.closed:
                 raise RuntimeError(
                     'alru_cache is closed for {}'.format(wrapped))
@@ -209,7 +207,7 @@ def alru_cache(
             if fut is not None:
                 if not fut.done():
                     _cache_hit(wrapped, key)
-                    return (yield from asyncio.shield(fut, loop=_loop))
+                    return await asyncio.shield(fut, loop=_loop)
 
                 exc = fut._exception
 
@@ -234,7 +232,7 @@ def alru_cache(
                 wrapped._cache.popitem(last=False)
 
             _cache_miss(wrapped, key)
-            return (yield from asyncio.shield(fut, loop=_loop))
+            return await asyncio.shield(fut, loop=_loop)
 
         _cache_clear(wrapped)
         wrapped._origin = _origin
