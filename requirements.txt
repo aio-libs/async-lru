@@ -1,4 +1,4 @@
-flake8==3.8.2
+flake8==3.8.3
 ipdb==0.13.2
 ipython==7.9.0
 pytest==5.4.3
