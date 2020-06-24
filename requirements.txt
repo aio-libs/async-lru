@@ -1,5 +1,5 @@
 flake8==3.8.3
-ipdb==0.13.2
+ipdb==0.13.3
 ipython==7.9.0
 pytest==5.4.3
 pytest-asyncio==0.12.0
