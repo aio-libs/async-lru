@@ -1,4 +1,5 @@
 import asyncio
+import copy
 from collections import OrderedDict
 from functools import _CacheInfo, _make_key, partial, wraps
 
@@ -208,6 +209,9 @@ def alru_cache(
 
             if fut is not None:
                 if not fut.done():
+                    # TODO: fix edge case here that can cause cached
+                    # exceptions to be returned even when
+                    # cache_exceptions is False
                     _cache_hit(wrapped, key)
                     return (yield from asyncio.shield(fut, loop=_loop))
 
@@ -215,9 +219,19 @@ def alru_cache(
 
                 if exc is None or cache_exceptions:
                     _cache_hit(wrapped, key)
+                    if exc is not None:
+                        # if the cached exception is allowed to raise
+                        # frames will be appended to the traceback
+                        # resulting in a memory leak
+                        raise copy.copy(exc)
                     return fut.result()
 
                 # exception here and cache_exceptions == False
+
+                # exc must not be referenced by the current frame
+                # or it will be retained on the traceback if another
+                # exception is raised during the next call to fn()
+                exc = None
                 wrapped._cache.pop(key)
 
             fut = create_future(loop=_loop)
