@@ -2,9 +2,6 @@ import asyncio
 from collections import OrderedDict
 from functools import _CacheInfo, _make_key, partial, wraps
 
-
-from asyncio import ensure_future
-
 __version__ = "1.0.2"
 
 __all__ = ("alru_cache",)
@@ -124,37 +121,12 @@ def _cache_miss(wrapped, key):
     __cache_touch(wrapped, key)
 
 
-def _get_loop(cls, kwargs, fn, fn_args, fn_kwargs, *, loop):
-    if isinstance(loop, str):
-        assert cls ^ kwargs, 'choose self.loop or kwargs["loop"]'
-
-        if cls:
-            _self = getattr(fn, "__self__", None)
-
-            if _self is None:
-                assert fn_args, "seems not unbound function"
-                _self = fn_args[0]
-
-            _loop = getattr(_self, loop)
-        else:
-            _loop = fn_kwargs[loop]
-    elif loop is None:
-        _loop = asyncio.get_event_loop()
-    else:
-        _loop = loop
-
-    return _loop
-
-
 def alru_cache(
     fn=None,
     maxsize=128,
     typed=False,
     *,
-    cls=False,
-    kwargs=False,
     cache_exceptions=True,
-    loop=None
 ):
     def wrapper(fn):
         _origin = unpartial(fn)
@@ -172,9 +144,7 @@ def alru_cache(
             if wrapped.closed:
                 raise RuntimeError("alru_cache is closed for {}".format(wrapped))
 
-            _loop = _get_loop(
-                cls, kwargs, wrapped._origin, fn_args, fn_kwargs, loop=loop
-            )
+            loop = asyncio.get_event_loop()
 
             key = _make_key(fn_args, fn_kwargs, typed)
 
@@ -183,7 +153,7 @@ def alru_cache(
             if fut is not None:
                 if not fut.done():
                     _cache_hit(wrapped, key)
-                    return (yield from asyncio.shield(fut, loop=_loop))
+                    return (yield from asyncio.shield(fut))
 
                 exc = fut._exception
 
@@ -195,8 +165,7 @@ def alru_cache(
                 wrapped._cache.pop(key)
 
             fut = loop.create_future()
-            coro = fn(*fn_args, **fn_kwargs)
-            task = ensure_future(coro, loop=_loop)
+            task = loop.create_task(fn(*fn_args, **fn_kwargs))
             task.add_done_callback(partial(_done_callback, fut))
 
             wrapped.tasks.add(task)
@@ -208,7 +177,7 @@ def alru_cache(
                 wrapped._cache.popitem(last=False)
 
             _cache_miss(wrapped, key)
-            return (yield from asyncio.shield(fut, loop=_loop))
+            return (yield from asyncio.shield(fut))
 
         _cache_clear(wrapped)
         wrapped._origin = _origin

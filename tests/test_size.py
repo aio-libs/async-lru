@@ -9,7 +9,7 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_alru_cache_removing_lru_keys(check_lru, loop):
-    @alru_cache(maxsize=3, loop=loop)
+    @alru_cache(maxsize=3)
     async def coro(val):
         return val
 
@@ -33,7 +33,7 @@ async def test_alru_cache_removing_lru_keys(check_lru, loop):
 
 
 async def test_alru_cache_none_max_size(check_lru, loop):
-    @alru_cache(maxsize=None, loop=loop)
+    @alru_cache(maxsize=None)
     async def coro(val):
         return val
 
@@ -47,7 +47,7 @@ async def test_alru_cache_none_max_size(check_lru, loop):
 
 
 async def test_alru_cache_zero_max_size(check_lru, loop):
-    @alru_cache(maxsize=0, loop=loop)
+    @alru_cache(maxsize=0)
     async def coro(val):
         return val
 

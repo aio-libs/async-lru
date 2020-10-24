@@ -1,26 +1,6 @@
-import asyncio
 from functools import partial
-from unittest import mock
 
-from async_lru import create_future, unpartial
-
-
-def test_create_future(loop):
-    loop.create_future = mock.Mock()
-    loop.create_future.side_effect = AttributeError
-
-    fut = create_future(loop=loop)
-
-    assert isinstance(fut, asyncio.Future)
-
-    def _create_future():
-        return asyncio.Future(loop=loop)
-
-    loop.create_future = _create_future
-
-    fut = create_future(loop=loop)
-
-    assert isinstance(fut, asyncio.Future)
+from async_lru import unpartial
 
 
 def test_unpartial():

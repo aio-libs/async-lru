@@ -14,7 +14,7 @@ async def test_partialmethod_basic(check_lru, loop):
         async def _coro(self, val):
             return val
 
-        coro = alru_cache(partialmethod(_coro, 2), loop=loop)
+        coro = alru_cache(partialmethod(_coro, 2))
 
     obj = Obj()
 
@@ -32,7 +32,7 @@ async def test_partialmethod_basic(check_lru, loop):
 async def test_partialmethod_partial(check_lru, loop):
     class Obj:
         def __init__(self):
-            self.coro = alru_cache(partial(self._coro, 2), loop=loop)
+            self.coro = alru_cache(partial(self._coro, 2))
 
         async def __coro(self, val1, val2):
             return val1 + val2
@@ -60,7 +60,7 @@ async def test_partialmethod_cls_loop(check_lru, loop):
         async def _coro(self, val):
             return val
 
-        coro = alru_cache(partialmethod(_coro, 2), cls=True, loop="_loop")
+        coro = alru_cache(partialmethod(_coro, 2))
 
     obj = Obj(loop=loop)
 
@@ -80,7 +80,7 @@ async def test_partialmethod_kwargs_loop(check_lru, loop):
         async def _coro(self, val, *, _loop):
             return val
 
-        coro = alru_cache(partialmethod(_coro, 2), kwargs=True, loop="_loop")
+        coro = alru_cache(partialmethod(_coro, 2))
 
     obj = Obj()
 

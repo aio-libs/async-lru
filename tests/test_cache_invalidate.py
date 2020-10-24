@@ -9,7 +9,7 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_cache_invalidate(check_lru, loop):
-    @alru_cache(loop=loop)
+    @alru_cache()
     async def coro(val):
         return val
 
@@ -43,7 +43,7 @@ async def test_cache_invalidate(check_lru, loop):
 
 
 async def test_cache_invalidate_multiple_args(check_lru, loop):
-    @alru_cache(loop=loop)
+    @alru_cache()
     async def coro(*args):
         return len(args)
 
@@ -63,7 +63,7 @@ async def test_cache_invalidate_multiple_args(check_lru, loop):
 
 
 async def test_cache_invalidate_multiple_args_different_order(check_lru, loop):
-    @alru_cache(loop=loop)
+    @alru_cache()
     async def coro(*args):
         return len(args)
 

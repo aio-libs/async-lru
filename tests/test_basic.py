@@ -120,7 +120,7 @@ async def test_alru_cache_await_same_result_async(check_lru, loop):
     calls = 0
     val = object()
 
-    @alru_cache(loop=loop)
+    @alru_cache()
     async def coro():
         nonlocal calls
         calls += 1
@@ -143,7 +143,7 @@ async def test_alru_cache_await_same_result_coroutine(check_lru, loop):
     calls = 0
     val = object()
 
-    @alru_cache(loop=loop)
+    @alru_cache()
     @asyncio.coroutine
     def coro():
         nonlocal calls
@@ -167,8 +167,8 @@ async def test_alru_cache_dict_not_shared(check_lru, loop):
     async def coro(val):
         return val
 
-    coro1 = alru_cache(loop=loop)(coro)
-    coro2 = alru_cache(loop=loop)(coro)
+    coro1 = alru_cache()(coro)
+    coro2 = alru_cache()(coro)
 
     ret1 = await coro1(1)
     check_lru(coro1, hits=0, misses=1, cache=1, tasks=0)

@@ -61,7 +61,7 @@ This package is 100% port of Python built-in function `functools.lru_cache <http
 
     loop.close()
 
-Python 3.3+ is required
+Python 3.6+ is required
 
 Thanks
 ------

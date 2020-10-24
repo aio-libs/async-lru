@@ -17,7 +17,6 @@ from async_lru import (
     _done_callback,
     _open,
     _wait_closed,
-    create_future,
 )
 
 
@@ -32,8 +31,8 @@ class Wrapped:
 
 
 def test_done_callback_cancelled(loop):
-    task = create_future(loop=loop)
-    fut = create_future(loop=loop)
+    task = loop.create_future()
+    fut = loop.create_future()
 
     task.add_done_callback(partial(_done_callback, fut))
 
@@ -45,8 +44,8 @@ def test_done_callback_cancelled(loop):
 
 
 def test_done_callback_exception(loop):
-    task = create_future(loop=loop)
-    fut = create_future(loop=loop)
+    task = loop.create_future()
+    fut = loop.create_future()
 
     task.add_done_callback(partial(_done_callback, fut))
 
@@ -66,8 +65,8 @@ def test_done_callback_exception(loop):
 
 
 def test_done_callback(loop):
-    task = create_future(loop=loop)
-    fut = create_future(loop=loop)
+    task = loop.create_future()
+    fut = loop.create_future()
 
     task.add_done_callback(partial(_done_callback, fut))
 
@@ -201,7 +200,7 @@ def test_close(loop):
     with pytest.raises(RuntimeError):
         _close(wrapped, cancel=False, return_exceptions=True, loop=None)
 
-    fut = create_future(loop=loop)
+    fut = loop.create_future()
     wrapped.closed = False
     wrapped.tasks = {fut}
 
@@ -209,7 +208,7 @@ def test_close(loop):
 
     assert fut.cancelled()
 
-    fut = create_future(loop=loop)
+    fut = loop.create_future()
     fut.set_result(None)
     wrapped.closed = False
     wrapped.tasks = {fut}
@@ -218,7 +217,7 @@ def test_close(loop):
 
     assert not fut.cancelled()
 
-    fut = create_future(loop=loop)
+    fut = loop.create_future()
     fut.set_exception(ZeroDivisionError)
     wrapped.closed = False
     wrapped.tasks = {fut}
@@ -253,7 +252,7 @@ async def test_wait_closed(loop):
         assert mocked.called_once()
     asyncio.set_event_loop(None)
 
-    fut = create_future(loop=loop)
+    fut = loop.create_future()
     fut.set_result(None)
     wrapped.tasks = {fut}
     with mock.patch("async_lru._close_waited") as mocked:
@@ -266,7 +265,7 @@ async def test_wait_closed(loop):
         assert mocked.called_once()
 
     exc = ZeroDivisionError()
-    fut = create_future(loop=loop)
+    fut = loop.create_future()
     fut.set_exception(exc)
     wrapped.tasks = {fut}
     with mock.patch("async_lru._close_waited") as mocked:
@@ -278,7 +277,7 @@ async def test_wait_closed(loop):
         assert ret == [exc]
         assert mocked.called_once()
 
-    fut = create_future(loop=loop)
+    fut = loop.create_future()
     fut.set_exception(ZeroDivisionError)
     wrapped.tasks = {fut}
     with mock.patch("async_lru._close_waited") as mocked:
