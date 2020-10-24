@@ -15,7 +15,7 @@ async def test_cache_info(check_lru, loop):
 
     inputs = [1, 2, 3]
     coros = [coro(v) for v in inputs]
-    ret = await asyncio.gather(*coros, loop=loop)
+    ret = await asyncio.gather(*coros)
     assert ret == inputs
     check_lru(coro, hits=0, misses=3, cache=3, tasks=0, maxsize=4)
 
@@ -25,7 +25,7 @@ async def test_cache_info(check_lru, loop):
 
     inputs = [1, 1, 1]
     coros = [coro(v) for v in inputs]
-    ret = await asyncio.gather(*coros, loop=loop)
+    ret = await asyncio.gather(*coros)
     assert ret == inputs
     check_lru(coro, hits=2, misses=1, cache=1, tasks=0, maxsize=4)
 
@@ -35,6 +35,6 @@ async def test_cache_info(check_lru, loop):
 
     inputs = [1, 2, 3, 4] * 2
     coros = [coro(v) for v in inputs]
-    ret = await asyncio.gather(*coros, loop=loop)
+    ret = await asyncio.gather(*coros)
     assert ret == inputs
     check_lru(coro, hits=4, misses=4, cache=4, tasks=0, maxsize=4)

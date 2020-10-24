@@ -18,7 +18,7 @@ async def test_alru_cache_open(check_lru, loop):
     with pytest.raises(RuntimeError):
         coro.open()
 
-    close = coro.close(loop=loop)
+    close = coro.close()
 
     assert coro.closed
 

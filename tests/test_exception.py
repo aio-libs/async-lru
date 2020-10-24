@@ -16,7 +16,7 @@ async def test_alru_cache_exception(check_lru, loop):
     inputs = [1, 1, 1]
     coros = [coro(v) for v in inputs]
 
-    ret = await asyncio.gather(*coros, loop=loop, return_exceptions=True)
+    ret = await asyncio.gather(*coros, return_exceptions=True)
 
     check_lru(coro, hits=2, misses=1, cache=1, tasks=0)
 
@@ -37,7 +37,7 @@ async def test_alru_not_cache_exception(check_lru, loop):
     inputs = [1, 1, 1]
     coros = [coro(v) for v in inputs]
 
-    ret = await asyncio.gather(*coros, loop=loop, return_exceptions=True)
+    ret = await asyncio.gather(*coros, return_exceptions=True)
 
     check_lru(coro, hits=2, misses=1, cache=1, tasks=0)
 

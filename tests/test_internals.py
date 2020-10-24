@@ -20,17 +20,12 @@ from async_lru import (
 )
 
 
-try:
-    from asyncio import test_utils
-except ImportError:
-    from test.test_asyncio import utils as test_utils
-
-
 class Wrapped:
     pass
 
 
-def test_done_callback_cancelled(loop):
+@pytest.mark.asyncio
+async def test_done_callback_cancelled(loop):
     task = loop.create_future()
     fut = loop.create_future()
 
@@ -38,12 +33,13 @@ def test_done_callback_cancelled(loop):
 
     task.cancel()
 
-    test_utils.run_briefly(loop)
+    await asyncio.sleep(0)
 
     assert fut.cancelled()
 
 
-def test_done_callback_exception(loop):
+@pytest.mark.asyncio
+async def test_done_callback_exception(loop):
     task = loop.create_future()
     fut = loop.create_future()
 
@@ -53,10 +49,10 @@ def test_done_callback_exception(loop):
 
     task.set_exception(exc)
 
-    test_utils.run_briefly(loop)
+    await asyncio.sleep(0)
 
     with pytest.raises(ZeroDivisionError):
-        loop.run_until_complete(fut)
+        await fut
 
     with pytest.raises(ZeroDivisionError):
         fut.result()
@@ -64,7 +60,8 @@ def test_done_callback_exception(loop):
     assert fut.exception() is exc
 
 
-def test_done_callback(loop):
+@pytest.mark.asyncio
+async def test_done_callback(loop):
     task = loop.create_future()
     fut = loop.create_future()
 
@@ -72,7 +69,7 @@ def test_done_callback(loop):
 
     task.set_result(1)
 
-    test_utils.run_briefly(loop)
+    await asyncio.sleep(0)
 
     assert fut.result() == 1
 
@@ -193,18 +190,18 @@ def test_close(loop):
     wrapped.closed = False
     wrapped.tasks = set()
 
-    _close(wrapped, cancel=False, return_exceptions=True, loop=None)
+    _close(wrapped, cancel=False, return_exceptions=True)
 
     assert wrapped.closed
 
     with pytest.raises(RuntimeError):
-        _close(wrapped, cancel=False, return_exceptions=True, loop=None)
+        _close(wrapped, cancel=False, return_exceptions=True)
 
     fut = loop.create_future()
     wrapped.closed = False
     wrapped.tasks = {fut}
 
-    _close(wrapped, cancel=True, return_exceptions=True, loop=None)
+    _close(wrapped, cancel=True, return_exceptions=True)
 
     assert fut.cancelled()
 
@@ -213,7 +210,7 @@ def test_close(loop):
     wrapped.closed = False
     wrapped.tasks = {fut}
 
-    _close(wrapped, cancel=True, return_exceptions=True, loop=None)
+    _close(wrapped, cancel=True, return_exceptions=True)
 
     assert not fut.cancelled()
 
@@ -222,7 +219,7 @@ def test_close(loop):
     wrapped.closed = False
     wrapped.tasks = {fut}
 
-    _close(wrapped, cancel=True, return_exceptions=True, loop=None)
+    _close(wrapped, cancel=True, return_exceptions=True)
 
     assert not fut.cancelled()
 
@@ -236,7 +233,6 @@ async def test_wait_closed(loop):
         ret = await _wait_closed(
             wrapped,
             return_exceptions=True,
-            loop=loop,
         )
         assert ret == []
         assert mocked.called_once()
@@ -246,7 +242,6 @@ async def test_wait_closed(loop):
         ret = await _wait_closed(
             wrapped,
             return_exceptions=True,
-            loop=None,
         )
         assert ret == []
         assert mocked.called_once()
@@ -259,7 +254,6 @@ async def test_wait_closed(loop):
         ret = await _wait_closed(
             wrapped,
             return_exceptions=True,
-            loop=loop,
         )
         assert ret == [None]
         assert mocked.called_once()
@@ -272,7 +266,6 @@ async def test_wait_closed(loop):
         ret = await _wait_closed(
             wrapped,
             return_exceptions=True,
-            loop=loop,
         )
         assert ret == [exc]
         assert mocked.called_once()
@@ -285,7 +278,6 @@ async def test_wait_closed(loop):
             await _wait_closed(
                 wrapped,
                 return_exceptions=False,
-                loop=loop,
             )
         assert mocked.called_once()
 

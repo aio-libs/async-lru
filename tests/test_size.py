@@ -40,7 +40,7 @@ async def test_alru_cache_none_max_size(check_lru, loop):
     inputs = [1, 2, 3, 4] * 2
     coros = [coro(v) for v in inputs]
 
-    ret = await asyncio.gather(*coros, loop=loop)
+    ret = await asyncio.gather(*coros)
 
     check_lru(coro, hits=4, misses=4, cache=4, tasks=0, maxsize=None)
     assert ret == inputs
@@ -54,7 +54,7 @@ async def test_alru_cache_zero_max_size(check_lru, loop):
     inputs = [1, 2, 3, 4] * 2
     coros = [coro(v) for v in inputs]
 
-    ret = await asyncio.gather(*coros, loop=loop)
+    ret = await asyncio.gather(*coros)
 
     check_lru(coro, hits=0, misses=8, cache=0, tasks=0, maxsize=0)
     assert ret == inputs

@@ -58,7 +58,7 @@ def _open(wrapped):
     wrapped.closed = False
 
 
-def _close(wrapped, *, cancel=False, return_exceptions=True, loop=None):
+def _close(wrapped, *, cancel=False, return_exceptions=True):
     if wrapped.closed:
         raise RuntimeError("alru_cache is closed")
 
@@ -69,24 +69,20 @@ def _close(wrapped, *, cancel=False, return_exceptions=True, loop=None):
             if not task.done():  # not sure is it possible
                 task.cancel()
 
-    return _wait_closed(wrapped, return_exceptions=return_exceptions, loop=loop)
+    return _wait_closed(wrapped, return_exceptions=return_exceptions)
 
 
-@asyncio.coroutine
-def _wait_closed(wrapped, *, return_exceptions, loop):
-    if loop is None:
-        loop = asyncio.get_event_loop()
-
+async def _wait_closed(wrapped, *, return_exceptions):
     wait_closed = asyncio.gather(
-        *wrapped.tasks, return_exceptions=return_exceptions, loop=loop
+        *wrapped.tasks, return_exceptions=return_exceptions
     )
 
     wait_closed.add_done_callback(partial(_close_waited, wrapped))
 
-    ret = yield from wait_closed
+    ret = await wait_closed
 
     # hack to get _close_waited callback to be executed
-    yield from asyncio.sleep(0, loop=loop)
+    await asyncio.sleep(0)
 
     return ret
 
@@ -139,8 +135,7 @@ def alru_cache(
             fn = fn._make_unbound_method()
 
         @wraps(fn)
-        @asyncio.coroutine
-        def wrapped(*fn_args, **fn_kwargs):
+        async def wrapped(*fn_args, **fn_kwargs):
             if wrapped.closed:
                 raise RuntimeError("alru_cache is closed for {}".format(wrapped))
 
@@ -153,7 +148,7 @@ def alru_cache(
             if fut is not None:
                 if not fut.done():
                     _cache_hit(wrapped, key)
-                    return (yield from asyncio.shield(fut))
+                    return await asyncio.shield(fut)
 
                 exc = fut._exception
 
@@ -177,7 +172,7 @@ def alru_cache(
                 wrapped._cache.popitem(last=False)
 
             _cache_miss(wrapped, key)
-            return (yield from asyncio.shield(fut))
+            return await asyncio.shield(fut)
 
         _cache_clear(wrapped)
         wrapped._origin = _origin

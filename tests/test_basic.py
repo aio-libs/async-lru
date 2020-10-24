@@ -128,7 +128,7 @@ async def test_alru_cache_await_same_result_async(check_lru, loop):
         return val
 
     coros = [coro() for _ in range(100)]
-    ret = await asyncio.gather(*coros, loop=loop)
+    ret = await asyncio.gather(*coros)
     expected = [val] * 100
     assert ret == expected
     check_lru(coro, hits=99, misses=1, cache=1, tasks=0)
@@ -144,15 +144,14 @@ async def test_alru_cache_await_same_result_coroutine(check_lru, loop):
     val = object()
 
     @alru_cache()
-    @asyncio.coroutine
-    def coro():
+    async def coro():
         nonlocal calls
         calls += 1
 
         return val
 
     coros = [coro() for _ in range(100)]
-    ret = await asyncio.gather(*coros, loop=loop)
+    ret = await asyncio.gather(*coros)
     expected = [val] * 100
     assert ret == expected
     check_lru(coro, hits=99, misses=1, cache=1, tasks=0)

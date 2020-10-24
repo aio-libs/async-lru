@@ -21,7 +21,7 @@ async def test_cache_invalidate(check_lru, loop):
 
     coros = [coro(v) for v in inputs]
 
-    ret = await asyncio.gather(*coros, loop=loop)
+    ret = await asyncio.gather(*coros)
 
     assert ret == inputs
     check_lru(coro, hits=0, misses=3, cache=3, tasks=0)
@@ -36,7 +36,7 @@ async def test_cache_invalidate(check_lru, loop):
     inputs = [1, 2, 3]
     coros = [coro(v) for v in inputs]
 
-    ret = await asyncio.gather(*coros, loop=loop)
+    ret = await asyncio.gather(*coros)
 
     assert ret == inputs
     check_lru(coro, hits=0, misses=6, cache=3, tasks=0)
