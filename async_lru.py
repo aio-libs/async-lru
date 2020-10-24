@@ -2,6 +2,7 @@ import asyncio
 from collections import OrderedDict
 from functools import _CacheInfo, _make_key, partial, wraps
 
+
 __version__ = "1.0.2"
 
 __all__ = ("alru_cache",)
@@ -73,9 +74,7 @@ def _close(wrapped, *, cancel=False, return_exceptions=True):
 
 
 async def _wait_closed(wrapped, *, return_exceptions):
-    wait_closed = asyncio.gather(
-        *wrapped.tasks, return_exceptions=return_exceptions
-    )
+    wait_closed = asyncio.gather(*wrapped.tasks, return_exceptions=return_exceptions)
 
     wait_closed.add_done_callback(partial(_close_waited, wrapped))
 

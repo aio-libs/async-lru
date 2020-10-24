@@ -6,7 +6,7 @@ from setuptools import setup
 
 
 def get_version():
-    regex = r'__version__\s=\s\"(?P<version>[\d\.ab]+?)\"'
+    regex = r"__version__\s=\s\"(?P<version>[\d\.ab]+?)\""
 
     path = ("async_lru.py",)
 
