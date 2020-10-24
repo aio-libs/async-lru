@@ -6,13 +6,14 @@ import pytest
 
 from async_lru import _CacheInfo
 
+
 asyncio.set_event_loop(None)
 
 
 @pytest.fixture
 def event_loop(request):
     loop = asyncio.new_event_loop()
-    loop.set_debug(bool(os.environ.get('PYTHONASYNCIODEBUG')))
+    loop.set_debug(bool(os.environ.get("PYTHONASYNCIODEBUG")))
 
     yield loop
 

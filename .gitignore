@@ -61,3 +61,5 @@ target/
 *.iml
 # rope
 .ropeproject
+
+.python-version

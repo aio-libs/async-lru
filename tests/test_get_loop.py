@@ -36,20 +36,20 @@ def test_get_loop_str_cls_kwargs():
     args = [True, True, None, None, None]
 
     with pytest.raises(AssertionError):
-        _get_loop(*args, loop='_loop')
+        _get_loop(*args, loop="_loop")
 
 
 def test_get_loop_kwargs(loop):
-    args = [False, True, None, None, {'_loop': loop}]
+    args = [False, True, None, None, {"_loop": loop}]
 
-    _loop = _get_loop(*args, loop='_loop')
+    _loop = _get_loop(*args, loop="_loop")
 
     assert _loop is loop
 
-    args[4].pop('_loop')
+    args[4].pop("_loop")
 
     with pytest.raises(KeyError):
-        _get_loop(*args, loop='_loop')
+        _get_loop(*args, loop="_loop")
 
 
 def test_get_loop_cls(loop):
@@ -64,21 +64,21 @@ def test_get_loop_cls(loop):
 
     args = [True, False, obj.coro, None, None]
 
-    _loop = _get_loop(*args, loop='_loop')
+    _loop = _get_loop(*args, loop="_loop")
 
     assert _loop is loop
 
     with pytest.raises(AttributeError):
-        _get_loop(*args, loop='loop')
+        _get_loop(*args, loop="loop")
 
     args[2] = Obj.coro
     args[3] = [obj]
 
-    _loop = _get_loop(*args, loop='_loop')
+    _loop = _get_loop(*args, loop="_loop")
 
     assert _loop is loop
 
     args[3] = []
 
     with pytest.raises(AssertionError):
-        _get_loop(*args, loop='_loop')
+        _get_loop(*args, loop="_loop")

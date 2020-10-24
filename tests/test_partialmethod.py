@@ -5,6 +5,7 @@ import pytest
 
 from async_lru import alru_cache
 
+
 pytestmark = pytest.mark.asyncio
 
 
@@ -59,7 +60,7 @@ async def test_partialmethod_cls_loop(check_lru, loop):
         async def _coro(self, val):
             return val
 
-        coro = alru_cache(partialmethod(_coro, 2), cls=True, loop='_loop')
+        coro = alru_cache(partialmethod(_coro, 2), cls=True, loop="_loop")
 
     obj = Obj(loop=loop)
 
@@ -79,7 +80,7 @@ async def test_partialmethod_kwargs_loop(check_lru, loop):
         async def _coro(self, val, *, _loop):
             return val
 
-        coro = alru_cache(partialmethod(_coro, 2), kwargs=True, loop='_loop')
+        coro = alru_cache(partialmethod(_coro, 2), kwargs=True, loop="_loop")
 
     obj = Obj()
 

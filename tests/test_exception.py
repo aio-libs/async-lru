@@ -4,13 +4,14 @@ import pytest
 
 from async_lru import alru_cache
 
+
 pytestmark = pytest.mark.asyncio
 
 
 async def test_alru_cache_exception(check_lru, loop):
     @alru_cache(cache_exceptions=True, loop=loop)
     async def coro(val):
-        1/0
+        1 / 0
 
     inputs = [1, 1, 1]
     coros = [coro(v) for v in inputs]
@@ -31,7 +32,7 @@ async def test_alru_cache_exception(check_lru, loop):
 async def test_alru_not_cache_exception(check_lru, loop):
     @alru_cache(cache_exceptions=False, loop=loop)
     async def coro(val):
-        1/0
+        1 / 0
 
     inputs = [1, 1, 1]
     coros = [coro(v) for v in inputs]

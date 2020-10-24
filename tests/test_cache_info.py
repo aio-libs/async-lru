@@ -4,6 +4,7 @@ import pytest
 
 from async_lru import alru_cache
 
+
 pytestmark = pytest.mark.asyncio
 
 

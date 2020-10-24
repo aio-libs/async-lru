@@ -4,6 +4,7 @@ import pytest
 
 from async_lru import _make_key, alru_cache
 
+
 pytestmark = pytest.mark.asyncio
 
 
@@ -20,7 +21,7 @@ async def test_alru_cache_removing_lru_keys(check_lru, loop):
 
     for i, v in enumerate([3, 4, 5]):
         await coro(v)
-        check_lru(coro, hits=0, misses=i + 1, cache=i+1, tasks=0, maxsize=3)
+        check_lru(coro, hits=0, misses=i + 1, cache=i + 1, tasks=0, maxsize=3)
 
     check_lru(coro, hits=0, misses=3, cache=3, tasks=0, maxsize=3)
     assert list(coro._cache) == [key3, key4, key5]

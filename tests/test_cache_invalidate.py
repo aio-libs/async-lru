@@ -4,6 +4,7 @@ import pytest
 
 from async_lru import alru_cache
 
+
 pytestmark = pytest.mark.asyncio
 
 
@@ -50,9 +51,9 @@ async def test_cache_invalidate_multiple_args(check_lru, loop):
         args = tuple(range(size))
         ret = await coro(*args)
         assert ret == size
-        check_lru(coro, hits=0, misses=i+1, cache=1, tasks=0)
+        check_lru(coro, hits=0, misses=i + 1, cache=1, tasks=0)
         coro.invalidate(*args)
-        check_lru(coro, hits=0, misses=i+1, cache=0, tasks=0)
+        check_lru(coro, hits=0, misses=i + 1, cache=0, tasks=0)
 
     for size in range(10):
         args = tuple(range(size))
@@ -71,16 +72,16 @@ async def test_cache_invalidate_multiple_args_different_order(check_lru, loop):
         rev_args = tuple(reversed(args))
         ret = await coro(*args)
         assert ret == size
-        check_lru(coro, hits=0, misses=2*i+1, cache=i+1, tasks=0)
+        check_lru(coro, hits=0, misses=2 * i + 1, cache=i + 1, tasks=0)
         ret = await coro(*rev_args)
         # The reversed args should be a miss
-        check_lru(coro, hits=0, misses=2*i+2, cache=i+2, tasks=0)
+        check_lru(coro, hits=0, misses=2 * i + 2, cache=i + 2, tasks=0)
         coro.invalidate(*rev_args)
         # The reversed args should be invalidated
-        check_lru(coro, hits=0, misses=2*i+2, cache=i+1, tasks=0)
+        check_lru(coro, hits=0, misses=2 * i + 2, cache=i + 1, tasks=0)
 
     for i, size in enumerate(range(2, 10)):
         args = tuple(range(size))
         ret = await coro(*args)
         assert ret == size
-        check_lru(coro, hits=i+1, misses=16, cache=8, tasks=0)
+        check_lru(coro, hits=i + 1, misses=16, cache=8, tasks=0)

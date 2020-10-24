@@ -5,9 +5,21 @@ from unittest import mock
 
 import pytest
 
-from async_lru import (__cache_touch, _cache_clear, _cache_hit, _cache_info,
-                       _cache_invalidate, _cache_miss, _close, _close_waited,
-                       _done_callback, _open, _wait_closed, create_future)
+from async_lru import (
+    __cache_touch,
+    _cache_clear,
+    _cache_hit,
+    _cache_info,
+    _cache_invalidate,
+    _cache_miss,
+    _close,
+    _close_waited,
+    _done_callback,
+    _open,
+    _wait_closed,
+    create_future,
+)
+
 
 try:
     from asyncio import test_utils
@@ -71,7 +83,7 @@ def test_cache_invalidate_typed():
     wrapped._cache = {}
 
     args = (1,)
-    kwargs = {'1': 1}
+    kwargs = {"1": 1}
 
     from_cache = _cache_invalidate(wrapped, True, *args, **kwargs)
 
@@ -103,7 +115,7 @@ def test_cache_invalidate_not_typed():
     wrapped._cache = {}
 
     args = (1,)
-    kwargs = {'1': 1}
+    kwargs = {"1": 1}
 
     from_cache = _cache_invalidate(wrapped, False, *args, **kwargs)
 
@@ -133,7 +145,7 @@ def test_cache_invalidate_not_typed():
 def test_cache_clear():
     wrapped = Wrapped()
 
-    attrs = ['hits', '_cache', 'tasks']
+    attrs = ["hits", "_cache", "tasks"]
     for attr in attrs:
         assert not hasattr(wrapped, attr)
 
@@ -182,33 +194,18 @@ def test_close(loop):
     wrapped.closed = False
     wrapped.tasks = set()
 
-    _close(
-        wrapped,
-        cancel=False,
-        return_exceptions=True,
-        loop=None
-    )
+    _close(wrapped, cancel=False, return_exceptions=True, loop=None)
 
     assert wrapped.closed
 
     with pytest.raises(RuntimeError):
-        _close(
-            wrapped,
-            cancel=False,
-            return_exceptions=True,
-            loop=None
-        )
+        _close(wrapped, cancel=False, return_exceptions=True, loop=None)
 
     fut = create_future(loop=loop)
     wrapped.closed = False
     wrapped.tasks = {fut}
 
-    _close(
-        wrapped,
-        cancel=True,
-        return_exceptions=True,
-        loop=None
-    )
+    _close(wrapped, cancel=True, return_exceptions=True, loop=None)
 
     assert fut.cancelled()
 
@@ -217,12 +214,7 @@ def test_close(loop):
     wrapped.closed = False
     wrapped.tasks = {fut}
 
-    _close(
-        wrapped,
-        cancel=True,
-        return_exceptions=True,
-        loop=None
-    )
+    _close(wrapped, cancel=True, return_exceptions=True, loop=None)
 
     assert not fut.cancelled()
 
@@ -231,12 +223,7 @@ def test_close(loop):
     wrapped.closed = False
     wrapped.tasks = {fut}
 
-    _close(
-        wrapped,
-        cancel=True,
-        return_exceptions=True,
-        loop=None
-    )
+    _close(wrapped, cancel=True, return_exceptions=True, loop=None)
 
     assert not fut.cancelled()
 
@@ -246,7 +233,7 @@ async def test_wait_closed(loop):
     wrapped = Wrapped()
     wrapped.tasks = set()
 
-    with mock.patch('async_lru._close_waited') as mocked:
+    with mock.patch("async_lru._close_waited") as mocked:
         ret = await _wait_closed(
             wrapped,
             return_exceptions=True,
@@ -256,7 +243,7 @@ async def test_wait_closed(loop):
         assert mocked.called_once()
 
     asyncio.set_event_loop(loop)
-    with mock.patch('async_lru._close_waited') as mocked:
+    with mock.patch("async_lru._close_waited") as mocked:
         ret = await _wait_closed(
             wrapped,
             return_exceptions=True,
@@ -269,7 +256,7 @@ async def test_wait_closed(loop):
     fut = create_future(loop=loop)
     fut.set_result(None)
     wrapped.tasks = {fut}
-    with mock.patch('async_lru._close_waited') as mocked:
+    with mock.patch("async_lru._close_waited") as mocked:
         ret = await _wait_closed(
             wrapped,
             return_exceptions=True,
@@ -282,7 +269,7 @@ async def test_wait_closed(loop):
     fut = create_future(loop=loop)
     fut.set_exception(exc)
     wrapped.tasks = {fut}
-    with mock.patch('async_lru._close_waited') as mocked:
+    with mock.patch("async_lru._close_waited") as mocked:
         ret = await _wait_closed(
             wrapped,
             return_exceptions=True,
@@ -294,7 +281,7 @@ async def test_wait_closed(loop):
     fut = create_future(loop=loop)
     fut.set_exception(ZeroDivisionError)
     wrapped.tasks = {fut}
-    with mock.patch('async_lru._close_waited') as mocked:
+    with mock.patch("async_lru._close_waited") as mocked:
         with pytest.raises(ZeroDivisionError):
             await _wait_closed(
                 wrapped,
@@ -308,7 +295,7 @@ def test_close_waited():
     wrapped = Wrapped()
     wrapped.cache_clear = partial(_cache_clear, wrapped)
 
-    with mock.patch('async_lru._cache_clear') as mocked:
+    with mock.patch("async_lru._cache_clear") as mocked:
         _close_waited(wrapped, None)
 
         assert mocked.called_once()
@@ -355,7 +342,7 @@ def test_cache_hit():
     wrapped._cache = OrderedDict()
     wrapped._cache[1] = 1
 
-    with mock.patch('async_lru.__cache_touch') as mocked:
+    with mock.patch("async_lru.__cache_touch") as mocked:
         _cache_hit(wrapped, 1)
 
         assert mocked.called_once()
@@ -373,7 +360,7 @@ def test_cache_miss():
     wrapped._cache = OrderedDict()
     wrapped._cache[1] = 1
 
-    with mock.patch('async_lru.__cache_touch') as mocked:
+    with mock.patch("async_lru.__cache_touch") as mocked:
         _cache_miss(wrapped, 1)
 
         assert mocked.called_once()

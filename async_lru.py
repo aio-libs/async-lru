@@ -2,25 +2,16 @@ import asyncio
 from collections import OrderedDict
 from functools import _CacheInfo, _make_key, partial, wraps
 
-try:
-    from asyncio import ensure_future
-except ImportError:  # pragma: no cover
-    ensure_future = getattr(asyncio, 'async')
 
-__version__ = '1.0.2'
+from asyncio import ensure_future
 
-__all__ = ('alru_cache',)
+__version__ = "1.0.2"
 
-
-def create_future(*, loop):
-    try:
-        return loop.create_future()
-    except AttributeError:
-        return asyncio.Future(loop=loop)
+__all__ = ("alru_cache",)
 
 
 def unpartial(fn):
-    while hasattr(fn, 'func'):
+    while hasattr(fn, "func"):
         fn = fn.func
 
     return fn
@@ -58,25 +49,21 @@ def _cache_clear(wrapped):
 
 def _open(wrapped):
     if not wrapped.closed:
-        raise RuntimeError('alru_cache is not closed')
+        raise RuntimeError("alru_cache is not closed")
 
     was_closed = (
-        wrapped.hits ==
-        wrapped.misses ==
-        len(wrapped.tasks) ==
-        len(wrapped._cache) ==
-        0
+        wrapped.hits == wrapped.misses == len(wrapped.tasks) == len(wrapped._cache) == 0
     )
 
     if not was_closed:
-        raise RuntimeError('alru_cache was not closed correctly')
+        raise RuntimeError("alru_cache was not closed correctly")
 
     wrapped.closed = False
 
 
 def _close(wrapped, *, cancel=False, return_exceptions=True, loop=None):
     if wrapped.closed:
-        raise RuntimeError('alru_cache is closed')
+        raise RuntimeError("alru_cache is closed")
 
     wrapped.closed = True
 
@@ -85,11 +72,7 @@ def _close(wrapped, *, cancel=False, return_exceptions=True, loop=None):
             if not task.done():  # not sure is it possible
                 task.cancel()
 
-    return _wait_closed(
-        wrapped,
-        return_exceptions=return_exceptions,
-        loop=loop
-    )
+    return _wait_closed(wrapped, return_exceptions=return_exceptions, loop=loop)
 
 
 @asyncio.coroutine
@@ -98,9 +81,7 @@ def _wait_closed(wrapped, *, return_exceptions, loop):
         loop = asyncio.get_event_loop()
 
     wait_closed = asyncio.gather(
-        *wrapped.tasks,
-        return_exceptions=return_exceptions,
-        loop=loop
+        *wrapped.tasks, return_exceptions=return_exceptions, loop=loop
     )
 
     wait_closed.add_done_callback(partial(_close_waited, wrapped))
@@ -148,10 +129,10 @@ def _get_loop(cls, kwargs, fn, fn_args, fn_kwargs, *, loop):
         assert cls ^ kwargs, 'choose self.loop or kwargs["loop"]'
 
         if cls:
-            _self = getattr(fn, '__self__', None)
+            _self = getattr(fn, "__self__", None)
 
             if _self is None:
-                assert fn_args, 'seems not unbound function'
+                assert fn_args, "seems not unbound function"
                 _self = fn_args[0]
 
             _loop = getattr(_self, loop)
@@ -179,27 +160,20 @@ def alru_cache(
         _origin = unpartial(fn)
 
         if not asyncio.iscoroutinefunction(_origin):
-            raise RuntimeError(
-                'Coroutine function is required, got {}'.format(fn))
+            raise RuntimeError("Coroutine function is required, got {}".format(fn))
 
         # functools.partialmethod support
-        if hasattr(fn, '_make_unbound_method'):
+        if hasattr(fn, "_make_unbound_method"):
             fn = fn._make_unbound_method()
 
         @wraps(fn)
         @asyncio.coroutine
         def wrapped(*fn_args, **fn_kwargs):
             if wrapped.closed:
-                raise RuntimeError(
-                    'alru_cache is closed for {}'.format(wrapped))
+                raise RuntimeError("alru_cache is closed for {}".format(wrapped))
 
             _loop = _get_loop(
-                cls,
-                kwargs,
-                wrapped._origin,
-                fn_args,
-                fn_kwargs,
-                loop=loop
+                cls, kwargs, wrapped._origin, fn_args, fn_kwargs, loop=loop
             )
 
             key = _make_key(fn_args, fn_kwargs, typed)
@@ -220,7 +194,7 @@ def alru_cache(
                 # exception here and cache_exceptions == False
                 wrapped._cache.pop(key)
 
-            fut = create_future(loop=_loop)
+            fut = loop.create_future()
             coro = fn(*fn_args, **fn_kwargs)
             task = ensure_future(coro, loop=_loop)
             task.add_done_callback(partial(_done_callback, fut))
@@ -250,7 +224,7 @@ def alru_cache(
     if fn is None:
         return wrapper
 
-    if callable(fn) or hasattr(fn, '_make_unbound_method'):
+    if callable(fn) or hasattr(fn, "_make_unbound_method"):
         return wrapper(fn)
 
-    raise NotImplementedError('{} decorating is not supported'.format(fn))
+    raise NotImplementedError("{} decorating is not supported".format(fn))

@@ -4,11 +4,11 @@ import pytest
 
 from async_lru import alru_cache
 
+
 pytestmark = pytest.mark.asyncio
 
 
 async def test_cache_close(check_lru, loop):
-
     @alru_cache(loop=loop)
     async def coro(val):
         await asyncio.sleep(0.2, loop=loop)
