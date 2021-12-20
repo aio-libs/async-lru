@@ -35,7 +35,7 @@ jobs:
         restore-keys: |
             pip-lint-
     - name: Install dependencies
-      uses: py-actions/py-dependency-install@v2
+      uses: py-actions/py-dependency-install@v3.0.0
       with:
         path: requirements.txt
     - name: Install itself
