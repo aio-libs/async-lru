@@ -190,7 +190,8 @@ def test_close(loop):
     wrapped.closed = False
     wrapped.tasks = set()
 
-    _close(wrapped, cancel=False, return_exceptions=True)
+    awaitable = _close(wrapped, cancel=False, return_exceptions=True)
+    loop.run_until_complete(awaitable)
 
     assert wrapped.closed
 
@@ -201,7 +202,8 @@ def test_close(loop):
     wrapped.closed = False
     wrapped.tasks = {fut}
 
-    _close(wrapped, cancel=True, return_exceptions=True)
+    awaitable = _close(wrapped, cancel=True, return_exceptions=True)
+    loop.run_until_complete(awaitable)
 
     assert fut.cancelled()
 
@@ -210,7 +212,8 @@ def test_close(loop):
     wrapped.closed = False
     wrapped.tasks = {fut}
 
-    _close(wrapped, cancel=True, return_exceptions=True)
+    awaitable = _close(wrapped, cancel=True, return_exceptions=True)
+    loop.run_until_complete(awaitable)
 
     assert not fut.cancelled()
 
@@ -219,7 +222,8 @@ def test_close(loop):
     wrapped.closed = False
     wrapped.tasks = {fut}
 
-    _close(wrapped, cancel=True, return_exceptions=True)
+    awaitable = _close(wrapped, cancel=True, return_exceptions=True)
+    loop.run_until_complete(awaitable)
 
     assert not fut.cancelled()
 

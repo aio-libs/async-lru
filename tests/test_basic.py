@@ -54,7 +54,9 @@ def test_alru_cache_deco(loop, check_lru):
     assert isinstance(coro.tasks, set)
     check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
-    assert asyncio.iscoroutine(coro())
+    awaitable = coro()
+    assert asyncio.iscoroutine(awaitable)
+    loop.run_until_complete(awaitable)
 
 
 def test_alru_cache_deco_called(check_lru, loop):
@@ -75,7 +77,9 @@ def test_alru_cache_deco_called(check_lru, loop):
     assert isinstance(coro.tasks, set)
     check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
-    assert asyncio.iscoroutine(coro())
+    awaitable = coro()
+    assert asyncio.iscoroutine(awaitable)
+    loop.run_until_complete(awaitable)
 
 
 def test_alru_cache_fn_called(check_lru, loop):
@@ -97,7 +101,9 @@ def test_alru_cache_fn_called(check_lru, loop):
     assert isinstance(coro_wrapped.tasks, set)
     check_lru(coro_wrapped, hits=0, misses=0, cache=0, tasks=0)
 
-    assert asyncio.iscoroutine(coro_wrapped())
+    awaitable = coro_wrapped()
+    assert asyncio.iscoroutine(awaitable)
+    loop.run_until_complete(awaitable)
 
 
 def test_alru_cache_origin(loop):
