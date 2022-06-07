@@ -6,5 +6,5 @@ pytest-cov==2.10.1
 pytest-runner==5.2
 isort==5.6.4
 black==20.8b1; implementation_name=="cpython"
-mypy==0.920; implementation_name=="cpython"
+mypy==0.961; implementation_name=="cpython"
 -e .
