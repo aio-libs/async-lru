@@ -126,7 +126,11 @@ def alru_cache(
     def wrapper(fn):
         _origin = unpartial(fn)
 
-        if not asyncio.iscoroutinefunction(_origin):
+        # NOTE: cython_function_or_method support for Cython
+        # with unecessary cython package installation
+        _is_cython_function = type(fn).__qualname__ == 'cython_function_or_method'
+
+        if not asyncio.iscoroutinefunction(_origin) and not _is_cython_function:
             raise RuntimeError("Coroutine function is required, got {}".format(fn))
 
         # functools.partialmethod support
