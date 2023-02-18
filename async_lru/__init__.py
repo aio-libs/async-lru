@@ -354,7 +354,6 @@ def alru_cache(
     *,
     cache_exceptions: bool = True,
 ) -> Union[Callable[[_CBP[_R]], _LRUCacheWrapper[_R]], _LRUCacheWrapper[_R]]:
-
     if maxsize is None or isinstance(maxsize, int):
         return _make_wrapper(maxsize, typed, cache_exceptions)
     else:
