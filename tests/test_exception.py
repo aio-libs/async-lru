@@ -1,13 +1,14 @@
 import asyncio
+from typing import Callable
 
 import pytest
 
 from async_lru import alru_cache
 
 
-async def test_alru_cache_exception(check_lru):
+async def test_alru_cache_exception(check_lru: Callable[..., None]) -> None:
     @alru_cache(cache_exceptions=True)
-    async def coro(val):
+    async def coro(val: int) -> None:
         1 / 0
 
     inputs = [1, 1, 1]
@@ -26,9 +27,9 @@ async def test_alru_cache_exception(check_lru):
     check_lru(coro, hits=3, misses=1, cache=1, tasks=0)
 
 
-async def test_alru_not_cache_exception(check_lru):
+async def test_alru_not_cache_exception(check_lru: Callable[..., None]) -> None:
     @alru_cache(cache_exceptions=False)
-    async def coro(val):
+    async def coro(val: int) -> None:
         1 / 0
 
     inputs = [1, 1, 1]

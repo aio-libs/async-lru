@@ -1,11 +1,12 @@
 import asyncio
+from typing import Callable
 
 from async_lru import alru_cache
 
 
-async def test_cache_invalidate(check_lru):
+async def test_cache_invalidate(check_lru: Callable[..., None]) -> None:
     @alru_cache()
-    async def coro(val):
+    async def coro(val: int) -> int:
         return val
 
     inputs = [1, 2, 3]
@@ -37,9 +38,9 @@ async def test_cache_invalidate(check_lru):
     check_lru(coro, hits=0, misses=6, cache=3, tasks=0)
 
 
-async def test_cache_invalidate_multiple_args(check_lru):
+async def test_cache_invalidate_multiple_args(check_lru: Callable[..., None]) -> None:
     @alru_cache()
-    async def coro(*args):
+    async def coro(*args: int) -> int:
         return len(args)
 
     for i, size in enumerate(range(10)):
@@ -57,9 +58,11 @@ async def test_cache_invalidate_multiple_args(check_lru):
     check_lru(coro, hits=0, misses=20, cache=10, tasks=0)
 
 
-async def test_cache_invalidate_multiple_args_different_order(check_lru):
+async def test_cache_invalidate_multiple_args_different_order(
+    check_lru: Callable[..., None]
+) -> None:
     @alru_cache()
-    async def coro(*args):
+    async def coro(*args: int) -> int:
         return len(args)
 
     for i, size in enumerate(range(2, 10)):

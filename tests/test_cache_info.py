@@ -1,11 +1,12 @@
 import asyncio
+from typing import Callable
 
 from async_lru import alru_cache
 
 
-async def test_cache_info(check_lru):
+async def test_cache_info(check_lru: Callable[..., None]) -> None:
     @alru_cache(maxsize=4)
-    async def coro(val):
+    async def coro(val: int) -> int:
         return val
 
     inputs = [1, 2, 3]

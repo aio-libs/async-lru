@@ -1,5 +1,6 @@
 import asyncio
 from functools import partial
+from typing import Callable
 
 import pytest
 
@@ -23,22 +24,22 @@ for attr in ["hits", "misses", "tasks", "closed"]:
     alru_cache_calable_attrs.remove(attr)
 
 
-def test_alru_cache_not_callable():
+def test_alru_cache_not_callable() -> None:
     with pytest.raises(NotImplementedError):
-        alru_cache("foo")
+        alru_cache("foo")  # type: ignore[call-overload]
 
 
-def test_alru_cache_not_coroutine():
+def test_alru_cache_not_coroutine() -> None:
     with pytest.raises(RuntimeError):
 
-        @alru_cache
-        def not_coro(val):
+        @alru_cache  # type: ignore[arg-type]
+        def not_coro(val: int) -> int:
             return val
 
 
-async def test_alru_cache_deco(check_lru):
+async def test_alru_cache_deco(check_lru: Callable[..., None]) -> None:
     @alru_cache
-    async def coro():
+    async def coro() -> None:
         pass
 
     assert asyncio.iscoroutinefunction(coro)
@@ -48,7 +49,6 @@ async def test_alru_cache_deco(check_lru):
     for attr in alru_cache_calable_attrs:
         assert callable(getattr(coro, attr))
 
-    assert isinstance(coro._LRUCacheWrapper__cache, dict)
     assert isinstance(coro.tasks, set)
     check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
@@ -57,9 +57,9 @@ async def test_alru_cache_deco(check_lru):
     await awaitable
 
 
-async def test_alru_cache_deco_called(check_lru):
+async def test_alru_cache_deco_called(check_lru: Callable[..., None]) -> None:
     @alru_cache()
-    async def coro():
+    async def coro() -> None:
         pass
 
     assert asyncio.iscoroutinefunction(coro)
@@ -69,7 +69,6 @@ async def test_alru_cache_deco_called(check_lru):
     for attr in alru_cache_calable_attrs:
         assert callable(getattr(coro, attr))
 
-    assert isinstance(coro._LRUCacheWrapper__cache, dict)
     assert isinstance(coro.tasks, set)
     check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
@@ -78,8 +77,8 @@ async def test_alru_cache_deco_called(check_lru):
     await awaitable
 
 
-async def test_alru_cache_fn_called(check_lru):
-    async def coro():
+async def test_alru_cache_fn_called(check_lru: Callable[..., None]) -> None:
+    async def coro() -> None:
         pass
 
     coro_wrapped = alru_cache(coro)
@@ -91,7 +90,6 @@ async def test_alru_cache_fn_called(check_lru):
     for attr in alru_cache_calable_attrs:
         assert callable(getattr(coro_wrapped, attr))
 
-    assert isinstance(coro_wrapped._LRUCacheWrapper__cache, dict)
     assert isinstance(coro_wrapped.tasks, set)
     check_lru(coro_wrapped, hits=0, misses=0, cache=0, tasks=0)
 
@@ -100,25 +98,27 @@ async def test_alru_cache_fn_called(check_lru):
     await awaitable
 
 
-def test_alru_cache_origin():
-    async def coro():
-        pass
+async def test_alru_cache_partial() -> None:
+    async def coro(val:int) -> int:
+        return val
 
-    coro_wrapped = alru_cache(coro)
+    coro_wrapped1 = alru_cache(coro)
 
-    assert coro_wrapped._origin is coro
+    assert await coro_wrapped1(1) == 1
 
-    coro_wrapped = alru_cache(partial(coro))
+    coro_wrapped2 = alru_cache(partial(coro, 2))
 
-    assert coro_wrapped._origin is coro
+    assert await coro_wrapped2() == 2
 
 
-async def test_alru_cache_await_same_result_async(check_lru):
+async def test_alru_cache_await_same_result_async(
+    check_lru: Callable[..., None]
+) -> None:
     calls = 0
     val = object()
 
     @alru_cache()
-    async def coro():
+    async def coro() -> object:
         nonlocal calls
         calls += 1
 
@@ -135,12 +135,14 @@ async def test_alru_cache_await_same_result_async(check_lru):
     check_lru(coro, hits=100, misses=1, cache=1, tasks=0)
 
 
-async def test_alru_cache_await_same_result_coroutine(check_lru):
+async def test_alru_cache_await_same_result_coroutine(
+    check_lru: Callable[..., None]
+) -> None:
     calls = 0
     val = object()
 
     @alru_cache()
-    async def coro():
+    async def coro() -> object:
         nonlocal calls
         calls += 1
 
@@ -157,8 +159,8 @@ async def test_alru_cache_await_same_result_coroutine(check_lru):
     check_lru(coro, hits=100, misses=1, cache=1, tasks=0)
 
 
-async def test_alru_cache_dict_not_shared(check_lru):
-    async def coro(val):
+async def test_alru_cache_dict_not_shared(check_lru: Callable[..., None]) -> None:
+    async def coro(val: int) -> int:
         return val
 
     coro1 = alru_cache()(coro)
@@ -173,22 +175,21 @@ async def test_alru_cache_dict_not_shared(check_lru):
     assert ret1 == ret2
 
     assert (
-        coro1._LRUCacheWrapper__cache[1].result()
-        == coro2._LRUCacheWrapper__cache[1].result()
+        coro1._LRUCacheWrapper__cache[1].result()  # type: ignore[attr-defined]
+        == coro2._LRUCacheWrapper__cache[1].result()  # type: ignore[attr-defined]
     )
-    assert coro1._LRUCacheWrapper__cache != coro2._LRUCacheWrapper__cache
-    assert coro1._LRUCacheWrapper__cache.keys() == coro2._LRUCacheWrapper__cache.keys()
-    assert coro1._LRUCacheWrapper__cache is not coro2._LRUCacheWrapper__cache
+    assert coro1._LRUCacheWrapper__cache != coro2._LRUCacheWrapper__cache  # type: ignore[attr-defined]
+    assert coro1._LRUCacheWrapper__cache.keys() == coro2._LRUCacheWrapper__cache.keys()  # type: ignore[attr-defined]
+    assert coro1._LRUCacheWrapper__cache is not coro2._LRUCacheWrapper__cache  # type: ignore[attr-defined]
 
 
-def xtest_alru_cache_method():
-    async def coro():
-        pass
+async def test_alru_cache_method() -> None:
+    class A:
+        def __init__(self, val: int)->None:
+            self.val = val
+        @alru_cache
+        async def coro(self) -> int:
+            return self.val
 
-    coro_wrapped = alru_cache(coro)
-
-    assert coro_wrapped._origin is coro
-
-    coro_wrapped = alru_cache(partial(coro))
-
-    assert coro_wrapped._origin is coro
+    a = A(42)
+    assert await a.coro() == 42

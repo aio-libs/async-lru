@@ -1,13 +1,14 @@
 import asyncio
+from typing import Callable
 
 import pytest
 
 from async_lru import alru_cache
 
 
-async def test_cache_close(check_lru):
+async def test_cache_close(check_lru: Callable[..., None]) -> None:
     @alru_cache()
-    async def coro(val):
+    async def coro(val: int) -> int:
         await asyncio.sleep(0.2)
 
         return val
@@ -45,9 +46,11 @@ async def test_cache_close(check_lru):
         coro.close()
 
 
-async def test_cache_close_cancel_return_exceptions(check_lru):
+async def test_cache_close_cancel_return_exceptions(
+    check_lru: Callable[..., None]
+) -> None:
     @alru_cache()
-    async def coro(val):
+    async def coro(val: int) -> int:
         await asyncio.sleep(0.2)
 
         return val
@@ -75,9 +78,11 @@ async def test_cache_close_cancel_return_exceptions(check_lru):
         await gather
 
 
-async def test_cache_close_cancel_not_return_exceptions(check_lru):
+async def test_cache_close_cancel_not_return_exceptions(
+    check_lru: Callable[..., None]
+) -> None:
     @alru_cache()
-    async def coro(val):
+    async def coro(val: int) -> int:
         await asyncio.sleep(0.2)
 
         return val
@@ -103,9 +108,9 @@ async def test_cache_close_cancel_not_return_exceptions(check_lru):
     check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
 
-async def test_cache_close_return_exceptions(check_lru):
-    @alru_cache()
-    async def coro(val):
+async def test_cache_close_return_exceptions(check_lru: Callable[..., None]) -> None:
+    @alru_cache
+    async def coro(val: int) -> int:
         await asyncio.sleep(0.2)
 
         raise ZeroDivisionError
@@ -137,9 +142,11 @@ async def test_cache_close_return_exceptions(check_lru):
     check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
 
-async def test_cache_close_not_return_exceptions(check_lru):
+async def test_cache_close_not_return_exceptions(
+    check_lru: Callable[..., None]
+) -> None:
     @alru_cache()
-    async def coro(val):
+    async def coro(val: int) -> int:
         await asyncio.sleep(0.2)
 
         raise ZeroDivisionError

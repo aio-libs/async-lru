@@ -1,11 +1,13 @@
+from typing import Callable
+
 import pytest
 
 from async_lru import alru_cache
 
 
-async def test_alru_cache_open(check_lru):
+async def test_alru_cache_open(check_lru: Callable[..., None]) -> None:
     @alru_cache()
-    async def coro(val):
+    async def coro(val: int) -> int:
         return val
 
     await coro(1)
