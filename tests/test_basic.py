@@ -99,7 +99,7 @@ async def test_alru_cache_fn_called(check_lru: Callable[..., None]) -> None:
 
 
 async def test_alru_cache_partial() -> None:
-    async def coro(val:int) -> int:
+    async def coro(val: int) -> int:
         return val
 
     coro_wrapped1 = alru_cache(coro)
@@ -185,8 +185,9 @@ async def test_alru_cache_dict_not_shared(check_lru: Callable[..., None]) -> Non
 
 async def test_alru_cache_method() -> None:
     class A:
-        def __init__(self, val: int)->None:
+        def __init__(self, val: int) -> None:
             self.val = val
+
         @alru_cache
         async def coro(self) -> int:
             return self.val

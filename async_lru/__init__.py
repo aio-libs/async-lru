@@ -31,7 +31,7 @@ _T = TypeVar("_T")
 _R = TypeVar("_R")
 _Coro = Coroutine[Any, Any, _R]
 _CB = Callable[..., _Coro[_R]]
-_CBP = Union[_CB[_R], 'partial[_Coro[_R]]', 'partialmethod[_Coro[_R]]']
+_CBP = Union[_CB[_R], "partial[_Coro[_R]]", "partialmethod[_Coro[_R]]"]
 
 
 def _done_callback(fut: "asyncio.Future[_R]", task: "asyncio.Task[_R]") -> None:

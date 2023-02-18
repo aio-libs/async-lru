@@ -121,9 +121,7 @@ def test_cache_invalidate_not_typed() -> None:
 
 
 async def test_cache_clear() -> None:
-    wrapped = _LRUCacheWrapper(
-        mock.AsyncMock(return_value=1), None, True, True
-    )
+    wrapped = _LRUCacheWrapper(mock.AsyncMock(return_value=1), None, True, True)
 
     await wrapped(123)
 
