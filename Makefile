@@ -8,7 +8,7 @@ lint: black flake8 mypy
 
 
 mypy:
-	#mypy --strict --show-error-codes .
+	mypy
 
 
 black:
