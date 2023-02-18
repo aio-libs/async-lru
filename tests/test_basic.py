@@ -1,5 +1,5 @@
 import asyncio
-from functools import partial, _CacheInfo
+from functools import _CacheInfo, partial
 from typing import Callable
 
 import pytest
