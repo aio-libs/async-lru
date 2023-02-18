@@ -5,23 +5,8 @@ updates:
   schedule:
     interval: daily
   open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: black
-    versions:
-    - 21.4b0
-    - 21.4b1
-  - dependency-name: pytest-asyncio
-    versions:
-    - 0.15.0
-  - dependency-name: flake8
-    versions:
-    - 3.9.0
-  - dependency-name: pytest
-    versions:
-    - 6.2.2
-  - dependency-name: mypy
-    versions:
-    - "0.800"
-  - dependency-name: isort
-    versions:
-    - 5.7.0
+- package-ecosystem: github-actions
+  directory: /
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
