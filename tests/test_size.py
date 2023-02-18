@@ -21,12 +21,12 @@ async def test_alru_cache_removing_lru_keys(check_lru: Callable[..., None]) -> N
         check_lru(coro, hits=0, misses=i + 1, cache=i + 1, tasks=0, maxsize=3)
 
     check_lru(coro, hits=0, misses=3, cache=3, tasks=0, maxsize=3)
-    assert list(coro._LRUCacheWrapper__cache) == [key3, key4, key5]  # type: ignore[attr-defined]
+    assert list(coro._LRUCacheWrapper__cache) == [key3, key4, key5]  # type: ignore[attr-defined]  # noqa: E501
 
     for v in [3, 2, 1]:
         await coro(v)
     check_lru(coro, hits=1, misses=5, cache=3, tasks=0, maxsize=3)
-    assert list(coro._LRUCacheWrapper__cache) == [key3, key2, key1]  # type: ignore[attr-defined]
+    assert list(coro._LRUCacheWrapper__cache) == [key3, key2, key1]  # type: ignore[attr-defined]  # noqa: E501
 
 
 async def test_alru_cache_none_max_size(check_lru: Callable[..., None]) -> None:
