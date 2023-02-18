@@ -5,10 +5,7 @@ import pytest
 from async_lru import alru_cache
 
 
-pytestmark = pytest.mark.asyncio
-
-
-async def test_cache_close(check_lru, loop):
+async def test_cache_close(check_lru):
     @alru_cache()
     async def coro(val):
         await asyncio.sleep(0.2)
@@ -48,7 +45,7 @@ async def test_cache_close(check_lru, loop):
         coro.close()
 
 
-async def test_cache_close_cancel_return_exceptions(check_lru, loop):
+async def test_cache_close_cancel_return_exceptions(check_lru):
     @alru_cache()
     async def coro(val):
         await asyncio.sleep(0.2)
@@ -78,7 +75,7 @@ async def test_cache_close_cancel_return_exceptions(check_lru, loop):
         await gather
 
 
-async def test_cache_close_cancel_not_return_exceptions(check_lru, loop):
+async def test_cache_close_cancel_not_return_exceptions(check_lru):
     @alru_cache()
     async def coro(val):
         await asyncio.sleep(0.2)
@@ -106,7 +103,7 @@ async def test_cache_close_cancel_not_return_exceptions(check_lru, loop):
     check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
 
-async def test_cache_close_return_exceptions(check_lru, loop):
+async def test_cache_close_return_exceptions(check_lru):
     @alru_cache()
     async def coro(val):
         await asyncio.sleep(0.2)
@@ -140,7 +137,7 @@ async def test_cache_close_return_exceptions(check_lru, loop):
     check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
 
-async def test_cache_close_not_return_exceptions(check_lru, loop):
+async def test_cache_close_not_return_exceptions(check_lru):
     @alru_cache()
     async def coro(val):
         await asyncio.sleep(0.2)

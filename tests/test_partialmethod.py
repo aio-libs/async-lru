@@ -1,15 +1,10 @@
 import asyncio
 from functools import partial, partialmethod
 
-import pytest
-
 from async_lru import alru_cache
 
 
-pytestmark = pytest.mark.asyncio
-
-
-async def test_partialmethod_basic(check_lru, loop):
+async def test_partialmethod_basic(check_lru):
     class Obj:
         async def _coro(self, val):
             return val
@@ -29,7 +24,7 @@ async def test_partialmethod_basic(check_lru, loop):
     assert ret == [2, 2, 2, 2, 2]
 
 
-async def test_partialmethod_partial(check_lru, loop):
+async def test_partialmethod_partial(check_lru):
     class Obj:
         def __init__(self):
             self.coro = alru_cache(partial(self._coro, 2))

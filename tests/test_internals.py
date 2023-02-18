@@ -5,27 +5,11 @@ from unittest import mock
 
 import pytest
 
-from async_lru import (
-    __cache_touch,
-    _cache_clear,
-    _cache_hit,
-    _cache_info,
-    _cache_invalidate,
-    _cache_miss,
-    _close,
-    _close_waited,
-    _done_callback,
-    _open,
-    _wait_closed,
-)
+from async_lru import _done_callback, _LRUCacheWrapper
 
 
-class Wrapped:
-    pass
-
-
-@pytest.mark.asyncio
-async def test_done_callback_cancelled(loop):
+async def test_done_callback_cancelled():
+    loop = asyncio.get_running_loop()
     task = loop.create_future()
     fut = loop.create_future()
 
@@ -38,8 +22,8 @@ async def test_done_callback_cancelled(loop):
     assert fut.cancelled()
 
 
-@pytest.mark.asyncio
-async def test_done_callback_exception(loop):
+async def test_done_callback_exception():
+    loop = asyncio.get_running_loop()
     task = loop.create_future()
     fut = loop.create_future()
 
@@ -60,8 +44,8 @@ async def test_done_callback_exception(loop):
     assert fut.exception() is exc
 
 
-@pytest.mark.asyncio
-async def test_done_callback(loop):
+async def test_done_callback():
+    loop = asyncio.get_running_loop()
     task = loop.create_future()
     fut = loop.create_future()
 
@@ -75,188 +59,178 @@ async def test_done_callback(loop):
 
 
 def test_cache_invalidate_typed():
-    wrapped = Wrapped()
-    wrapped._cache = {}
+    wrapped = _LRUCacheWrapper(mock.ANY, mock.ANY, None, True, True)
 
     args = (1,)
     kwargs = {"1": 1}
 
-    from_cache = _cache_invalidate(wrapped, True, *args, **kwargs)
+    from_cache = wrapped.invalidate(*args, **kwargs)
 
     assert not from_cache
 
     key = _make_key(args, kwargs, True)
 
-    wrapped._cache[key] = 0
+    wrapped._LRUCacheWrapper__cache[key] = 0
 
-    from_cache = _cache_invalidate(wrapped, True, *args, **kwargs)
+    from_cache = wrapped.invalidate(*args, **kwargs)
 
     assert from_cache
 
-    assert len(wrapped._cache) == 0
+    assert len(wrapped._LRUCacheWrapper__cache) == 0
 
-    wrapped._cache[key] = 0
+    wrapped._LRUCacheWrapper__cache[key] = 0
 
     args = (1.0,)
 
-    from_cache = _cache_invalidate(wrapped, True, *args, **kwargs)
+    from_cache = wrapped.invalidate(*args, **kwargs)
 
     assert not from_cache
 
-    wrapped._cache[key] = 1
+    wrapped._LRUCacheWrapper__cache[key] = 1
 
 
 def test_cache_invalidate_not_typed():
-    wrapped = Wrapped()
-    wrapped._cache = {}
+    wrapped = _LRUCacheWrapper(mock.ANY, mock.ANY, None, False, True)
 
     args = (1,)
     kwargs = {"1": 1}
 
-    from_cache = _cache_invalidate(wrapped, False, *args, **kwargs)
+    from_cache = wrapped.invalidate(*args, **kwargs)
 
     assert not from_cache
 
     key = _make_key(args, kwargs, False)
 
-    wrapped._cache[key] = 0
+    wrapped._LRUCacheWrapper__cache[key] = 0
 
-    from_cache = _cache_invalidate(wrapped, False, *args, **kwargs)
+    from_cache = wrapped.invalidate(*args, **kwargs)
 
     assert from_cache
 
-    assert len(wrapped._cache) == 0
+    assert len(wrapped._LRUCacheWrapper__cache) == 0
 
-    wrapped._cache[key] = 0
+    wrapped._LRUCacheWrapper__cache[key] = 0
 
     args = (1.0,)
 
-    from_cache = _cache_invalidate(wrapped, False, *args, **kwargs)
+    from_cache = wrapped.invalidate(*args, **kwargs)
 
     assert from_cache
 
-    assert len(wrapped._cache) == 0
+    assert len(wrapped._LRUCacheWrapper__cache) == 0
 
 
-def test_cache_clear():
-    wrapped = Wrapped()
+async def test_cache_clear():
+    wrapped = _LRUCacheWrapper(
+        mock.AsyncMock(return_value=1), mock.ANY, None, True, True
+    )
 
-    attrs = ["hits", "_cache", "tasks"]
-    for attr in attrs:
-        assert not hasattr(wrapped, attr)
+    await wrapped(123)
 
-    _cache_clear(wrapped)
-
-    for attr in attrs:
-        assert hasattr(wrapped, attr)
-
-    assert wrapped.hits == wrapped.misses == 0
-    assert isinstance(wrapped._cache, dict)
-    assert len(wrapped._cache) == 0
-    assert isinstance(wrapped.tasks, set)
+    assert wrapped.cache_info().hits == 0
+    assert wrapped.cache_info().misses == 1
+    assert wrapped.cache_info().currsize == 1
     assert len(wrapped.tasks) == 0
 
-    _cache = wrapped._cache
-    tasks = wrapped.tasks
+    await wrapped(123)
+    assert wrapped.cache_info().hits == 1
+    assert wrapped.cache_info().misses == 1
+    assert wrapped.cache_info().currsize == 1
+    assert len(wrapped.tasks) == 0
 
-    _cache_clear(wrapped)
+    wrapped.cache_clear()
 
-    assert wrapped._cache is not _cache
-    assert wrapped.tasks is not tasks
+    assert wrapped.cache_info().hits == 0
+    assert wrapped.cache_info().misses == 0
+    assert wrapped.cache_info().currsize == 0
+    assert len(wrapped.tasks) == 0
 
 
 def test_open():
-    wrapped = Wrapped()
-    wrapped.hits = wrapped.misses = 1
-    wrapped._cache = {}
-    wrapped.tasks = set()
-    wrapped.closed = True
+    wrapped = _LRUCacheWrapper(mock.ANY, mock.ANY, None, True, True)
+    wrapped._LRUCacheWrapper__hits = wrapped._LRUCacheWrapper__misses = 1
+    wrapped._LRUCacheWrapper__cache = {}
+    wrapped._LRUCacheWrapper__tasks = set()
+    wrapped._LRUCacheWrapper__closed = True
 
     with pytest.raises(RuntimeError):
-        _open(wrapped)
+        wrapped.open()
 
-    wrapped.hits = wrapped.misses = 0
+    wrapped._LRUCacheWrapper__hits = wrapped._LRUCacheWrapper__misses = 0
 
-    _open(wrapped)
+    wrapped.open()
 
     assert not wrapped.closed
 
     with pytest.raises(RuntimeError):
-        _open(wrapped)
+        wrapped.open()
 
 
-def test_close(loop):
-    wrapped = Wrapped()
-    wrapped.closed = False
-    wrapped.tasks = set()
+async def test_close():
+    loop = asyncio.get_running_loop()
+    wrapped = _LRUCacheWrapper(mock.ANY, mock.ANY, None, True, True)
 
-    awaitable = _close(wrapped, cancel=False, return_exceptions=True)
-    loop.run_until_complete(awaitable)
+    awaitable = wrapped.close(cancel=False, return_exceptions=True)
+    await awaitable
 
     assert wrapped.closed
 
     with pytest.raises(RuntimeError):
-        _close(wrapped, cancel=False, return_exceptions=True)
+        wrapped.close(cancel=False, return_exceptions=True)
 
     fut = loop.create_future()
-    wrapped.closed = False
-    wrapped.tasks = {fut}
+    wrapped._LRUCacheWrapper__closed = False
+    wrapped._LRUCacheWrapper__tasks = {fut}
 
-    awaitable = _close(wrapped, cancel=True, return_exceptions=True)
-    loop.run_until_complete(awaitable)
+    awaitable = wrapped.close(cancel=True, return_exceptions=True)
+    await awaitable
 
     assert fut.cancelled()
 
     fut = loop.create_future()
     fut.set_result(None)
-    wrapped.closed = False
-    wrapped.tasks = {fut}
+    wrapped._LRUCacheWrapper__closed = False
+    wrapped._LRUCacheWrapper__tasks = {fut}
 
-    awaitable = _close(wrapped, cancel=True, return_exceptions=True)
-    loop.run_until_complete(awaitable)
+    awaitable = wrapped.close(cancel=True, return_exceptions=True)
+    await awaitable
 
     assert not fut.cancelled()
 
     fut = loop.create_future()
     fut.set_exception(ZeroDivisionError)
-    wrapped.closed = False
-    wrapped.tasks = {fut}
+    wrapped._LRUCacheWrapper__closed = False
+    wrapped._LRUCacheWrapper__tasks = {fut}
 
-    awaitable = _close(wrapped, cancel=True, return_exceptions=True)
-    loop.run_until_complete(awaitable)
+    awaitable = wrapped.close(cancel=True, return_exceptions=True)
+    await awaitable
 
     assert not fut.cancelled()
 
 
-@pytest.mark.asyncio
-async def test_wait_closed(loop):
-    wrapped = Wrapped()
-    wrapped.tasks = set()
+async def test_wait_closed():
+    loop = asyncio.get_running_loop()
+    wrapped = _LRUCacheWrapper(mock.ANY, mock.ANY, None, True, True)
 
-    with mock.patch("async_lru._close_waited") as mocked:
-        ret = await _wait_closed(
-            wrapped,
+    with mock.patch.object(_LRUCacheWrapper, "_close_waited") as mocked:
+        ret = await wrapped._wait_closed(
             return_exceptions=True,
         )
         assert ret == []
         assert mocked.called_once()
 
-    asyncio.set_event_loop(loop)
-    with mock.patch("async_lru._close_waited") as mocked:
-        ret = await _wait_closed(
-            wrapped,
+    with mock.patch.object(_LRUCacheWrapper, "_close_waited") as mocked:
+        ret = await wrapped._wait_closed(
             return_exceptions=True,
         )
         assert ret == []
         assert mocked.called_once()
-    asyncio.set_event_loop(None)
 
     fut = loop.create_future()
     fut.set_result(None)
-    wrapped.tasks = {fut}
-    with mock.patch("async_lru._close_waited") as mocked:
-        ret = await _wait_closed(
-            wrapped,
+    wrapped._LRUCacheWrapper__tasks = {fut}
+    with mock.patch.object(_LRUCacheWrapper, "_close_waited") as mocked:
+        ret = await wrapped._wait_closed(
             return_exceptions=True,
         )
         assert ret == [None]
@@ -265,10 +239,9 @@ async def test_wait_closed(loop):
     exc = ZeroDivisionError()
     fut = loop.create_future()
     fut.set_exception(exc)
-    wrapped.tasks = {fut}
-    with mock.patch("async_lru._close_waited") as mocked:
-        ret = await _wait_closed(
-            wrapped,
+    wrapped._LRUCacheWrapper__tasks = {fut}
+    with mock.patch.object(_LRUCacheWrapper, "_close_waited") as mocked:
+        ret = await wrapped._wait_closed(
             return_exceptions=True,
         )
         assert ret == [exc]
@@ -276,92 +249,85 @@ async def test_wait_closed(loop):
 
     fut = loop.create_future()
     fut.set_exception(ZeroDivisionError)
-    wrapped.tasks = {fut}
-    with mock.patch("async_lru._close_waited") as mocked:
+    wrapped._LRUCacheWrapper__tasks = {fut}
+    with mock.patch.object(_LRUCacheWrapper, "_close_waited") as mocked:
         with pytest.raises(ZeroDivisionError):
-            await _wait_closed(
-                wrapped,
+            await wrapped._wait_closed(
                 return_exceptions=False,
             )
         assert mocked.called_once()
 
 
 def test_close_waited():
-    wrapped = Wrapped()
-    wrapped.cache_clear = partial(_cache_clear, wrapped)
+    wrapped = _LRUCacheWrapper(mock.ANY, mock.ANY, None, True, True)
 
-    with mock.patch("async_lru._cache_clear") as mocked:
-        _close_waited(wrapped, None)
+    with mock.patch.object(_LRUCacheWrapper, "cache_clear") as mocked:
+        wrapped._close_waited(None)
 
         assert mocked.called_once()
 
 
 def test_cache_info():
-    wrapped = Wrapped()
-    wrapped._cache = {}
-    wrapped.hits = wrapped.misses = 0
+    wrapped = _LRUCacheWrapper(mock.ANY, mock.ANY, 3, True, True)
 
-    assert (0, 0, 3, 0) == _cache_info(wrapped, 3)
+    assert (0, 0, 3, 0) == wrapped.cache_info()
 
-    wrapped._cache[1] = 1
+    wrapped._LRUCacheWrapper__cache[1] = 1
 
-    assert (0, 0, 1, 1) == _cache_info(wrapped, 1)
+    assert (0, 0, 3, 1) == wrapped.cache_info()
 
-    wrapped.hits = 2
-    wrapped.misses = 3
-    wrapped._cache[2] = 2
+    wrapped._LRUCacheWrapper__hits = 2
+    wrapped._LRUCacheWrapper__misses = 3
+    wrapped._LRUCacheWrapper__cache[2] = 2
 
-    assert (2, 3, 5, 2) == _cache_info(wrapped, 5)
+    assert (2, 3, 3, 2) == wrapped.cache_info()
 
 
 def test__cache_touch():
-    wrapped = Wrapped()
+    wrapped = _LRUCacheWrapper(mock.ANY, mock.ANY, None, True, True)
 
-    wrapped._cache = OrderedDict()
-    wrapped._cache[1] = 1
-    wrapped._cache[2] = 2
+    wrapped._LRUCacheWrapper__cache[1] = 1
+    wrapped._LRUCacheWrapper__cache[2] = 2
 
-    __cache_touch(wrapped, 1)
-    assert list(wrapped._cache) == [2, 1]
+    wrapped._LRUCacheWrapper__cache_touch(1)
+    assert list(wrapped._LRUCacheWrapper__cache) == [2, 1]
 
-    __cache_touch(wrapped, 2)
-    assert list(wrapped._cache) == [1, 2]
+    wrapped._LRUCacheWrapper__cache_touch(2)
+    assert list(wrapped._LRUCacheWrapper__cache) == [1, 2]
 
     # test KeyError
-    __cache_touch(wrapped, 100)
+    wrapped._LRUCacheWrapper__cache_touch(100)
 
 
 def test_cache_hit():
-    wrapped = Wrapped()
-    wrapped.hits = 1
-    wrapped._cache = OrderedDict()
-    wrapped._cache[1] = 1
+    wrapped = _LRUCacheWrapper(mock.ANY, mock.ANY, None, True, True)
+    wrapped._LRUCacheWrapper__hits = 1
+    wrapped._LRUCacheWrapper__cache[1] = 1
 
-    with mock.patch("async_lru.__cache_touch") as mocked:
-        _cache_hit(wrapped, 1)
+    with mock.patch.object(_LRUCacheWrapper, "_LRUCacheWrapper__cache_touch") as mocked:
+        wrapped._cache_hit(1)
 
         assert mocked.called_once()
 
     assert wrapped.hits == 2
 
-    _cache_hit(wrapped, 1)
+    wrapped._cache_hit(1)
 
     assert wrapped.hits == 3
 
 
 def test_cache_miss():
-    wrapped = Wrapped()
-    wrapped.misses = 1
-    wrapped._cache = OrderedDict()
-    wrapped._cache[1] = 1
+    wrapped = _LRUCacheWrapper(mock.ANY, mock.ANY, None, True, True)
+    wrapped._LRUCacheWrapper__misses = 1
+    wrapped._LRUCacheWrapper__cache[1] = 1
 
-    with mock.patch("async_lru.__cache_touch") as mocked:
-        _cache_miss(wrapped, 1)
+    with mock.patch.object(_LRUCacheWrapper, "_LRUCacheWrapper__cache_touch") as mocked:
+        wrapped._cache_miss(1)
 
         assert mocked.called_once()
 
     assert wrapped.misses == 2
 
-    _cache_miss(wrapped, 1)
+    wrapped._cache_miss(1)
 
     assert wrapped.misses == 3

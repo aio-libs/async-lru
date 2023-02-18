@@ -5,10 +5,7 @@ import pytest
 from async_lru import alru_cache
 
 
-pytestmark = pytest.mark.asyncio
-
-
-async def test_alru_cache_exception(check_lru, loop):
+async def test_alru_cache_exception(check_lru):
     @alru_cache(cache_exceptions=True)
     async def coro(val):
         1 / 0
@@ -29,7 +26,7 @@ async def test_alru_cache_exception(check_lru, loop):
     check_lru(coro, hits=3, misses=1, cache=1, tasks=0)
 
 
-async def test_alru_not_cache_exception(check_lru, loop):
+async def test_alru_not_cache_exception(check_lru):
     @alru_cache(cache_exceptions=False)
     async def coro(val):
         1 / 0

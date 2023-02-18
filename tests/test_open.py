@@ -3,10 +3,7 @@ import pytest
 from async_lru import alru_cache
 
 
-pytestmark = pytest.mark.asyncio
-
-
-async def test_alru_cache_open(check_lru, loop):
+async def test_alru_cache_open(check_lru):
     @alru_cache()
     async def coro(val):
         return val

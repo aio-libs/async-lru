@@ -8,7 +8,7 @@ from setuptools import setup
 def get_version():
     regex = r"__version__\s=\s\"(?P<version>[\d\.ab]+?)\""
 
-    path = ("async_lru.py",)
+    path = ("async_lru/__init__.py",)
 
     return re.search(regex, read(*path)).group("version")
 
@@ -28,7 +28,7 @@ setup(
     url="https://github.com/aio-libs/async_lru",
     description="Simple lru_cache for asyncio",
     long_description=read("README.rst"),
-    py_modules=["async_lru"],
+    packages=["async_lru"],
     include_package_data=True,
     zip_safe=False,
     python_requires=">=3.8",

@@ -1,14 +1,9 @@
 import asyncio
 
-import pytest
-
 from async_lru import alru_cache
 
 
-pytestmark = pytest.mark.asyncio
-
-
-async def test_cache_info(check_lru, loop):
+async def test_cache_info(check_lru):
     @alru_cache(maxsize=4)
     async def coro(val):
         return val
