@@ -1,6 +1,6 @@
 import asyncio
 from functools import _make_key, partial
-from typing import Tuple
+from typing import Tuple, Union
 from unittest import mock
 
 import pytest
@@ -61,7 +61,7 @@ async def test_done_callback() -> None:
 def test_cache_invalidate_typed() -> None:
     wrapped = _LRUCacheWrapper(mock.ANY, None, True, True)
 
-    args: Tuple[int | float] = (1,)
+    args: Tuple[Union[int, float]] = (1,)
     kwargs = {"1": 1}
 
     from_cache = wrapped.invalidate(*args, **kwargs)
@@ -92,7 +92,7 @@ def test_cache_invalidate_typed() -> None:
 def test_cache_invalidate_not_typed() -> None:
     wrapped = _LRUCacheWrapper(mock.ANY, None, False, True)
 
-    args: Tuple[int | float] = (1,)
+    args: Tuple[Union[int, float]] = (1,)
     kwargs = {"1": 1}
 
     from_cache = wrapped.invalidate(*args, **kwargs)

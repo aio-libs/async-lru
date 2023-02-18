@@ -231,7 +231,7 @@ class _LRUCacheWrapper(Generic[_R]):
 
     def __get__(
         self, instance: _T, owner: Optional[Type[_T]]
-    ) -> Self | "_LRUCacheWrapperInstanceMethod[_R, _T]":
+    ) -> Union[Self, "_LRUCacheWrapperInstanceMethod[_R, _T]"]:
         if owner is None:
             return self
         else:
@@ -335,7 +335,7 @@ def _make_wrapper(
 
 @overload
 def alru_cache(
-    maxsize: int | None = 128, typed: bool = False, *, cache_exceptions: bool = False
+    maxsize: Optional[int] = 128, typed: bool = False, *, cache_exceptions: bool = False
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
     ...
 
