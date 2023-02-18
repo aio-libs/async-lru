@@ -8,17 +8,17 @@ lint: black flake8 mypy
 
 
 mypy:
-	#mypy --strict --show-error-codes async_lru.py tests
+	#mypy --strict --show-error-codes .
 
 
 black:
-	isort -c $(SOURCES)
-	black --check $(SOURCES)
+	isort -c .
+	black --check .
 
 flake8:
-	flake8 $(SOURCES)
+	flake8
 
 
 fmt:
-	isort $(SOURCES)
-	black $(SOURCES)
+	isort .
+	black .
