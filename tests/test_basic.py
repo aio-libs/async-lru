@@ -1,5 +1,5 @@
 import asyncio
-from functools import partial
+from functools import partial, _CacheInfo
 from typing import Callable
 
 import pytest
@@ -194,3 +194,19 @@ async def test_alru_cache_method() -> None:
 
     a = A(42)
     assert await a.coro() == 42
+
+
+async def test_invalidate_cache_for_method() -> None:
+    class A:
+        @alru_cache
+        async def coro(self, val: int) -> int:
+            return val
+
+    a = A()
+    assert await a.coro(42) == 42
+
+    assert a.coro.cache_info() == _CacheInfo(0, 1, 128, 1)
+
+    a.coro.invalidate(42)
+
+    assert a.coro.cache_info() == _CacheInfo(0, 1, 128, 0)

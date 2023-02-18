@@ -296,7 +296,7 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
         return self.__wrapper.closed
 
     def invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
-        return self.__wrapper.invalidate(*args, **kwargs)
+        return self.__wrapper.invalidate(self.__instance, *args, **kwargs)
 
     def cache_clear(self) -> None:
         self.__wrapper.cache_clear()
