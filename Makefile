@@ -18,7 +18,7 @@ black:
 	black --check .
 
 flake8:
-	flake8
+	flake8 async_lru tests setup.py
 
 
 fmt:

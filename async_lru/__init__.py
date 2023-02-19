@@ -4,12 +4,10 @@ from asyncio.coroutines import _is_coroutine  # type: ignore[attr-defined]
 from functools import _CacheInfo, _make_key, partial, partialmethod
 from typing import (
     Any,
-    Awaitable,
     Callable,
     Coroutine,
     Generic,
     Hashable,
-    List,
     Optional,
     OrderedDict,
     Set,
@@ -118,33 +116,19 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__cache.clear()
         self.__tasks.clear()
 
-    def cache_open(self) -> None:
-        if not self.__closed:
-            raise RuntimeError("alru_cache is not closed")
-
-        was_closed = (
-            self.__hits == self.__misses == len(self.__tasks) == len(self.__cache) == 0
-        )
-
-        if not was_closed:
-            raise RuntimeError("alru_cache was not closed correctly")
-
-        self.__closed = False
-
-    def cache_close(
-        self, *, cancel: bool = False, return_exceptions: bool = True
-    ) -> Awaitable[List[_R]]:
-        if self.__closed:
-            raise RuntimeError("alru_cache is closed")
-
+    async def cache_close(self, *, wait: bool = False) -> None:
         self.__closed = True
 
-        if cancel:
-            for task in self.__tasks:
-                if not task.done():  # not sure is it possible
+        tasks = list(self.__tasks)
+        if not tasks:
+            return
+
+        if not wait:
+            for task in tasks:
+                if not task.done():
                     task.cancel()
 
-        return self._wait_closed(return_exceptions=return_exceptions)
+        await asyncio.gather(*tasks, return_exceptions=True)
 
     def cache_info(self) -> _CacheInfo:
         return _CacheInfo(
@@ -163,17 +147,6 @@ class _LRUCacheWrapper(Generic[_R]):
             cache_exceptions=self.__cache_exceptions,
         )
 
-    async def _wait_closed(self, *, return_exceptions: bool) -> List[_R]:
-        try:
-            return await asyncio.gather(
-                *self.__tasks, return_exceptions=return_exceptions
-            )
-        finally:
-            self.cache_clear()
-
-    def _close_waited(self, fut: "asyncio.Future[List[_R]]") -> None:
-        self.cache_clear()
-
     def _cache_hit(self, key: Hashable) -> None:
         self.__hits += 1
         self.__cache.move_to_end(key)
@@ -187,8 +160,6 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__tasks.remove(task)
 
         if self.__ttl is not None:
-            # remove key from cache ttl seconds after task is done
-            # task instance from add_done_callback is used as pop default
             loop = asyncio.get_running_loop()
             cache_item = self.__cache[key]
             cache_item.later_call = loop.call_later(
@@ -298,13 +269,10 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
     def cache_clear(self) -> None:
         self.__wrapper.cache_clear()
 
-    def cache_open(self) -> None:
-        return self.__wrapper.cache_open()
-
-    def cache_close(
+    async def cache_close(
         self, *, cancel: bool = False, return_exceptions: bool = True
-    ) -> Awaitable[List[_R]]:
-        return self.__wrapper.cache_close()
+    ) -> None:
+        await self.__wrapper.cache_close()
 
     def cache_info(self) -> _CacheInfo:
         return self.__wrapper.cache_info()

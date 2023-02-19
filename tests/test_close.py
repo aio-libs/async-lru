@@ -1,5 +1,4 @@
 import asyncio
-import sys
 from typing import Callable
 
 import pytest
@@ -28,152 +27,18 @@ async def test_cache_close(check_lru: Callable[..., None]) -> None:
 
     close = coro.cache_close()
 
-    with pytest.raises(RuntimeError):
-        await coro(1)
-
     check_lru(coro, hits=0, misses=5, cache=5, tasks=5)
 
-    ret_close = await close
+    await close
 
-    check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
-
-    ret_gather = await gather
-
-    check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
-
-    assert set(ret_close) == set(ret_gather) == set(inputs)
-
-    with pytest.raises(RuntimeError):
-        coro.cache_close()
-
-
-async def test_cache_close_cancel_return_exceptions(
-    check_lru: Callable[..., None]
-) -> None:
-    @alru_cache()
-    async def coro(val: int) -> int:
-        await asyncio.sleep(0.2)
-
-        return val
-
-    inputs = [1, 2, 3, 4, 5]
-
-    coros = [coro(v) for v in inputs]
-
-    gather = asyncio.gather(*coros)
-
-    await asyncio.sleep(0.1)
-
-    close = coro.cache_close(cancel=True)
-
-    check_lru(coro, hits=0, misses=5, cache=5, tasks=5)
-
-    ret_close = await close
-
-    check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
-
-    for err in ret_close:
-        assert isinstance(err, asyncio.CancelledError)
+    check_lru(coro, hits=0, misses=5, cache=5, tasks=0)
+    assert coro.cache_parameters()["closed"]
 
     with pytest.raises(asyncio.CancelledError):
-        await gather
-
-
-async def test_cache_close_cancel_not_return_exceptions(
-    check_lru: Callable[..., None]
-) -> None:
-    @alru_cache()
-    async def coro(val: int) -> int:
-        await asyncio.sleep(0.2)
-
-        return val
-
-    inputs = [1, 2, 3, 4, 5]
-
-    coros = [coro(v) for v in inputs]
-
-    gather = asyncio.gather(*coros)
-
-    await asyncio.sleep(0.1)
-
-    close = coro.cache_close(cancel=True, return_exceptions=False)
-
-    check_lru(coro, hits=0, misses=5, cache=5, tasks=5)
-
-    with pytest.raises(asyncio.CancelledError):
-        await close
-
-    with pytest.raises(asyncio.CancelledError):
-        await gather
-
-    check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
-
-
-async def test_cache_close_return_exceptions(check_lru: Callable[..., None]) -> None:
-    @alru_cache
-    async def coro(val: int) -> int:
-        await asyncio.sleep(0.2)
-
-        raise ZeroDivisionError
-
-    inputs = [1, 2, 3, 4, 5]
-
-    coros = [coro(v) for v in inputs]
-
-    gather = asyncio.gather(*coros)
-
-    await asyncio.sleep(0.1)
-
-    close = coro.cache_close()
-
-    check_lru(coro, hits=0, misses=5, cache=5, tasks=5)
-
-    with pytest.raises(ZeroDivisionError):
         await gather
 
     check_lru(coro, hits=0, misses=5, cache=5, tasks=0)
+    assert coro.cache_parameters()["closed"]
 
-    ret_close = await close
-
-    check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
-
-    for err in ret_close:
-        assert isinstance(err, ZeroDivisionError)
-
-    check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
-
-
-@pytest.mark.skipif(
-    sys.implementation.name.lower() == "pypy",
-    reason="It seems like pypy has unstable 'gather()' for some reason",
-)
-async def test_cache_close_not_return_exceptions(
-    check_lru: Callable[..., None]
-) -> None:
-    @alru_cache()
-    async def coro(val: int) -> int:
-        await asyncio.sleep(0.2)
-
-        raise ZeroDivisionError
-
-    inputs = [1, 2, 3, 4, 5]
-
-    coros = [coro(v) for v in inputs]
-
-    gather = asyncio.gather(*coros, return_exceptions=True)
-    await asyncio.sleep(0.1)
-    close = coro.cache_close(return_exceptions=False)
-
-    check_lru(coro, hits=0, misses=5, cache=5, tasks=5)
-
-    with pytest.raises(ZeroDivisionError):
-        await close
-
-    check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
-
-    ret_gather = await gather  # <<< pypy can hang here
-
-    for err in ret_gather:
-        assert isinstance(err, ZeroDivisionError)
-
-    check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
+    # double call is no-op
+    await coro.cache_close()
