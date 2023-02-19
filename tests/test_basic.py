@@ -154,12 +154,18 @@ async def test_alru_cache_parameters() -> None:
         return val
 
     assert coro.cache_parameters() == _CacheParameters(
-        typed=False, maxsize=128, tasks=0, closed=False, cache_exceptions=False
+        typed=False,
+        maxsize=128,
+        tasks=0,
+        closed=False,
     )
 
     await coro(1)
     assert coro.cache_parameters() == _CacheParameters(
-        typed=False, maxsize=128, tasks=0, closed=False, cache_exceptions=False
+        typed=False,
+        maxsize=128,
+        tasks=0,
+        closed=False,
     )
 
 
@@ -175,7 +181,10 @@ async def test_alru_cache_method() -> None:
     a = A(42)
     assert await a.coro() == 42
     assert a.coro.cache_parameters() == _CacheParameters(
-        typed=False, maxsize=128, tasks=0, closed=False, cache_exceptions=False
+        typed=False,
+        maxsize=128,
+        tasks=0,
+        closed=False,
     )
 
 

@@ -39,7 +39,6 @@ class _CacheParameters(TypedDict):
     maxsize: Optional[int]
     tasks: int
     closed: bool
-    cache_exceptions: bool
 
 
 @dataclasses.dataclass
@@ -59,7 +58,6 @@ class _LRUCacheWrapper(Generic[_R]):
         fn: _CB[_R],
         maxsize: Optional[int],
         typed: bool,
-        cache_exceptions: bool,
         ttl: Optional[float],
     ) -> None:
         try:
@@ -92,7 +90,6 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__wrapped__ = fn
         self.__maxsize = maxsize
         self.__typed = typed
-        self.__cache_exceptions = cache_exceptions
         self.__ttl = ttl
         self.__cache: OrderedDict[Hashable, _CacheItem[_R]] = OrderedDict()
         self.__closed = False
@@ -144,7 +141,6 @@ class _LRUCacheWrapper(Generic[_R]):
             typed=self.__typed,
             tasks=len(self.__tasks),
             closed=self.__closed,
-            cache_exceptions=self.__cache_exceptions,
         )
 
     def _cache_hit(self, key: Hashable) -> None:
@@ -194,13 +190,13 @@ class _LRUCacheWrapper(Generic[_R]):
 
             exc = cache_item.fut._exception
 
-            if exc is None or self.__cache_exceptions:
+            if exc is None:
                 self._cache_hit(key)
                 return cache_item.fut.result()
-
-            # exception here and cache_exceptions == False
-            cache_item = self.__cache.pop(key)
-            cache_item.cancel()
+            else:
+                # exception here
+                cache_item = self.__cache.pop(key)
+                cache_item.cancel()
 
         fut = loop.create_future()
         coro = self.__wrapped__(*fn_args, **fn_kwargs)
@@ -287,7 +283,6 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
 def _make_wrapper(
     maxsize: Optional[int],
     typed: bool,
-    cache_exceptions: bool,
     ttl: Optional[float] = None,
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
     def wrapper(fn: _CBP[_R]) -> _LRUCacheWrapper[_R]:
@@ -303,9 +298,7 @@ def _make_wrapper(
         if hasattr(fn, "_make_unbound_method"):
             fn = fn._make_unbound_method()
 
-        return _LRUCacheWrapper(
-            cast(_CB[_R], fn), maxsize, typed, cache_exceptions, ttl
-        )
+        return _LRUCacheWrapper(cast(_CB[_R], fn), maxsize, typed, ttl)
 
     return wrapper
 
@@ -315,7 +308,6 @@ def alru_cache(
     maxsize: Optional[int] = 128,
     typed: bool = False,
     *,
-    cache_exceptions: bool = False,
     ttl: Optional[float] = None,
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
     ...
@@ -333,15 +325,14 @@ def alru_cache(
     maxsize: Union[Optional[int], _CBP[_R]] = 128,
     typed: bool = False,
     *,
-    cache_exceptions: bool = False,
     ttl: Optional[float] = None,
 ) -> Union[Callable[[_CBP[_R]], _LRUCacheWrapper[_R]], _LRUCacheWrapper[_R]]:
     if maxsize is None or isinstance(maxsize, int):
-        return _make_wrapper(maxsize, typed, cache_exceptions, ttl)
+        return _make_wrapper(maxsize, typed, ttl)
     else:
         fn = cast(_CB[_R], maxsize)
 
         if callable(fn) or hasattr(fn, "_make_unbound_method"):
-            return _make_wrapper(128, False, False, None)(fn)
+            return _make_wrapper(128, False, None)(fn)
 
         raise NotImplementedError("{!r} decorating is not supported".format(fn))
