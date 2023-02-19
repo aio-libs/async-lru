@@ -55,13 +55,10 @@ This package is 100% port of Python built-in function `functools.lru_cache <http
         await get_pep.close()
 
 
-    loop = asyncio.get_event_loop()
+    asyncio.run(main())
 
-    loop.run_until_complete(main())
 
-    loop.close()
-
-Python 3.6+ is required
+Python 3.8+ is required
 
 Thanks
 ------
