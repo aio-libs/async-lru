@@ -1,6 +1,8 @@
 SOURCES = setup.py async_lru.py tests
 
-test: lint
+test: lint test-only
+
+test-only:
 	pytest tests
 
 
