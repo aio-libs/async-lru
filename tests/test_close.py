@@ -1,4 +1,5 @@
 import asyncio
+import sys
 from typing import Callable
 
 import pytest
@@ -142,6 +143,10 @@ async def test_cache_close_return_exceptions(check_lru: Callable[..., None]) -> 
     check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
 
+@pytest.mark.skipif(
+    sys.implementation.name.lower() == "pypy",
+    reason="It seems like pypy has unstable 'gather()' for some reason",
+)
 async def test_cache_close_not_return_exceptions(
     check_lru: Callable[..., None]
 ) -> None:
@@ -156,9 +161,7 @@ async def test_cache_close_not_return_exceptions(
     coros = [coro(v) for v in inputs]
 
     gather = asyncio.gather(*coros, return_exceptions=True)
-
     await asyncio.sleep(0.1)
-
     close = coro.cache_close(return_exceptions=False)
 
     check_lru(coro, hits=0, misses=5, cache=5, tasks=5)
@@ -168,7 +171,7 @@ async def test_cache_close_not_return_exceptions(
 
     check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
-    ret_gather = await gather
+    ret_gather = await gather  # <<< pypy can hang here
 
     for err in ret_gather:
         assert isinstance(err, ZeroDivisionError)

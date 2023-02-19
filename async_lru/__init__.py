@@ -164,16 +164,12 @@ class _LRUCacheWrapper(Generic[_R]):
         )
 
     async def _wait_closed(self, *, return_exceptions: bool) -> List[_R]:
-        wait_closed = asyncio.gather(*self.__tasks, return_exceptions=return_exceptions)
-
-        wait_closed.add_done_callback(self._close_waited)
-
-        ret = await wait_closed
-
-        # hack to get _close_waited callback to be executed
-        await asyncio.sleep(0)
-
-        return ret
+        try:
+            return await asyncio.gather(
+                *self.__tasks, return_exceptions=return_exceptions
+            )
+        finally:
+            self.cache_clear()
 
     def _close_waited(self, fut: "asyncio.Future[List[_R]]") -> None:
         self.cache_clear()
