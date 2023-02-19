@@ -60,7 +60,7 @@ jobs:
         pyver: ['3.8', '3.9', '3.10', '3.11']
         os: [ubuntu, macos, windows]
         include:
-          - pyver: pypy3.9
+          - pyver: pypy3.8
             os: ubuntu
     runs-on: ${{ matrix.os }}-latest
     timeout-minutes: 30
