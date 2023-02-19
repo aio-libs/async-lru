@@ -97,14 +97,6 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__tasks: Set["asyncio.Task[_R]"] = set()
 
     @property
-    def hits(self) -> int:
-        return self.__hits
-
-    @property
-    def misses(self) -> int:
-        return self.__misses
-
-    @property
     def tasks(self) -> Set["asyncio.Task[_R]"]:
         return set(self.__tasks)
 
@@ -278,14 +270,6 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
         self.__wrapped__ = wrapper.__wrapped__
         self.__instance = instance
         self.__wrapper = wrapper
-
-    @property
-    def hits(self) -> int:
-        return self.__wrapper.hits
-
-    @property
-    def misses(self) -> int:
-        return self.__wrapper.misses
 
     @property
     def tasks(self) -> Set["asyncio.Task[_R]"]:

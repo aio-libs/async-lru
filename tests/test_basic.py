@@ -8,8 +8,6 @@ from async_lru import alru_cache
 
 
 alru_cache_attrs = [
-    "hits",
-    "misses",
     "tasks",
     "closed",
     "cache_info",
@@ -20,7 +18,7 @@ alru_cache_attrs = [
 ]
 
 alru_cache_calable_attrs = alru_cache_attrs.copy()
-for attr in ["hits", "misses", "tasks", "closed"]:
+for attr in ["tasks", "closed"]:
     alru_cache_calable_attrs.remove(attr)
 
 

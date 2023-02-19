@@ -309,11 +309,11 @@ def test_cache_hit() -> None:
 
         assert mocked.called_once()
 
-    assert wrapped.hits == 2
+    assert wrapped.cache_info().hits == 2
 
     wrapped._cache_hit(1)
 
-    assert wrapped.hits == 3
+    assert wrapped.cache_info().hits == 3
 
 
 def test_cache_miss() -> None:
@@ -326,8 +326,8 @@ def test_cache_miss() -> None:
 
         assert mocked.called_once()
 
-    assert wrapped.misses == 2
+    assert wrapped.cache_info().misses == 2
 
     wrapped._cache_miss(1)
 
-    assert wrapped.misses == 3
+    assert wrapped.cache_info().misses == 3

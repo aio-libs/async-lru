@@ -17,9 +17,6 @@ def check_lru() -> Callable[..., None]:
         tasks: int,
         maxsize: int = 128
     ) -> None:
-        assert wrapped.hits == hits
-        assert wrapped.misses == misses
-        assert len(wrapped._LRUCacheWrapper__cache) == cache  # type: ignore[attr-defined]  # noqa: E501
         assert len(wrapped.tasks) == tasks
         assert wrapped.cache_info() == _CacheInfo(
             hits=hits,
