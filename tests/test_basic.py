@@ -190,6 +190,6 @@ async def test_invalidate_cache_for_method() -> None:
 
     assert a.coro.cache_info() == _CacheInfo(0, 1, 128, 1)
 
-    a.coro.invalidate(42)
+    a.coro.cache_invalidate(42)
 
     assert a.coro.cache_info() == _CacheInfo(0, 1, 128, 0)

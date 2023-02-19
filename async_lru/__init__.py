@@ -105,7 +105,7 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__misses = 0
         self.__tasks: Set["asyncio.Task[_R]"] = set()
 
-    def invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
+    def cache_invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
         key = _make_key(args, kwargs, self.__typed)
 
         exists = key in self.__cache
@@ -121,7 +121,7 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__cache.clear()
         self.__tasks.clear()
 
-    def open(self) -> None:
+    def cache_open(self) -> None:
         if not self.__closed:
             raise RuntimeError("alru_cache is not closed")
 
@@ -134,7 +134,7 @@ class _LRUCacheWrapper(Generic[_R]):
 
         self.__closed = False
 
-    def close(
+    def cache_close(
         self, *, cancel: bool = False, return_exceptions: bool = True
     ) -> Awaitable[List[_R]]:
         if self.__closed:
@@ -148,21 +148,6 @@ class _LRUCacheWrapper(Generic[_R]):
                     task.cancel()
 
         return self._wait_closed(return_exceptions=return_exceptions)
-
-    async def _wait_closed(self, *, return_exceptions: bool) -> List[_R]:
-        wait_closed = asyncio.gather(*self.__tasks, return_exceptions=return_exceptions)
-
-        wait_closed.add_done_callback(self._close_waited)
-
-        ret = await wait_closed
-
-        # hack to get _close_waited callback to be executed
-        await asyncio.sleep(0)
-
-        return ret
-
-    def _close_waited(self, fut: "asyncio.Future[List[_R]]") -> None:
-        self.cache_clear()
 
     def cache_info(self) -> _CacheInfo:
         return _CacheInfo(
@@ -180,6 +165,21 @@ class _LRUCacheWrapper(Generic[_R]):
             closed=self.__closed,
             cache_exceptions=self.__cache_exceptions,
         )
+
+    async def _wait_closed(self, *, return_exceptions: bool) -> List[_R]:
+        wait_closed = asyncio.gather(*self.__tasks, return_exceptions=return_exceptions)
+
+        wait_closed.add_done_callback(self._close_waited)
+
+        ret = await wait_closed
+
+        # hack to get _close_waited callback to be executed
+        await asyncio.sleep(0)
+
+        return ret
+
+    def _close_waited(self, fut: "asyncio.Future[List[_R]]") -> None:
+        self.cache_clear()
 
     def __cache_touch(self, key: Hashable) -> None:
         try:
@@ -281,19 +281,19 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
         self.__instance = instance
         self.__wrapper = wrapper
 
-    def invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
-        return self.__wrapper.invalidate(self.__instance, *args, **kwargs)
+    def cache_invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
+        return self.__wrapper.cache_invalidate(self.__instance, *args, **kwargs)
 
     def cache_clear(self) -> None:
         self.__wrapper.cache_clear()
 
-    def open(self) -> None:
-        return self.__wrapper.open()
+    def cache_open(self) -> None:
+        return self.__wrapper.cache_open()
 
-    def close(
+    def cache_close(
         self, *, cancel: bool = False, return_exceptions: bool = True
     ) -> Awaitable[List[_R]]:
-        return self.__wrapper.close()
+        return self.__wrapper.cache_close()
 
     def cache_info(self) -> _CacheInfo:
         return self.__wrapper.cache_info()

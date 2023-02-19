@@ -25,7 +25,7 @@ async def test_cache_close(check_lru: Callable[..., None]) -> None:
 
     check_lru(coro, hits=0, misses=5, cache=5, tasks=5)
 
-    close = coro.close()
+    close = coro.cache_close()
 
     with pytest.raises(RuntimeError):
         await coro(1)
@@ -43,7 +43,7 @@ async def test_cache_close(check_lru: Callable[..., None]) -> None:
     assert set(ret_close) == set(ret_gather) == set(inputs)
 
     with pytest.raises(RuntimeError):
-        coro.close()
+        coro.cache_close()
 
 
 async def test_cache_close_cancel_return_exceptions(
@@ -63,7 +63,7 @@ async def test_cache_close_cancel_return_exceptions(
 
     await asyncio.sleep(0.1)
 
-    close = coro.close(cancel=True)
+    close = coro.cache_close(cancel=True)
 
     check_lru(coro, hits=0, misses=5, cache=5, tasks=5)
 
@@ -95,7 +95,7 @@ async def test_cache_close_cancel_not_return_exceptions(
 
     await asyncio.sleep(0.1)
 
-    close = coro.close(cancel=True, return_exceptions=False)
+    close = coro.cache_close(cancel=True, return_exceptions=False)
 
     check_lru(coro, hits=0, misses=5, cache=5, tasks=5)
 
@@ -123,7 +123,7 @@ async def test_cache_close_return_exceptions(check_lru: Callable[..., None]) -> 
 
     await asyncio.sleep(0.1)
 
-    close = coro.close()
+    close = coro.cache_close()
 
     check_lru(coro, hits=0, misses=5, cache=5, tasks=5)
 
@@ -159,7 +159,7 @@ async def test_cache_close_not_return_exceptions(
 
     await asyncio.sleep(0.1)
 
-    close = coro.close(return_exceptions=False)
+    close = coro.cache_close(return_exceptions=False)
 
     check_lru(coro, hits=0, misses=5, cache=5, tasks=5)
 

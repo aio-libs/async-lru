@@ -52,7 +52,7 @@ This package is 100% port of Python built-in function `functools.lru_cache <http
         # CacheInfo(hits=3, misses=8, maxsize=32, currsize=8)
 
         # closing is optional, but highly recommended
-        await get_pep.close()
+        await get_pep.cache_close()
 
 
     asyncio.run(main())

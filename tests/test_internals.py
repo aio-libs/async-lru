@@ -64,7 +64,7 @@ def test_cache_invalidate_typed() -> None:
     args: Tuple[Union[int, float]] = (1,)
     kwargs = {"1": 1}
 
-    from_cache = wrapped.invalidate(*args, **kwargs)
+    from_cache = wrapped.cache_invalidate(*args, **kwargs)
 
     assert not from_cache
 
@@ -72,7 +72,7 @@ def test_cache_invalidate_typed() -> None:
 
     wrapped._LRUCacheWrapper__cache[key] = 0  # type: ignore[attr-defined]
 
-    from_cache = wrapped.invalidate(*args, **kwargs)
+    from_cache = wrapped.cache_invalidate(*args, **kwargs)
 
     assert from_cache
 
@@ -82,7 +82,7 @@ def test_cache_invalidate_typed() -> None:
 
     args = (1.0,)
 
-    from_cache = wrapped.invalidate(*args, **kwargs)
+    from_cache = wrapped.cache_invalidate(*args, **kwargs)
 
     assert not from_cache
 
@@ -95,7 +95,7 @@ def test_cache_invalidate_not_typed() -> None:
     args: Tuple[Union[int, float]] = (1,)
     kwargs = {"1": 1}
 
-    from_cache = wrapped.invalidate(*args, **kwargs)
+    from_cache = wrapped.cache_invalidate(*args, **kwargs)
 
     assert not from_cache
 
@@ -103,7 +103,7 @@ def test_cache_invalidate_not_typed() -> None:
 
     wrapped._LRUCacheWrapper__cache[key] = 0  # type: ignore[attr-defined]
 
-    from_cache = wrapped.invalidate(*args, **kwargs)
+    from_cache = wrapped.cache_invalidate(*args, **kwargs)
 
     assert from_cache
 
@@ -113,7 +113,7 @@ def test_cache_invalidate_not_typed() -> None:
 
     args = (1.0,)
 
-    from_cache = wrapped.invalidate(*args, **kwargs)
+    from_cache = wrapped.cache_invalidate(*args, **kwargs)
 
     assert from_cache
 
@@ -144,7 +144,7 @@ async def test_cache_clear() -> None:
     assert wrapped.cache_parameters()["tasks"] == 0
 
 
-def test_open() -> None:
+def test_cache_open() -> None:
     wrapped = _LRUCacheWrapper(mock.ANY, None, True, True)
     wrapped._LRUCacheWrapper__hits = 1  # type: ignore[attr-defined]
     wrapped._LRUCacheWrapper__misses = 1  # type: ignore[attr-defined]
@@ -153,36 +153,36 @@ def test_open() -> None:
     wrapped._LRUCacheWrapper__closed = True  # type: ignore[attr-defined]
 
     with pytest.raises(RuntimeError):
-        wrapped.open()
+        wrapped.cache_open()
 
     wrapped._LRUCacheWrapper__hits = 0  # type: ignore[attr-defined]
     wrapped._LRUCacheWrapper__misses = 0  # type: ignore[attr-defined]
 
-    wrapped.open()
+    wrapped.cache_open()
 
     assert not wrapped.cache_parameters()["closed"]
 
     with pytest.raises(RuntimeError):
-        wrapped.open()
+        wrapped.cache_open()
 
 
-async def test_close() -> None:
+async def test_cache_close() -> None:
     loop = asyncio.get_running_loop()
     wrapped = _LRUCacheWrapper(mock.ANY, None, True, True)
 
-    awaitable = wrapped.close(cancel=False, return_exceptions=True)
+    awaitable = wrapped.cache_close(cancel=False, return_exceptions=True)
     await awaitable
 
     assert wrapped.cache_parameters()["closed"]
 
     with pytest.raises(RuntimeError):
-        wrapped.close(cancel=False, return_exceptions=True)
+        wrapped.cache_close(cancel=False, return_exceptions=True)
 
     fut = loop.create_future()
     wrapped._LRUCacheWrapper__closed = False  # type: ignore[attr-defined]
     wrapped._LRUCacheWrapper__tasks = {fut}  # type: ignore[attr-defined]
 
-    awaitable = wrapped.close(cancel=True, return_exceptions=True)
+    awaitable = wrapped.cache_close(cancel=True, return_exceptions=True)
     await awaitable
 
     assert fut.cancelled()
@@ -192,7 +192,7 @@ async def test_close() -> None:
     wrapped._LRUCacheWrapper__closed = False  # type: ignore[attr-defined]
     wrapped._LRUCacheWrapper__tasks = {fut}  # type: ignore[attr-defined]
 
-    awaitable = wrapped.close(cancel=True, return_exceptions=True)
+    awaitable = wrapped.cache_close(cancel=True, return_exceptions=True)
     await awaitable
 
     assert not fut.cancelled()
@@ -202,7 +202,7 @@ async def test_close() -> None:
     wrapped._LRUCacheWrapper__closed = False  # type: ignore[attr-defined]
     wrapped._LRUCacheWrapper__tasks = {fut}  # type: ignore[attr-defined]
 
-    awaitable = wrapped.close(cancel=True, return_exceptions=True)
+    awaitable = wrapped.cache_close(cancel=True, return_exceptions=True)
     await awaitable
 
     assert not fut.cancelled()

@@ -15,9 +15,9 @@ async def test_alru_cache_open(check_lru: Callable[..., None]) -> None:
     check_lru(coro, hits=0, misses=1, cache=1, tasks=0)
 
     with pytest.raises(RuntimeError):
-        coro.open()
+        coro.cache_open()
 
-    close = coro.close()
+    close = coro.cache_close()
 
     assert coro.cache_parameters()["closed"]
 
@@ -25,13 +25,13 @@ async def test_alru_cache_open(check_lru: Callable[..., None]) -> None:
         await coro()
 
     with pytest.raises(RuntimeError):
-        coro.open()
+        coro.cache_open()
 
     await close
 
     check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
-    coro.open()
+    coro.cache_open()
 
     ret = await coro(1)
 

@@ -11,9 +11,9 @@ async def test_cache_invalidate(check_lru: Callable[..., None]) -> None:
 
     inputs = [1, 2, 3]
 
-    coro.invalidate(1)
-    coro.invalidate(2)
-    coro.invalidate(3)
+    coro.cache_invalidate(1)
+    coro.cache_invalidate(2)
+    coro.cache_invalidate(3)
 
     coros = [coro(v) for v in inputs]
 
@@ -22,11 +22,11 @@ async def test_cache_invalidate(check_lru: Callable[..., None]) -> None:
     assert ret == inputs
     check_lru(coro, hits=0, misses=3, cache=3, tasks=0)
 
-    coro.invalidate(1)
+    coro.cache_invalidate(1)
     check_lru(coro, hits=0, misses=3, cache=2, tasks=0)
-    coro.invalidate(2)
+    coro.cache_invalidate(2)
     check_lru(coro, hits=0, misses=3, cache=1, tasks=0)
-    coro.invalidate(3)
+    coro.cache_invalidate(3)
     check_lru(coro, hits=0, misses=3, cache=0, tasks=0)
 
     inputs = [1, 2, 3]
@@ -48,7 +48,7 @@ async def test_cache_invalidate_multiple_args(check_lru: Callable[..., None]) ->
         ret = await coro(*args)
         assert ret == size
         check_lru(coro, hits=0, misses=i + 1, cache=1, tasks=0)
-        coro.invalidate(*args)
+        coro.cache_invalidate(*args)
         check_lru(coro, hits=0, misses=i + 1, cache=0, tasks=0)
 
     for size in range(10):
@@ -74,7 +74,7 @@ async def test_cache_invalidate_multiple_args_different_order(
         ret = await coro(*rev_args)
         # The reversed args should be a miss
         check_lru(coro, hits=0, misses=2 * i + 2, cache=i + 2, tasks=0)
-        coro.invalidate(*rev_args)
+        coro.cache_invalidate(*rev_args)
         # The reversed args should be invalidated
         check_lru(coro, hits=0, misses=2 * i + 2, cache=i + 1, tasks=0)
 
