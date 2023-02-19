@@ -58,6 +58,31 @@ This package is 100% port of Python built-in function `functools.lru_cache <http
     asyncio.run(main())
 
 
+TTL (time-to-live, expiration on timeout) is supported by accepting `ttl` configuration
+parameter (off by default):
+
+.. code-block:: python
+
+    @alru_cache(ttl=5)
+    async def func(arg):
+        return arg * 2
+
+
+The library supports explicit invalidation for specific function call by
+`cache_invalidate()`:
+
+.. code-block:: python
+
+    @alru_cache(ttl=5)
+    async def func(arg1, arg2):
+        return arg * 2
+
+    func.cache_invalidate(1, arg2=2)
+
+The method returns `True` if corresponding arguments set was cached already, `False`
+otherwise.
+
+
 Python 3.8+ is required
 
 Thanks

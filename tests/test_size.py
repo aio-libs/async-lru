@@ -1,5 +1,4 @@
 import asyncio
-from functools import _make_key
 from typing import Callable
 
 from async_lru import alru_cache
@@ -10,23 +9,37 @@ async def test_alru_cache_removing_lru_keys(check_lru: Callable[..., None]) -> N
     async def coro(val: int) -> int:
         return val
 
-    key5 = _make_key((5,), {}, False)
-    key4 = _make_key((4,), {}, False)
-    key3 = _make_key((3,), {}, False)
-    key2 = _make_key((2,), {}, False)
-    key1 = _make_key((1,), {}, False)
+    for i, v in enumerate([3, 4, 5]):
+        await coro(v)
+        check_lru(coro, hits=0, misses=i + 1, cache=i + 1, tasks=0, maxsize=3)
+
+    check_lru(coro, hits=0, misses=3, cache=3, tasks=0, maxsize=3)
+    assert list(coro._LRUCacheWrapper__cache) == [3, 4, 5]  # type: ignore[attr-defined]
+
+    for v in [3, 2, 1]:
+        await coro(v)
+    check_lru(coro, hits=1, misses=5, cache=3, tasks=0, maxsize=3)
+    assert list(coro._LRUCacheWrapper__cache) == [3, 2, 1]  # type: ignore[attr-defined]
+
+
+async def test_alru_cache_removing_lru_keys_with_full_displacement(
+    check_lru: Callable[..., None]
+) -> None:
+    @alru_cache(maxsize=3)
+    async def coro(val: int) -> int:
+        return val
 
     for i, v in enumerate([3, 4, 5]):
         await coro(v)
         check_lru(coro, hits=0, misses=i + 1, cache=i + 1, tasks=0, maxsize=3)
 
     check_lru(coro, hits=0, misses=3, cache=3, tasks=0, maxsize=3)
-    assert list(coro._LRUCacheWrapper__cache) == [key3, key4, key5]  # type: ignore[attr-defined]  # noqa: E501
+    assert list(coro._LRUCacheWrapper__cache) == [3, 4, 5]  # type: ignore[attr-defined]
 
-    for v in [3, 2, 1]:
+    for v in [1, 2, 3]:
         await coro(v)
-    check_lru(coro, hits=1, misses=5, cache=3, tasks=0, maxsize=3)
-    assert list(coro._LRUCacheWrapper__cache) == [key3, key2, key1]  # type: ignore[attr-defined]  # noqa: E501
+    check_lru(coro, hits=0, misses=6, cache=3, tasks=0, maxsize=3)
+    assert list(coro._LRUCacheWrapper__cache) == [1, 2, 3]  # type: ignore[attr-defined]
 
 
 async def test_alru_cache_none_max_size(check_lru: Callable[..., None]) -> None:
