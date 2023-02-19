@@ -32,6 +32,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     python_requires=">=3.8",
+    install_requires=["typing_extensions>=4.0.0"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",

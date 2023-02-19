@@ -3,7 +3,6 @@ import dataclasses
 from asyncio.coroutines import _is_coroutine  # type: ignore[attr-defined]
 from functools import _CacheInfo, _make_key, partial, partialmethod
 from typing import (
-    TYPE_CHECKING,
     Any,
     Awaitable,
     Callable,
@@ -22,10 +21,7 @@ from typing import (
     overload,
 )
 
-
-if TYPE_CHECKING:
-    # pypy doesn't support typing_extensions
-    from typing_extensions import Self
+from typing_extensions import Self
 
 
 __version__ = "2.0.0"
@@ -256,7 +252,7 @@ class _LRUCacheWrapper(Generic[_R]):
 
     def __get__(
         self, instance: _T, owner: Optional[Type[_T]]
-    ) -> Union["Self", "_LRUCacheWrapperInstanceMethod[_R, _T]"]:
+    ) -> Union[Self, "_LRUCacheWrapperInstanceMethod[_R, _T]"]:
         if owner is None:
             return self
         else:
