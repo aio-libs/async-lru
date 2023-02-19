@@ -14,6 +14,7 @@ from typing import (
     OrderedDict,
     Set,
     Type,
+    TypedDict,
     TypeVar,
     Union,
     cast,
@@ -36,6 +37,14 @@ _R = TypeVar("_R")
 _Coro = Coroutine[Any, Any, _R]
 _CB = Callable[..., _Coro[_R]]
 _CBP = Union[_CB[_R], "partial[_Coro[_R]]", "partialmethod[_Coro[_R]]"]
+
+
+class _CacheParameters(TypedDict):
+    typed: bool
+    maxsize: Optional[int]
+    tasks: int
+    closed: bool
+    cache_exceptions: bool
 
 
 def _done_callback(fut: "asyncio.Future[_R]", task: "asyncio.Task[_R]") -> None:
@@ -96,14 +105,6 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__misses = 0
         self.__tasks: Set["asyncio.Task[_R]"] = set()
 
-    @property
-    def tasks(self) -> Set["asyncio.Task[_R]"]:
-        return set(self.__tasks)
-
-    @property
-    def closed(self) -> int:
-        return self.__closed
-
     def invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
         key = _make_key(args, kwargs, self.__typed)
 
@@ -149,7 +150,7 @@ class _LRUCacheWrapper(Generic[_R]):
         return self._wait_closed(return_exceptions=return_exceptions)
 
     async def _wait_closed(self, *, return_exceptions: bool) -> List[_R]:
-        wait_closed = asyncio.gather(*self.tasks, return_exceptions=return_exceptions)
+        wait_closed = asyncio.gather(*self.__tasks, return_exceptions=return_exceptions)
 
         wait_closed.add_done_callback(self._close_waited)
 
@@ -169,6 +170,15 @@ class _LRUCacheWrapper(Generic[_R]):
             self.__misses,
             self.__maxsize,  # type: ignore[arg-type]
             len(self.__cache),
+        )
+
+    def cache_parameters(self) -> _CacheParameters:
+        return _CacheParameters(
+            maxsize=self.__maxsize,
+            typed=self.__typed,
+            tasks=len(self.__tasks),
+            closed=self.__closed,
+            cache_exceptions=self.__cache_exceptions,
         )
 
     def __cache_touch(self, key: Hashable) -> None:
@@ -271,14 +281,6 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
         self.__instance = instance
         self.__wrapper = wrapper
 
-    @property
-    def tasks(self) -> Set["asyncio.Task[_R]"]:
-        return self.__wrapper.tasks
-
-    @property
-    def closed(self) -> int:
-        return self.__wrapper.closed
-
     def invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
         return self.__wrapper.invalidate(self.__instance, *args, **kwargs)
 
@@ -295,6 +297,9 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
 
     def cache_info(self) -> _CacheInfo:
         return self.__wrapper.cache_info()
+
+    def cache_parameters(self) -> _CacheParameters:
+        return self.__wrapper.cache_parameters()
 
     async def __call__(self, /, *fn_args: Any, **fn_kwargs: Any) -> _R:
         return await self.__wrapper(self.__instance, *fn_args, **fn_kwargs)
@@ -348,6 +353,6 @@ def alru_cache(
         fn = cast(_CB[_R], maxsize)
 
         if callable(fn) or hasattr(fn, "_make_unbound_method"):
-            return _make_wrapper(128, False, True)(fn)
+            return _make_wrapper(128, False, False)(fn)
 
         raise NotImplementedError("{!r} decorating is not supported".format(fn))

@@ -17,12 +17,12 @@ def check_lru() -> Callable[..., None]:
         tasks: int,
         maxsize: int = 128
     ) -> None:
-        assert len(wrapped.tasks) == tasks
         assert wrapped.cache_info() == _CacheInfo(
             hits=hits,
             misses=misses,
             maxsize=maxsize,
             currsize=cache,
         )
+        assert wrapped.cache_parameters()["tasks"] == tasks
 
     return _check_lru

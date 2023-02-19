@@ -13,7 +13,7 @@ async def test_cache_close(check_lru: Callable[..., None]) -> None:
 
         return val
 
-    assert not coro.closed
+    assert not coro.cache_parameters()["closed"]
 
     inputs = [1, 2, 3, 4, 5]
 

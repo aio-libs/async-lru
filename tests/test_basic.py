@@ -4,22 +4,7 @@ from typing import Callable
 
 import pytest
 
-from async_lru import alru_cache
-
-
-alru_cache_attrs = [
-    "tasks",
-    "closed",
-    "cache_info",
-    "cache_clear",
-    "invalidate",
-    "close",
-    "open",
-]
-
-alru_cache_calable_attrs = alru_cache_attrs.copy()
-for attr in ["tasks", "closed"]:
-    alru_cache_calable_attrs.remove(attr)
+from async_lru import _CacheParameters, alru_cache
 
 
 def test_alru_cache_not_callable() -> None:
@@ -42,12 +27,6 @@ async def test_alru_cache_deco(check_lru: Callable[..., None]) -> None:
 
     assert asyncio.iscoroutinefunction(coro)
 
-    for attr in alru_cache_attrs:
-        assert hasattr(coro, attr)
-    for attr in alru_cache_calable_attrs:
-        assert callable(getattr(coro, attr))
-
-    assert isinstance(coro.tasks, set)
     check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
     awaitable = coro()
@@ -62,12 +41,6 @@ async def test_alru_cache_deco_called(check_lru: Callable[..., None]) -> None:
 
     assert asyncio.iscoroutinefunction(coro)
 
-    for attr in alru_cache_attrs:
-        assert hasattr(coro, attr)
-    for attr in alru_cache_calable_attrs:
-        assert callable(getattr(coro, attr))
-
-    assert isinstance(coro.tasks, set)
     check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
     awaitable = coro()
@@ -83,12 +56,6 @@ async def test_alru_cache_fn_called(check_lru: Callable[..., None]) -> None:
 
     assert asyncio.iscoroutinefunction(coro_wrapped)
 
-    for attr in alru_cache_attrs:
-        assert hasattr(coro_wrapped, attr)
-    for attr in alru_cache_calable_attrs:
-        assert callable(getattr(coro_wrapped, attr))
-
-    assert isinstance(coro_wrapped.tasks, set)
     check_lru(coro_wrapped, hits=0, misses=0, cache=0, tasks=0)
 
     awaitable = coro_wrapped()
@@ -181,6 +148,21 @@ async def test_alru_cache_dict_not_shared(check_lru: Callable[..., None]) -> Non
     assert coro1._LRUCacheWrapper__cache is not coro2._LRUCacheWrapper__cache  # type: ignore[attr-defined]  # noqa: E501
 
 
+async def test_alru_cache_parameters() -> None:
+    @alru_cache
+    async def coro(val: int) -> int:
+        return val
+
+    assert coro.cache_parameters() == _CacheParameters(
+        typed=False, maxsize=128, tasks=0, closed=False, cache_exceptions=False
+    )
+
+    await coro(1)
+    assert coro.cache_parameters() == _CacheParameters(
+        typed=False, maxsize=128, tasks=0, closed=False, cache_exceptions=False
+    )
+
+
 async def test_alru_cache_method() -> None:
     class A:
         def __init__(self, val: int) -> None:
@@ -192,6 +174,9 @@ async def test_alru_cache_method() -> None:
 
     a = A(42)
     assert await a.coro() == 42
+    assert a.coro.cache_parameters() == _CacheParameters(
+        typed=False, maxsize=128, tasks=0, closed=False, cache_exceptions=False
+    )
 
 
 async def test_invalidate_cache_for_method() -> None:

@@ -128,20 +128,20 @@ async def test_cache_clear() -> None:
     assert wrapped.cache_info().hits == 0
     assert wrapped.cache_info().misses == 1
     assert wrapped.cache_info().currsize == 1
-    assert len(wrapped.tasks) == 0
+    assert wrapped.cache_parameters()["tasks"] == 0
 
     await wrapped(123)
     assert wrapped.cache_info().hits == 1
     assert wrapped.cache_info().misses == 1
     assert wrapped.cache_info().currsize == 1
-    assert len(wrapped.tasks) == 0
+    assert wrapped.cache_parameters()["tasks"] == 0
 
     wrapped.cache_clear()
 
     assert wrapped.cache_info().hits == 0
     assert wrapped.cache_info().misses == 0
     assert wrapped.cache_info().currsize == 0
-    assert len(wrapped.tasks) == 0
+    assert wrapped.cache_parameters()["tasks"] == 0
 
 
 def test_open() -> None:
@@ -160,7 +160,7 @@ def test_open() -> None:
 
     wrapped.open()
 
-    assert not wrapped.closed
+    assert not wrapped.cache_parameters()["closed"]
 
     with pytest.raises(RuntimeError):
         wrapped.open()
@@ -173,7 +173,7 @@ async def test_close() -> None:
     awaitable = wrapped.close(cancel=False, return_exceptions=True)
     await awaitable
 
-    assert wrapped.closed
+    assert wrapped.cache_parameters()["closed"]
 
     with pytest.raises(RuntimeError):
         wrapped.close(cancel=False, return_exceptions=True)
