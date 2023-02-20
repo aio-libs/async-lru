@@ -16,6 +16,7 @@ from typing import (
     TypeVar,
     Union,
     cast,
+    final,
     overload,
 )
 
@@ -34,6 +35,7 @@ _CB = Callable[..., _Coro[_R]]
 _CBP = Union[_CB[_R], "partial[_Coro[_R]]", "partialmethod[_Coro[_R]]"]
 
 
+@final
 class _CacheParameters(TypedDict):
     typed: bool
     maxsize: Optional[int]
@@ -41,6 +43,7 @@ class _CacheParameters(TypedDict):
     closed: bool
 
 
+@final
 @dataclasses.dataclass
 class _CacheItem(Generic[_R]):
     fut: "asyncio.Future[_R]"
@@ -52,6 +55,7 @@ class _CacheItem(Generic[_R]):
             self.later_call = None
 
 
+@final
 class _LRUCacheWrapper(Generic[_R]):
     def __init__(
         self,
@@ -222,6 +226,7 @@ class _LRUCacheWrapper(Generic[_R]):
             return _LRUCacheWrapperInstanceMethod(self, instance)
 
 
+@final
 class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
     def __init__(
         self,
