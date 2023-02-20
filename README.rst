@@ -75,7 +75,7 @@ The library supports explicit invalidation for specific function call by
 
     @alru_cache(ttl=5)
     async def func(arg1, arg2):
-        return arg * 2
+        return arg1 + arg2
 
     func.cache_invalidate(1, arg2=2)
 
