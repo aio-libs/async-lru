@@ -159,9 +159,8 @@ class _LRUCacheWrapper(Generic[_R]):
     ) -> None:
         self.__tasks.remove(task)
 
-        if self.__ttl is not None:
+        if self.__ttl is not None and (cache_item := self.__cache.get(key)):
             loop = asyncio.get_running_loop()
-            cache_item = self.__cache[key]
             cache_item.later_call = loop.call_later(
                 self.__ttl, self.__cache.pop, key, None
             )

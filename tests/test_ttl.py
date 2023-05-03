@@ -58,3 +58,12 @@ async def test_ttl_with_explicit_invalidation(check_lru: Callable[..., None]) ->
     # cache is not cleared after ttl expires because invalidate also should clear
     # the invalidation by timeout
     check_lru(coro, hits=0, misses=2, cache=1, tasks=0, maxsize=None)
+
+
+async def test_ttl_concurrent() -> None:
+    @alru_cache(maxsize=1, ttl=1)
+    async def coro(val: int) -> int:
+        return val
+
+    results = await asyncio.gather(*[coro(i) for i in range(2)])
+    assert results == list(range(2))
