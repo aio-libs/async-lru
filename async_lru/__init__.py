@@ -190,7 +190,8 @@ class _LRUCacheWrapper(Generic[_R]):
         if cache_item is not None:
             if not cache_item.fut.done():
                 self._cache_hit(key)
-                return await asyncio.shield(cache_item.fut)
+                while not cache_item.fut.done():
+                    await asyncio.sleep(0)
 
             exc = cache_item.fut._exception
 
@@ -209,6 +210,9 @@ class _LRUCacheWrapper(Generic[_R]):
         task.add_done_callback(partial(self._task_done_callback, fut, key))
 
         self.__cache[key] = _CacheItem(fut, None)
+        
+        def set_result(task: asyncio.Task) -> None:
+            self.__cache[key].val = task.result()
 
         if self.__maxsize is not None and len(self.__cache) > self.__maxsize:
             dropped_key, cache_item = self.__cache.popitem(last=False)
