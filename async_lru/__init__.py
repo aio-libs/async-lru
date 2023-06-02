@@ -100,6 +100,9 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__hits = 0
         self.__misses = 0
         self.__tasks: Set["asyncio.Task[_R]"] = set()
+        # for weird use cases with threads
+        import threading
+        self.__thread_lock = threading.Lock()
 
     def cache_invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
         key = _make_key(args, kwargs, self.__typed)
@@ -112,10 +115,11 @@ class _LRUCacheWrapper(Generic[_R]):
             return True
 
     def cache_clear(self) -> None:
-        self.__hits = 0
-        self.__misses = 0
-        self.__cache.clear()
-        self.__tasks.clear()
+        with self.__thread_lock:
+            self.__hits = 0
+            self.__misses = 0
+            self.__cache.clear()
+            self.__tasks.clear()
 
     async def cache_close(self, *, wait: bool = False) -> None:
         self.__closed = True
@@ -148,11 +152,13 @@ class _LRUCacheWrapper(Generic[_R]):
         )
 
     def _cache_hit(self, key: Hashable) -> None:
-        self.__hits += 1
-        self.__cache.move_to_end(key)
+        with self.__thread_lock:
+            self.__hits += 1
+            self.__cache.move_to_end(key)
 
     def _cache_miss(self, key: Hashable) -> None:
-        self.__misses += 1
+        with self.__thread_lock:
+            self.__misses += 1
 
     def _task_done_callback(
         self, fut: "asyncio.Future[_R]", key: Hashable, task: "asyncio.Task[_R]"
@@ -189,7 +195,7 @@ class _LRUCacheWrapper(Generic[_R]):
 
         if cache_item is not None:
             if not cache_item.fut.done():
-                if asyncio.get_event_loop() == cache_item.loop:
+                if asyncio.get_event_loop() == cache_item.fut._loop:
                     # This will run in the thread that created the cache_item.
                     self._cache_hit(key)
                     return await asyncio.shield(cache_item.fut)
