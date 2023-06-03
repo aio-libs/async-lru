@@ -1,5 +1,6 @@
 import asyncio
 import dataclasses
+import sys
 from asyncio.coroutines import _is_coroutine  # type: ignore[attr-defined]
 from functools import _CacheInfo, _make_key, partial, partialmethod
 from typing import (
@@ -20,7 +21,10 @@ from typing import (
     overload,
 )
 
-from typing_extensions import Self
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:
+    from typing_extensions import Self
 
 
 __version__ = "2.0.2"
