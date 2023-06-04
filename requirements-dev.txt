@@ -1,3 +1,5 @@
+-r requirements.txt
+
 flake8==6.0.0
 flake8-bandit==4.1.1
 flake8-bugbear==23.5.9
