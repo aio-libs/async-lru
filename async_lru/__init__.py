@@ -140,7 +140,7 @@ class _LRUCacheWrapper(Generic[_R]):
         return _CacheInfo(
             self.__hits,
             self.__misses,
-            self.__maxsize,  # type: ignore[arg-type]
+            self.__maxsize,
             len(self.__cache),
         )
 
