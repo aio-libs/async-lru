@@ -1,5 +1,6 @@
 import asyncio
 import dataclasses
+import sys
 from asyncio.coroutines import _is_coroutine  # type: ignore[attr-defined]
 from functools import _CacheInfo, _make_key, partial, partialmethod
 from typing import (
@@ -20,7 +21,11 @@ from typing import (
     overload,
 )
 
-from typing_extensions import Self
+
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:
+    from typing_extensions import Self
 
 
 __version__ = "2.0.2"
@@ -135,7 +140,7 @@ class _LRUCacheWrapper(Generic[_R]):
         return _CacheInfo(
             self.__hits,
             self.__misses,
-            self.__maxsize,  # type: ignore[arg-type]
+            self.__maxsize,
             len(self.__cache),
         )
 
@@ -179,7 +184,7 @@ class _LRUCacheWrapper(Generic[_R]):
 
     async def __call__(self, /, *fn_args: Any, **fn_kwargs: Any) -> _R:
         if self.__closed:
-            raise RuntimeError("alru_cache is closed for {}".format(self))
+            raise RuntimeError(f"alru_cache is closed for {self}")
 
         loop = asyncio.get_running_loop()
 
@@ -297,7 +302,7 @@ def _make_wrapper(
             origin = origin.func
 
         if not asyncio.iscoroutinefunction(origin):
-            raise RuntimeError("Coroutine function is required, got {!r}".format(fn))
+            raise RuntimeError(f"Coroutine function is required, got {fn!r}")
 
         # functools.partialmethod support
         if hasattr(fn, "_make_unbound_method"):
@@ -340,4 +345,4 @@ def alru_cache(
         if callable(fn) or hasattr(fn, "_make_unbound_method"):
             return _make_wrapper(128, False, None)(fn)
 
-        raise NotImplementedError("{!r} decorating is not supported".format(fn))
+        raise NotImplementedError(f"{fn!r} decorating is not supported")
