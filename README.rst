@@ -22,7 +22,7 @@ Installation
 Usage
 -----
 
-This package is a port of Python's built-in `functools.lru_cache <https://docs.python.org/3/library/functools.html#functools.lru_cache>`_ function for `asyncio <https://docs.python.org/3/library/asyncio.html>`_. To better handle async behaviour, it also ensures multiple concurrent calls will only result in 1 call to the wrapped function, with all ``await``s receiving the result of that call when it completes.
+This package is a port of Python's built-in `functools.lru_cache <https://docs.python.org/3/library/functools.html#functools.lru_cache>`_ function for `asyncio <https://docs.python.org/3/library/asyncio.html>`_. To better handle async behaviour, it also ensures multiple concurrent calls will only result in 1 call to the wrapped function, with all ``await``\s receiving the result of that call when it completes.
 
 .. code-block:: python
 
