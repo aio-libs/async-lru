@@ -65,5 +65,5 @@ async def test_ttl_concurrent() -> None:
     async def coro(val: int) -> int:
         return val
 
-    results = await asyncio.gather(*[coro(i) for i in range(2)])
-    assert results == list(range(2))
+    results = await asyncio.gather(*(coro(i) for i in range(2)))
+    assert results == tuple(range(2))
