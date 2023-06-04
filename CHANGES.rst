@@ -7,4 +7,4 @@ CHANGES
 2.x (2023-xx-xx)
 ==================
 
-- xxx
+- Fixed a ``KeyError`` that could occur when using ``ttl`` with ``maxsize``.
