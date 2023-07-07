@@ -1,4 +1,4 @@
-async_lru
+async-lru
 =========
 
 :info: Simple lru cache for asyncio
@@ -26,7 +26,7 @@ Installation
 
 .. code-block:: shell
 
-    pip install async_lru
+    pip install async-lru
 
 Usage
 -----
