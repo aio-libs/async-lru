@@ -3,8 +3,9 @@ async_lru
 
 :info: Simple lru cache for asyncio
 
-.. image:: https://travis-ci.com/aio-libs/async_lru.svg?branch=master
-    :target: https://travis-ci.com/aio-libs/async_lru
+.. image:: https://github.com/aio-libs/async-lru/actions/workflows/ci-cd.yml/badge.svg?event=push
+   :target: https://github.com/aio-libs/async-lru/actions/workflows/ci-cd.yml?query=event:push
+   :alt: GitHub Actions CI/CD workflows status
 
 .. image:: https://img.shields.io/pypi/v/async_lru.svg
     :target: https://pypi.python.org/pypi/async_lru
