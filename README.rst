@@ -10,8 +10,8 @@ async_lru
 .. image:: https://img.shields.io/pypi/v/async_lru.svg
     :target: https://pypi.python.org/pypi/async_lru
 
-.. image:: https://codecov.io/gh/aio-libs/async_lru/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/aio-libs/async_lru
+.. image:: https://codecov.io/gh/aio-libs/async-lru/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/aio-libs/async-lru
 
 .. image:: https://img.shields.io/matrix/aio-libs:matrix.org?label=Discuss%20on%20Matrix%20at%20%23aio-libs%3Amatrix.org&logo=matrix&server_fqdn=matrix.org&style=flat
    :target: https://matrix.to/#/%23aio-libs:matrix.org
