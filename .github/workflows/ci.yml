@@ -97,7 +97,6 @@ jobs:
 
   deploy:
     name: Deploy
-    environment: release
     runs-on: ubuntu-latest
     needs: [check]
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
