@@ -102,6 +102,7 @@ jobs:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
 
     permissions:
+      contents: write
       id-token: write  # IMPORTANT: mandatory for trusted publishing & sigstore
 
     environment:
