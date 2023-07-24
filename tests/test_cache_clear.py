@@ -23,7 +23,7 @@ async def test_cache_clear(check_lru: Callable[..., None]) -> None:
 async def test_cache_clear_pending_task() -> None:
     @alru_cache()
     async def coro() -> str:
-        await asyncio.sleep(.5)
+        await asyncio.sleep(0.5)
         return "foo"
 
     t = asyncio.create_task(coro())
@@ -40,7 +40,7 @@ async def test_cache_clear_pending_task() -> None:
 
 
 async def test_cache_clear_ttl_callback(check_lru: Callable[..., None]) -> None:
-    @alru_cache(ttl=.5)
+    @alru_cache(ttl=0.5)
     async def coro() -> str:
         return "foo"
 
@@ -52,4 +52,4 @@ async def test_cache_clear_ttl_callback(check_lru: Callable[..., None]) -> None:
     coro.cache_clear()
 
     assert cache_item.later_call.cancelled()
-    await asyncio.sleep(.5)
+    await asyncio.sleep(0.5)
