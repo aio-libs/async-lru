@@ -28,8 +28,8 @@ async def test_cache_clear_pending_task() -> None:
 
     t = asyncio.create_task(coro())
     await asyncio.sleep(0)
-    assert len(coro._LRUCacheWrapper__tasks) == 1
-    inner_task = next(iter(coro._LRUCacheWrapper__tasks))
+    assert len(coro._LRUCacheWrapper__tasks) == 1  # type: ignore[attr-defined]
+    inner_task = next(iter(coro._LRUCacheWrapper__tasks))  # type: ignore[attr-defined]
     assert not inner_task.done()
 
     coro.cache_clear()
@@ -45,8 +45,8 @@ async def test_cache_clear_ttl_callback(check_lru: Callable[..., None]) -> None:
         return "foo"
 
     await coro()
-    assert len(coro._LRUCacheWrapper__cache) == 1
-    cache_item = next(iter(coro._LRUCacheWrapper__cache.values()))
+    assert len(coro._LRUCacheWrapper__cache) == 1  # type: ignore[attr-defined]
+    cache_item = next(iter(coro._LRUCacheWrapper__cache.values()))  # type: ignore[attr-defined]
     assert not cache_item.later_call.cancelled()
 
     coro.cache_clear()
