@@ -119,6 +119,10 @@ class _LRUCacheWrapper(Generic[_R]):
     def cache_clear(self) -> None:
         self.__hits = 0
         self.__misses = 0
+
+        for c in self.__cache.values():
+            if c.later_call:
+                c.later_call.cancel()
         self.__cache.clear()
         self.__tasks.clear()
 
@@ -162,7 +166,7 @@ class _LRUCacheWrapper(Generic[_R]):
     def _task_done_callback(
         self, fut: "asyncio.Future[_R]", key: Hashable, task: "asyncio.Task[_R]"
     ) -> None:
-        self.__tasks.remove(task)
+        self.__tasks.discard(task)
 
         cache_item = self.__cache.get(key)
         if self.__ttl is not None and cache_item is not None:
