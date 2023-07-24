@@ -20,9 +20,7 @@ async def test_cache_clear(check_lru: Callable[..., None]) -> None:
     check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
 
-async def test_cache_clear_before_task_finished(
-        check_lru: Callable[..., None]
-) -> None:
+async def test_cache_clear_before_task_finished(check_lru: Callable[..., None]) -> None:
     @alru_cache()
     async def coro(val: int) -> int:
         return val
