@@ -143,9 +143,9 @@ async def test_alru_cache_dict_not_shared(check_lru: Callable[..., None]) -> Non
         coro1._LRUCacheWrapper__cache[1].fut.result()  # type: ignore[attr-defined]
         == coro2._LRUCacheWrapper__cache[1].fut.result()  # type: ignore[attr-defined]
     )
-    assert coro1._LRUCacheWrapper__cache != coro2._LRUCacheWrapper__cache  # type: ignore[attr-defined]  # noqa: E501
-    assert coro1._LRUCacheWrapper__cache.keys() == coro2._LRUCacheWrapper__cache.keys()  # type: ignore[attr-defined]  # noqa: E501
-    assert coro1._LRUCacheWrapper__cache is not coro2._LRUCacheWrapper__cache  # type: ignore[attr-defined]  # noqa: E501
+    assert coro1._LRUCacheWrapper__cache != coro2._LRUCacheWrapper__cache  # type: ignore[attr-defined]
+    assert coro1._LRUCacheWrapper__cache.keys() == coro2._LRUCacheWrapper__cache.keys()  # type: ignore[attr-defined]
+    assert coro1._LRUCacheWrapper__cache is not coro2._LRUCacheWrapper__cache  # type: ignore[attr-defined]
 
 
 async def test_alru_cache_parameters() -> None:
