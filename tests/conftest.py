@@ -1,9 +1,16 @@
+import sys
 from functools import _CacheInfo
-from typing import Callable, ParamSpec, TypeVar
+from typing import Callable, TypeVar
 
 import pytest
 
 from async_lru import _LRUCacheWrapper
+
+
+if sys.version_info >= (3, 10):
+    from typing import ParamSpec
+else:
+    from typing_extensions import ParamSpec
 
 
 _T = TypeVar("_T")
