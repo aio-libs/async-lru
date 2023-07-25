@@ -21,6 +21,7 @@ from typing import (
     overload,
 )
 
+
 if sys.version_info >= (3, 10):
     from typing import ParamSpec
 else:
@@ -346,7 +347,9 @@ def alru_cache(
     typed: bool = False,
     *,
     ttl: Optional[float] = None,
-) -> Union[Callable[[_CBP[_P, _R]], _LRUCacheWrapper[_P, _R]], _LRUCacheWrapper[_P, _R]]:
+) -> Union[
+    Callable[[_CBP[_P, _R]], _LRUCacheWrapper[_P, _R]], _LRUCacheWrapper[_P, _R]
+]:
     if maxsize is None or isinstance(maxsize, int):
         return _make_wrapper(maxsize, typed, ttl)
     else:

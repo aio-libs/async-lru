@@ -5,6 +5,7 @@ import pytest
 
 from async_lru import _LRUCacheWrapper
 
+
 _T = TypeVar("_T")
 _P = ParamSpec("_P")
 
