@@ -52,7 +52,7 @@ jobs:
     strategy:
       matrix:
         pyver:
-        - ~3.12.0-0
+        - 3.12
         - 3.11
         - >-
           3.10
@@ -70,6 +70,7 @@ jobs:
     - name: Setup Python ${{ matrix.pyver }}
       uses: actions/setup-python@v4
       with:
+        allow-prereleases: true
         python-version: ${{ matrix.pyver }}
         cache: 'pip'
         cache-dependency-path: '**/requirements*.txt'
