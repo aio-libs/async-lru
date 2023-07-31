@@ -1,4 +1,6 @@
 import asyncio
+import platform
+import sys
 from functools import _CacheInfo, partial
 from typing import Callable
 
@@ -181,6 +183,28 @@ async def test_alru_cache_method() -> None:
     a = A(42)
     assert await a.coro() == 42
     assert a.coro.cache_parameters() == _CacheParameters(
+        typed=False,
+        maxsize=128,
+        tasks=0,
+        closed=False,
+    )
+
+
+@pytest.mark.xfail(
+    sys.version_info[:2] == (3, 9) and platform.python_implementation() != "PyPy",
+    reason="#511",
+)
+async def test_alru_cache_classmethod() -> None:
+    class A:
+        offset = 3
+
+        @classmethod
+        @alru_cache
+        async def coro(cls, val: int) -> int:
+            return val + cls.offset
+
+    assert await A.coro(5) == 8
+    assert A.coro.cache_parameters() == _CacheParameters(
         typed=False,
         maxsize=128,
         tasks=0,
