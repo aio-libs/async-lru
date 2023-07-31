@@ -188,6 +188,24 @@ async def test_alru_cache_method() -> None:
     )
 
 
+async def test_alru_cache_classmethod() -> None:
+    class A:
+        offset = 3
+
+        @classmethod
+        @alru_cache
+        async def coro(cls, val: int) -> int:
+            return val + cls.offset
+
+    assert await A.coro(5) == 8
+    assert A.coro.cache_parameters() == _CacheParameters(
+        typed=False,
+        maxsize=128,
+        tasks=0,
+        closed=False,
+    )
+
+
 async def test_invalidate_cache_for_method() -> None:
     class A:
         @alru_cache
