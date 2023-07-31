@@ -1,7 +1,6 @@
 import asyncio
 import dataclasses
 import sys
-from asyncio.coroutines import _is_coroutine  # type: ignore[attr-defined]
 from functools import _CacheInfo, _make_key, partial, partialmethod
 from typing import (
     Any,
@@ -95,7 +94,6 @@ class _LRUCacheWrapper(Generic[_R]):
             pass
         # set __wrapped__ last so we don't inadvertently copy it
         # from the wrapped function when updating __dict__
-        self._is_coroutine = _is_coroutine
         self.__wrapped__ = fn
         self.__maxsize = maxsize
         self.__typed = typed
@@ -268,7 +266,6 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
             pass
         # set __wrapped__ last so we don't inadvertently copy it
         # from the wrapped function when updating __dict__
-        self._is_coroutine = _is_coroutine
         self.__wrapped__ = wrapper.__wrapped__
         self.__instance = instance
         self.__wrapper = wrapper
