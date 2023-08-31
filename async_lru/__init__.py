@@ -196,14 +196,14 @@ class _LRUCacheWrapper(Generic[_R]):
 
         key = _make_key(fn_args, fn_kwargs, self.__typed)
 
-        return_coroutine = None
-        with self.__lookup_mutex:
-            cache_item = self.__cache.get(key)
+        cache_item = self.__cache.get(key)
 
+        return_future = None
+        with self.__lookup_mutex:
             if cache_item is not None:
                 if not cache_item.fut.done():
                     self._cache_hit(key)
-                    return_coroutine = asyncio.shield(cache_item.fut)
+                    return_future = asyncio.shield(cache_item.fut)
                 else:
                     exc = cache_item.fut._exception
 
@@ -214,22 +214,39 @@ class _LRUCacheWrapper(Generic[_R]):
                         # exception here
                         cache_item = self.__cache.pop(key)
                         cache_item.cancel()
+                        fut = loop.create_future()
+                        coro = self.__wrapped__(*fn_args, **fn_kwargs)
+                        task: asyncio.Task[_R] = loop.create_task(coro)
+                        self.__tasks.add(task)
+                        task.add_done_callback(partial(self._task_done_callback, fut, key))
 
-            fut = loop.create_future()
-            coro = self.__wrapped__(*fn_args, **fn_kwargs)
-            task: asyncio.Task[_R] = loop.create_task(coro)
-            self.__tasks.add(task)
-            task.add_done_callback(partial(self._task_done_callback, fut, key))
+                        self.__cache[key] = _CacheItem(fut, None)
 
-            self.__cache[key] = _CacheItem(fut, None)
+                        if self.__maxsize is not None and len(self.__cache) > self.__maxsize:
+                            dropped_key, cache_item = self.__cache.popitem(last=False)
+                            cache_item.cancel()
 
-            if self.__maxsize is not None and len(self.__cache) > self.__maxsize:
-                dropped_key, cache_item = self.__cache.popitem(last=False)
-                cache_item.cancel()
+                        self._cache_miss(key)
+                        return_future = asyncio.shield(fut)
+            else:
+                fut = loop.create_future()
+                coro = self.__wrapped__(*fn_args, **fn_kwargs)
+                task: asyncio.Task[_R] = loop.create_task(coro)
+                self.__tasks.add(task)
+                task.add_done_callback(partial(self._task_done_callback, fut, key))
 
-            self._cache_miss(key)
-            return_coroutine = asyncio.shield(fut)
-        return await return_coroutine
+                self.__cache[key] = _CacheItem(fut, None)
+
+                if self.__maxsize is not None and len(self.__cache) > self.__maxsize:
+                    dropped_key, cache_item = self.__cache.popitem(last=False)
+                    cache_item.cancel()
+
+                self._cache_miss(key)
+                return_future = asyncio.shield(fut)
+        return await return_future
+
+
+
 
     def __get__(
         self, instance: _T, owner: Optional[Type[_T]]
