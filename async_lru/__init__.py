@@ -196,10 +196,8 @@ class _LRUCacheWrapper(Generic[_R]):
 
         key = _make_key(fn_args, fn_kwargs, self.__typed)
 
-        cache_item = self.__cache.get(key)
-
-        return_future = None
         with self.__lookup_mutex:
+            cache_item = self.__cache.get(key)
             if cache_item is not None:
                 if not cache_item.fut.done():
                     self._cache_hit(key)
