@@ -77,6 +77,15 @@ parameter (off by default):
     async def func(arg):
         return arg * 2
 
+Ignorable arguments are supported by accepting `ignore_args` configuration
+parameter (off by default). This can be useful when want to pass an argument to the cached function but don't want it to be considered when performing cache key lookups:
+
+.. code-block:: python
+
+    @alru_cache(ignore_args=["client_arg"])
+    async def func(client_arg, value_arg):
+        return client_arg.do(value_arg)
+
 
 The library supports explicit invalidation for specific function call by
 `cache_invalidate()`:

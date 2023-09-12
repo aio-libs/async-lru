@@ -1,5 +1,6 @@
 import asyncio
 import dataclasses
+import inspect
 import sys
 from asyncio.coroutines import _is_coroutine  # type: ignore[attr-defined]
 from functools import _CacheInfo, _make_key, partial, partialmethod
@@ -68,6 +69,7 @@ class _LRUCacheWrapper(Generic[_R]):
         maxsize: Optional[int],
         typed: bool,
         ttl: Optional[float],
+        ignore_args: Optional[list[str]],
     ) -> None:
         try:
             self.__module__ = fn.__module__
@@ -100,14 +102,41 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__maxsize = maxsize
         self.__typed = typed
         self.__ttl = ttl
+        self.__ignore_args = []
+        self.__ignore_kwargs = []
+        if ignore_args:
+            full_arg_spec = inspect.getfullargspec(fn)
+            for ignore_arg in ignore_args:
+                self.__ignore_kwargs.append(ignore_arg)
+                try:
+                    arg_index = full_arg_spec.args.index(ignore_arg)
+                except ValueError:
+                    raise ValueError(f"ignore_arg {ignore_arg} does not exist on wrapped function")
+                else:
+                    self.__ignore_args.append(arg_index)
         self.__cache: OrderedDict[Hashable, _CacheItem[_R]] = OrderedDict()
         self.__closed = False
         self.__hits = 0
         self.__misses = 0
         self.__tasks: Set["asyncio.Task[_R]"] = set()
 
+    # wraps around functools _make_key and adds the ignore_args functionality
+    def _make_key(self, args, kwargs, __typed):
+        if self.__ignore_args:
+            args_list = list(args)
+            cloned_kwags = {**kwargs}
+            for ignore_arg_index in self.__ignore_args:
+                if ignore_arg_index < len(args_list):
+                    args_list.pop(ignore_arg_index)
+            for ignore_kwarg in self.__ignore_kwargs:
+                if ignore_kwarg in cloned_kwags:
+                    cloned_kwags.pop(ignore_kwarg)
+            return _make_key(tuple(args_list), cloned_kwags, __typed)
+        else:
+            return _make_key(args, kwargs, __typed)
+
     def cache_invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
-        key = _make_key(args, kwargs, self.__typed)
+        key = self._make_key(args, kwargs, self.__typed)
 
         cache_item = self.__cache.pop(key, None)
         if cache_item is None:
@@ -192,7 +221,7 @@ class _LRUCacheWrapper(Generic[_R]):
 
         loop = asyncio.get_running_loop()
 
-        key = _make_key(fn_args, fn_kwargs, self.__typed)
+        key = self._make_key(fn_args, fn_kwargs, self.__typed)
 
         cache_item = self.__cache.get(key)
 
@@ -298,6 +327,7 @@ def _make_wrapper(
     maxsize: Optional[int],
     typed: bool,
     ttl: Optional[float] = None,
+    ignore_args: Optional[list[str]] = None,
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
     def wrapper(fn: _CBP[_R]) -> _LRUCacheWrapper[_R]:
         origin = fn
@@ -312,7 +342,7 @@ def _make_wrapper(
         if hasattr(fn, "_make_unbound_method"):
             fn = fn._make_unbound_method()
 
-        return _LRUCacheWrapper(cast(_CB[_R], fn), maxsize, typed, ttl)
+        return _LRUCacheWrapper(cast(_CB[_R], fn), maxsize, typed, ttl, ignore_args)
 
     return wrapper
 
@@ -323,6 +353,7 @@ def alru_cache(
     typed: bool = False,
     *,
     ttl: Optional[float] = None,
+    ignore_args: Optional[list[str]] = None,
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
     ...
 
@@ -340,13 +371,14 @@ def alru_cache(
     typed: bool = False,
     *,
     ttl: Optional[float] = None,
+    ignore_args: Optional[list[str]] = None,
 ) -> Union[Callable[[_CBP[_R]], _LRUCacheWrapper[_R]], _LRUCacheWrapper[_R]]:
     if maxsize is None or isinstance(maxsize, int):
-        return _make_wrapper(maxsize, typed, ttl)
+        return _make_wrapper(maxsize, typed, ttl, ignore_args)
     else:
         fn = cast(_CB[_R], maxsize)
 
         if callable(fn) or hasattr(fn, "_make_unbound_method"):
-            return _make_wrapper(128, False, None)(fn)
+            return _make_wrapper(128, False, None, None)(fn)
 
         raise NotImplementedError(f"{fn!r} decorating is not supported")
