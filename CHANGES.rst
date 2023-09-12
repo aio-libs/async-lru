@@ -14,3 +14,8 @@ CHANGES
 
 - Fixed a ``KeyError`` that could occur when using ``ttl`` with ``maxsize``.
 - Dropped ``typing-extensions`` dependency in Python 3.11+.
+
+2.1.0 (2023-09-12)
+==================
+
+- Add ``ignore_args``
