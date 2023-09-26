@@ -1,26 +1,18 @@
-SOURCES = setup.py async_lru.py tests
+# Some simple testing tasks (sorry, UNIX only).
 
-test: lint test-only
+.PHONY: init setup
+init setup:
+	pip install -r requirements-dev.txt
+	pre-commit install
 
-test-only:
-	pytest tests
+.PHONY: fmt
+fmt:
+	python -m pre_commit run --all-files --show-diff-on-failure
 
-
-lint: black flake8 mypy
-
-
-mypy:
+.PHONY: lint
+lint: fmt
 	mypy
 
-
-black:
-	isort -c .
-	black --check .
-
-flake8:
-	flake8 async_lru tests setup.py
-
-
-fmt:
-	isort .
-	black .
+.PHONY: test
+test:
+	pytest -s ./tests/

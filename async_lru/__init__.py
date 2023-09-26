@@ -1,5 +1,6 @@
 import asyncio
 import dataclasses
+import sys
 from asyncio.coroutines import _is_coroutine  # type: ignore[attr-defined]
 from functools import _CacheInfo, _make_key, partial, partialmethod
 from typing import (
@@ -20,10 +21,14 @@ from typing import (
     overload,
 )
 
-from typing_extensions import Self
+
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:
+    from typing_extensions import Self
 
 
-__version__ = "2.0.2"
+__version__ = "2.0.4"
 
 __all__ = ("alru_cache",)
 
@@ -114,6 +119,10 @@ class _LRUCacheWrapper(Generic[_R]):
     def cache_clear(self) -> None:
         self.__hits = 0
         self.__misses = 0
+
+        for c in self.__cache.values():
+            if c.later_call:
+                c.later_call.cancel()
         self.__cache.clear()
         self.__tasks.clear()
 
@@ -135,7 +144,7 @@ class _LRUCacheWrapper(Generic[_R]):
         return _CacheInfo(
             self.__hits,
             self.__misses,
-            self.__maxsize,  # type: ignore[arg-type]
+            self.__maxsize,
             len(self.__cache),
         )
 
@@ -157,11 +166,11 @@ class _LRUCacheWrapper(Generic[_R]):
     def _task_done_callback(
         self, fut: "asyncio.Future[_R]", key: Hashable, task: "asyncio.Task[_R]"
     ) -> None:
-        self.__tasks.remove(task)
+        self.__tasks.discard(task)
 
-        if self.__ttl is not None:
+        cache_item = self.__cache.get(key)
+        if self.__ttl is not None and cache_item is not None:
             loop = asyncio.get_running_loop()
-            cache_item = self.__cache[key]
             cache_item.later_call = loop.call_later(
                 self.__ttl, self.__cache.pop, key, None
             )
@@ -179,7 +188,7 @@ class _LRUCacheWrapper(Generic[_R]):
 
     async def __call__(self, /, *fn_args: Any, **fn_kwargs: Any) -> _R:
         if self.__closed:
-            raise RuntimeError("alru_cache is closed for {}".format(self))
+            raise RuntimeError(f"alru_cache is closed for {self}")
 
         loop = asyncio.get_running_loop()
 
@@ -297,7 +306,7 @@ def _make_wrapper(
             origin = origin.func
 
         if not asyncio.iscoroutinefunction(origin):
-            raise RuntimeError("Coroutine function is required, got {!r}".format(fn))
+            raise RuntimeError(f"Coroutine function is required, got {fn!r}")
 
         # functools.partialmethod support
         if hasattr(fn, "_make_unbound_method"):
@@ -340,4 +349,4 @@ def alru_cache(
         if callable(fn) or hasattr(fn, "_make_unbound_method"):
             return _make_wrapper(128, False, None)(fn)
 
-        raise NotImplementedError("{!r} decorating is not supported".format(fn))
+        raise NotImplementedError(f"{fn!r} decorating is not supported")

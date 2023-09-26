@@ -1,28 +1,38 @@
-async_lru
+async-lru
 =========
 
 :info: Simple lru cache for asyncio
 
-.. image:: https://travis-ci.com/aio-libs/async_lru.svg?branch=master
-    :target: https://travis-ci.com/aio-libs/async_lru
+.. image:: https://github.com/aio-libs/async-lru/actions/workflows/ci-cd.yml/badge.svg?event=push
+   :target: https://github.com/aio-libs/async-lru/actions/workflows/ci-cd.yml?query=event:push
+   :alt: GitHub Actions CI/CD workflows status
 
-.. image:: https://img.shields.io/pypi/v/async_lru.svg
-    :target: https://pypi.python.org/pypi/async_lru
+.. image:: https://img.shields.io/pypi/v/async-lru.svg?logo=Python&logoColor=white
+   :target: https://pypi.org/project/async-lru
+   :alt: async-lru @ PyPI
 
-.. image:: https://codecov.io/gh/aio-libs/async_lru/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/aio-libs/async_lru
+.. image:: https://codecov.io/gh/aio-libs/async-lru/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/aio-libs/async-lru
+
+.. image:: https://img.shields.io/matrix/aio-libs:matrix.org?label=Discuss%20on%20Matrix%20at%20%23aio-libs%3Amatrix.org&logo=matrix&server_fqdn=matrix.org&style=flat
+   :target: https://matrix.to/#/%23aio-libs:matrix.org
+   :alt: Matrix Room — #aio-libs:matrix.org
+
+.. image:: https://img.shields.io/matrix/aio-libs-space:matrix.org?label=Discuss%20on%20Matrix%20at%20%23aio-libs-space%3Amatrix.org&logo=matrix&server_fqdn=matrix.org&style=flat
+   :target: https://matrix.to/#/%23aio-libs-space:matrix.org
+   :alt: Matrix Space — #aio-libs-space:matrix.org
 
 Installation
 ------------
 
 .. code-block:: shell
 
-    pip install async_lru
+    pip install async-lru
 
 Usage
 -----
 
-This package is 100% port of Python built-in function `functools.lru_cache <https://docs.python.org/3/library/functools.html#functools.lru_cache>`_ for `asyncio <https://docs.python.org/3/library/asyncio.html>`_
+This package is a port of Python's built-in `functools.lru_cache <https://docs.python.org/3/library/functools.html#functools.lru_cache>`_ function for `asyncio <https://docs.python.org/3/library/asyncio.html>`_. To better handle async behaviour, it also ensures multiple concurrent calls will only result in 1 call to the wrapped function, with all ``await``\s receiving the result of that call when it completes.
 
 .. code-block:: python
 
