@@ -211,7 +211,7 @@ class _LRUCacheWrapper(Generic[_P, _R]):
             exc = cache_item.fut._exception
 
             if exc is None:
-                self._cache_hit(key)  # type: ignore[unreachable]  # github.com/python/typeshed/pull/10502
+                self._cache_hit(key)
                 return cache_item.fut.result()
             else:
                 # exception here
