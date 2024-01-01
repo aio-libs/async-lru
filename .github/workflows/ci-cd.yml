@@ -22,7 +22,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: 3.8
         cache: 'pip'
@@ -68,7 +68,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
     - name: Setup Python ${{ matrix.pyver }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         allow-prereleases: true
         python-version: ${{ matrix.pyver }}
@@ -120,7 +120,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: 3.8
     - name: Install dependencies
