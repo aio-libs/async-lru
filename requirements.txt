@@ -4,4 +4,4 @@ coverage==7.4.3
 pytest==8.0.2
 pytest-asyncio==0.23.5
 pytest-cov==4.1.0
-pytest-timeout==2.2.0
+pytest-timeout==2.3.1
