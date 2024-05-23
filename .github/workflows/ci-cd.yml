@@ -20,17 +20,17 @@ jobs:
     timeout-minutes: 5
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: 3.8
         cache: 'pip'
         cache-dependency-path: '**/requirements*.txt'
     - name: Pre-Commit hooks
-      uses: pre-commit/action@v3.0.0
+      uses: pre-commit/action@v3.0.1
     - name: Install dependencies
-      uses: py-actions/py-dependency-install@v4.0.0
+      uses: py-actions/py-dependency-install@v4.1.0
       with:
         path: requirements-dev.txt
     - name: Install itself
@@ -66,16 +66,16 @@ jobs:
     timeout-minutes: 15
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Setup Python ${{ matrix.pyver }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         allow-prereleases: true
         python-version: ${{ matrix.pyver }}
         cache: 'pip'
         cache-dependency-path: '**/requirements*.txt'
     - name: Install dependencies
-      uses: py-actions/py-dependency-install@v4.0.0
+      uses: py-actions/py-dependency-install@v4.1.0
       with:
         path: requirements.txt
     - name: Run unittests
@@ -84,7 +84,7 @@ jobs:
         COLOR: 'yes'
     - run: python -m coverage xml
     - name: Upload coverage
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         file: ./coverage.xml
         flags: unit
@@ -118,9 +118,9 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: 3.8
     - name: Install dependencies
@@ -155,7 +155,7 @@ jobs:
       # Confusingly, this action also supports updating releases, not
       # just creating them. This is what we want here, since we've manually
       # created the release above.
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         # dist/ contains the built packages, which smoketest-artifacts/
         # contains the signatures and certificates.
