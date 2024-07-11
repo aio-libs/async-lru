@@ -222,6 +222,7 @@ class _LRUCacheWrapper(Generic[_R]):
         if self.__maxsize is not None and len(self.__cache) > self.__maxsize:
             dropped_key, cache_item = self.__cache.popitem(last=False)
             cache_item.cancel()
+            del cache_item
 
         self._cache_miss(key)
         return await asyncio.shield(fut)
