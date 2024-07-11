@@ -1,5 +1,6 @@
 import asyncio
 import gc
+import sys
 from typing import Callable
 
 import pytest
@@ -28,8 +29,13 @@ async def test_alru_exception(check_lru: Callable[..., None]) -> None:
     check_lru(coro, hits=2, misses=2, cache=1, tasks=0)
 
 
+@pytest.mark.skipif(
+    reason="Memory leak is not fixed for PyPy3.9",
+    condition=sys.implementation.name == "pypy",
+)
 async def test_alru_exception_reference_cleanup(check_lru: Callable[..., None]) -> None:
-    class CustomClass: ...
+    class CustomClass:
+        ...
 
     @alru_cache()
     async def coro(val: int) -> None:
