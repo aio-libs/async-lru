@@ -39,7 +39,7 @@ async def test_alru_exception_reference_cleanup(check_lru: Callable[..., None]) 
 
     @alru_cache()
     async def coro(val: int) -> None:
-        leaky = CustomClass()
+        _ = CustomClass()  # object we are verifying not to leak
         1 / 0
 
     coros = [coro(v) for v in range(1000)]
