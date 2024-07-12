@@ -29,7 +29,7 @@ async def test_alru_exception(check_lru: Callable[..., None]) -> None:
     check_lru(coro, hits=2, misses=2, cache=0, tasks=0)
 
 
-@pytest.mark.skipif(
+@pytest.mark.xfail(
     reason="Memory leak is not fixed for PyPy3.9",
     condition=sys.implementation.name == "pypy",
 )
