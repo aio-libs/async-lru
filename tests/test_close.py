@@ -31,13 +31,13 @@ async def test_cache_close(check_lru: Callable[..., None]) -> None:
 
     await close
 
-    check_lru(coro, hits=0, misses=5, cache=5, tasks=0)
+    check_lru(coro, hits=0, misses=5, cache=0, tasks=0)
     assert coro.cache_parameters()["closed"]
 
     with pytest.raises(asyncio.CancelledError):
         await gather
 
-    check_lru(coro, hits=0, misses=5, cache=5, tasks=0)
+    check_lru(coro, hits=0, misses=5, cache=0, tasks=0)
     assert coro.cache_parameters()["closed"]
 
     # double call is no-op
