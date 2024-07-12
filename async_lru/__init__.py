@@ -168,21 +168,23 @@ class _LRUCacheWrapper(Generic[_R]):
     ) -> None:
         self.__tasks.discard(task)
 
+        if task.cancelled():
+            fut.cancel()
+            self.__cache.pop(key, None)
+            return
+
+        exc = task.exception()
+        if exc is not None:
+            fut.set_exception(exc)
+            self.__cache.pop(key, None)
+            return
+
         cache_item = self.__cache.get(key)
         if self.__ttl is not None and cache_item is not None:
             loop = asyncio.get_running_loop()
             cache_item.later_call = loop.call_later(
                 self.__ttl, self.__cache.pop, key, None
             )
-
-        if task.cancelled():
-            fut.cancel()
-            return
-
-        exc = task.exception()
-        if exc is not None:
-            fut.set_exception(exc)
-            return
 
         fut.set_result(task.result())
 
@@ -197,19 +199,11 @@ class _LRUCacheWrapper(Generic[_R]):
         cache_item = self.__cache.get(key)
 
         if cache_item is not None:
+            self._cache_hit(key)
             if not cache_item.fut.done():
-                self._cache_hit(key)
                 return await asyncio.shield(cache_item.fut)
 
-            exc = cache_item.fut._exception
-
-            if exc is None:
-                self._cache_hit(key)
-                return cache_item.fut.result()
-            else:
-                # exception here
-                cache_item = self.__cache.pop(key)
-                cache_item.cancel()
+            return cache_item.fut.result()
 
         fut = loop.create_future()
         coro = self.__wrapped__(*fn_args, **fn_kwargs)
