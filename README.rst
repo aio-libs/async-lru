@@ -68,7 +68,7 @@ This package is a port of Python's built-in `functools.lru_cache <https://docs.p
     asyncio.run(main())
 
 
-TTL (time-to-live, expiration on timeout) is supported by accepting `ttl` configuration
+TTL (time-to-live in seconds, expiration on timeout) is supported by accepting `ttl` configuration
 parameter (off by default):
 
 .. code-block:: python
