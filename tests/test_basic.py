@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 import platform
 import sys
 from functools import _CacheInfo, partial
@@ -6,7 +7,7 @@ from typing import Callable
 
 import pytest
 
-from async_lru import _CacheParameters, alru_cache
+from async_lru import _CacheParameters, alru_cache, iscoroutinefunction
 
 
 def test_alru_cache_not_callable() -> None:
@@ -27,7 +28,7 @@ async def test_alru_cache_deco(check_lru: Callable[..., None]) -> None:
     async def coro() -> None:
         pass
 
-    assert asyncio.iscoroutinefunction(coro)
+    assert iscoroutinefunction(coro)
 
     check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
@@ -41,7 +42,7 @@ async def test_alru_cache_deco_called(check_lru: Callable[..., None]) -> None:
     async def coro() -> None:
         pass
 
-    assert asyncio.iscoroutinefunction(coro)
+    assert iscoroutinefunction(coro)
 
     check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
@@ -56,7 +57,7 @@ async def test_alru_cache_fn_called(check_lru: Callable[..., None]) -> None:
 
     coro_wrapped = alru_cache(coro)
 
-    assert asyncio.iscoroutinefunction(coro_wrapped)
+    assert iscoroutinefunction(coro_wrapped)
 
     check_lru(coro_wrapped, hits=0, misses=0, cache=0, tasks=0)
 
