@@ -92,9 +92,6 @@ The library supports explicit invalidation for specific function call by
 The method returns `True` if corresponding arguments set was cached already, `False`
 otherwise.
 
-
-Python 3.8+ is required
-
 Thanks
 ------
 
