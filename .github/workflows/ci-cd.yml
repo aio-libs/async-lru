@@ -24,7 +24,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
-        python-version: 3.8
+        python-version: 3.9
         cache: 'pip'
         cache-dependency-path: '**/requirements*.txt'
     - name: Pre-Commit hooks
@@ -51,17 +51,15 @@ jobs:
     name: Test
     strategy:
       matrix:
-        pyver:
-        - 3.12
-        - 3.11
-        - >-
-          3.10
-        - 3.9
-        - 3.8
+        pyver: ['3.9', '3.10', '3.11', '3.12', '3.13']
         os: [ubuntu, macos, windows]
+        experimental: [false]
         include:
           - pyver: pypy-3.9
             os: ubuntu
+          - os: ubuntu
+            pyver: "3.14"
+            experimental: true
     runs-on: ${{ matrix.os }}-latest
     timeout-minutes: 15
     steps:
@@ -122,7 +120,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
-        python-version: 3.8
+        python-version: 3.13
     - name: Install dependencies
       run:
         python -m pip install -U pip wheel setuptools build twine
