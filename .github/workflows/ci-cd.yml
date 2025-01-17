@@ -61,6 +61,7 @@ jobs:
             pyver: "3.14"
             experimental: true
     runs-on: ${{ matrix.os }}-latest
+    continue-on-error: ${{ matrix.experimental }}
     timeout-minutes: 15
     steps:
     - name: Checkout
