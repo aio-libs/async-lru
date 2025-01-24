@@ -22,16 +22,10 @@ from typing import (
 )
 
 
-if sys.version_info >= (3, 10):
-    from typing import ParamSpec
-else:
-    from typing_extensions import ParamSpec
-
-
 if sys.version_info >= (3, 11):
-    from typing import Self
+    from typing import Self, ParamSpec, Concatenate
 else:
-    from typing_extensions import Self
+    from typing_extensions import Self, ParamSpec, Concatenate
 
 
 __version__ = "2.0.4"
@@ -39,12 +33,14 @@ __version__ = "2.0.4"
 __all__ = ("alru_cache",)
 
 
+_P = ParamSpec("_P")
 _T = TypeVar("_T")
 _R = TypeVar("_R")
-_P = ParamSpec("_P")
+
 _Coro = Coroutine[Any, Any, _R]
 _CB = Callable[_P, _Coro[_R]]
-_CBP = Union[_CB[_P, _R], "partial[_Coro[_R]]", "partialmethod[_Coro[_R]]"]
+_CBM = Union[_CB[_P, _R], _CB[Concatenate[Self, _P], _R]]
+_CBP = Union[_CBM[_P, _R], "partial[_Coro[_R]]", "partialmethod[_Coro[_R]]"]
 
 
 @final
@@ -214,7 +210,7 @@ class _LRUCacheWrapper(Generic[_P, _R]):
 
         fut = loop.create_future()
         coro = self.__wrapped__(*fn_args, **fn_kwargs)
-        task = loop.create_task(coro)
+        task: asyncio.Task[_R] = loop.create_task(coro)
         self.__tasks.add(task)
         task.add_done_callback(partial(self._task_done_callback, fut, key))
 
@@ -229,7 +225,7 @@ class _LRUCacheWrapper(Generic[_P, _R]):
 
     def __get__(
         self, instance: _T, owner: Optional[Type[_T]]
-    ) -> Union[Self, "_LRUCacheWrapperInstanceMethod[_P, _R, _T]"]:
+    ) -> Union[Self, "_LRUCacheWrapperInstanceMethod[_R, _T]"]:
         if owner is None:
             return self
         else:
@@ -237,10 +233,10 @@ class _LRUCacheWrapper(Generic[_P, _R]):
 
 
 @final
-class _LRUCacheWrapperInstanceMethod(Generic[_P, _R, _T]):
+class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
     def __init__(
         self,
-        wrapper: _LRUCacheWrapper[_P, _R],
+        wrapper: _LRUCacheWrapper[Concatenate[Self, _P] , _R],
         instance: _T,
     ) -> None:
         try:
@@ -292,15 +288,15 @@ class _LRUCacheWrapperInstanceMethod(Generic[_P, _R, _T]):
         return self.__wrapper.cache_parameters()
 
     async def __call__(self, /, *fn_args: _P.args, **fn_kwargs: _P.kwargs) -> _R:
-        return await self.__wrapper(self.__instance, *fn_args, **fn_kwargs)  # type: ignore[arg-type]
+        return await self.__wrapper(self.__instance, *fn_args, **fn_kwargs)
 
 
 def _make_wrapper(
     maxsize: Optional[int],
     typed: bool,
     ttl: Optional[float] = None,
-) -> Callable[[_CBP[_P, _R]], _LRUCacheWrapper[_P, _R]]:
-    def wrapper(fn: _CBP[_P, _R]) -> _LRUCacheWrapper[_P, _R]:
+) -> Callable[[_CBP[_P, _R]], _LRUCacheWrapper[_R]]:
+    def wrapper(fn: _CBP[_P, _R]) -> _LRUCacheWrapper[_R]:
         origin = fn
 
         while isinstance(origin, (partial, partialmethod)):
@@ -341,15 +337,14 @@ def alru_cache(
     typed: bool = False,
     *,
     ttl: Optional[float] = None,
-) -> Union[
-    Callable[[_CBP[_P, _R]], _LRUCacheWrapper[_P, _R]], _LRUCacheWrapper[_P, _R]
-]:
+) -> Union[Callable[..., _CBP[_P, _R]], _LRUCacheWrapper[_R], _LRUCacheWrapper[_R]]:
     if maxsize is None or isinstance(maxsize, int):
         return _make_wrapper(maxsize, typed, ttl)
     else:
-        fn = maxsize
+        fn = cast(_CB[_P, _R], maxsize)
 
         if callable(fn) or hasattr(fn, "_make_unbound_method"):
             return _make_wrapper(128, False, None)(fn)
 
         raise NotImplementedError(f"{fn!r} decorating is not supported")
+
