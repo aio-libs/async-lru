@@ -42,9 +42,6 @@ __all__ = ("alru_cache",)
 _T = TypeVar("_T")
 _R = TypeVar("_R")
 _P = ParamSpec("_P")
-_Coro = Coroutine[Any, Any, _R]
-_CB = Callable[_P, _Coro[_R]]
-_CBP = Union[_CB[_P, _R], "partial[_Coro[_R]]", "partialmethod[_Coro[_R]]"]
 
 
 @final
@@ -71,7 +68,7 @@ class _CacheItem(Generic[_R]):
 class _LRUCacheWrapper(Generic[_P, _R]):
     def __init__(
         self,
-        fn: _CB[_P, _R],
+        fn: Callable[_P, Coroutine[Any, Any, _R]],
         maxsize: Optional[int],
         typed: bool,
         ttl: Optional[float],
@@ -299,8 +296,8 @@ def _make_wrapper(
     maxsize: Optional[int],
     typed: bool,
     ttl: Optional[float] = None,
-) -> Callable[[_CBP[_P, _R]], _LRUCacheWrapper[_P, _R]]:
-    def wrapper(fn: _CBP[_P, _R]) -> _LRUCacheWrapper[_P, _R]:
+) -> Callable[[Callable[_P, Coroutine[Any, Any, _R]]], _LRUCacheWrapper[_P, _R]]:
+    def wrapper(fn: Callable[_P, Coroutine[Any, Any, _R]]) -> _LRUCacheWrapper[_P, _R]:
         origin = fn
 
         while isinstance(origin, (partial, partialmethod)):
@@ -313,7 +310,7 @@ def _make_wrapper(
         if hasattr(fn, "_make_unbound_method"):
             fn = fn._make_unbound_method()
 
-        return _LRUCacheWrapper(cast(_CB[_P, _R], fn), maxsize, typed, ttl)
+        return _LRUCacheWrapper(fn, maxsize, typed, ttl)
 
     return wrapper
 
@@ -324,32 +321,33 @@ def alru_cache(
     typed: bool = False,
     *,
     ttl: Optional[float] = None,
-) -> Callable[[_CBP[_P, _R]], _LRUCacheWrapper[_P, _R]]:
+) -> Callable[[Callable[_P, Coroutine[Any, Any, _R]]], _LRUCacheWrapper[_P, _R]]:
     ...
 
 
 @overload
-def alru_cache(
-    maxsize: _CBP[_P, _R],
+def alru_cache(  # type: ignore[misc]
+    maxsize: Callable[_P, Coroutine[Any, Any, _R]],
     /,
 ) -> _LRUCacheWrapper[_P, _R]:
     ...
 
 
 def alru_cache(
-    maxsize: Union[Optional[int], _CBP[_P, _R]] = 128,
+    maxsize: Union[Optional[int], Callable[_P, Coroutine[Any, Any, _R]]] = 128,
     typed: bool = False,
     *,
     ttl: Optional[float] = None,
 ) -> Union[
-    Callable[[_CBP[_P, _R]], _LRUCacheWrapper[_P, _R]], _LRUCacheWrapper[_P, _R]
+    Callable[[Callable[_P, Coroutine[Any, Any, _R]]], _LRUCacheWrapper[_P, _R]], _LRUCacheWrapper[_P, _R]
 ]:
     if maxsize is None or isinstance(maxsize, int):
         return _make_wrapper(maxsize, typed, ttl)
     else:
         fn = maxsize
 
-        if callable(fn) or hasattr(fn, "_make_unbound_method"):
+        # partialmethod is not callable() at runtime.
+        if callable(fn) or hasattr(fn, "_make_unbound_method"):  # type: ignore[unreachable]
             return _make_wrapper(128, False, None)(fn)
 
         raise NotImplementedError(f"{fn!r} decorating is not supported")
