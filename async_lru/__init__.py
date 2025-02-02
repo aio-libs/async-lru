@@ -222,6 +222,18 @@ class _LRUCacheWrapper(Generic[_P, _R]):
         self._cache_miss(key)
         return await asyncio.shield(fut)
 
+    @overload
+    def __get__(
+        self, instance: _T, owner: None
+    ) -> Self:
+        ...
+
+    @overload
+    def __get__(
+        self, instance: _T, owner: Type[_T]
+    ) -> "_LRUCacheWrapperInstanceMethod[_P, _R, _T]":
+        ...
+
     def __get__(
         self, instance: _T, owner: Optional[Type[_T]]
     ) -> Union[Self, "_LRUCacheWrapperInstanceMethod[_P, _R, _T]"]:
