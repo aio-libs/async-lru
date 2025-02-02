@@ -4,7 +4,6 @@ import sys
 from asyncio.coroutines import _is_coroutine  # type: ignore[attr-defined]
 from functools import _CacheInfo, _make_key, partial, partialmethod
 from typing import (
-    Any,
     Callable,
     Coroutine,
     Generic,
@@ -67,7 +66,7 @@ class _CacheItem(Generic[_R]):
 class _LRUCacheWrapper(Generic[_P, _R]):
     def __init__(
         self,
-        fn: Callable[_P, Coroutine[Any, Any, _R]],
+        fn: Callable[_P, Coroutine[object, object, _R]],
         maxsize: Optional[int],
         typed: bool,
         ttl: Optional[float],
@@ -109,7 +108,7 @@ class _LRUCacheWrapper(Generic[_P, _R]):
         self.__misses = 0
         self.__tasks: Set["asyncio.Task[_R]"] = set()
 
-    def cache_invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
+    def cache_invalidate(self, /, *args: _P.args, **kwargs: _P.kwargs) -> bool:
         key = _make_key(args, kwargs, self.__typed)
 
         cache_item = self.__cache.pop(key, None)
@@ -270,7 +269,7 @@ class _LRUCacheWrapperInstanceMethod(Generic[_P, _R, _T]):
         self.__instance = instance
         self.__wrapper = wrapper
 
-    def cache_invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
+    def cache_invalidate(self, /, *args: _P.args, **kwargs: _P.kwargs) -> bool:
         return self.__wrapper.cache_invalidate(self.__instance, *args, **kwargs)
 
     def cache_clear(self) -> None:
@@ -295,8 +294,8 @@ def _make_wrapper(
     maxsize: Optional[int],
     typed: bool,
     ttl: Optional[float] = None,
-) -> Callable[[Callable[_P, Coroutine[Any, Any, _R]]], _LRUCacheWrapper[_P, _R]]:
-    def wrapper(fn: Callable[_P, Coroutine[Any, Any, _R]]) -> _LRUCacheWrapper[_P, _R]:
+) -> Callable[[Callable[_P, Coroutine[object, object, _R]]], _LRUCacheWrapper[_P, _R]]:
+    def wrapper(fn: Callable[_P, Coroutine[object, object, _R]]) -> _LRUCacheWrapper[_P, _R]:
         origin = fn
 
         while isinstance(origin, (partial, partialmethod)):
@@ -320,25 +319,25 @@ def alru_cache(
     typed: bool = False,
     *,
     ttl: Optional[float] = None,
-) -> Callable[[Callable[_P, Coroutine[Any, Any, _R]]], _LRUCacheWrapper[_P, _R]]:
+) -> Callable[[Callable[_P, Coroutine[object, object, _R]]], _LRUCacheWrapper[_P, _R]]:
     ...
 
 
 @overload
-def alru_cache(  # type: ignore[misc]
-    maxsize: Callable[_P, Coroutine[Any, Any, _R]],
+def alru_cache(
+    maxsize: Callable[_P, Coroutine[object, object, _R]],
     /,
 ) -> _LRUCacheWrapper[_P, _R]:
     ...
 
 
 def alru_cache(
-    maxsize: Union[Optional[int], Callable[_P, Coroutine[Any, Any, _R]]] = 128,
+    maxsize: Union[Optional[int], Callable[_P, Coroutine[object, object, _R]]] = 128,
     typed: bool = False,
     *,
     ttl: Optional[float] = None,
 ) -> Union[
-    Callable[[Callable[_P, Coroutine[Any, Any, _R]]], _LRUCacheWrapper[_P, _R]],
+    Callable[[Callable[_P, Coroutine[object, object, _R]]], _LRUCacheWrapper[_P, _R]],
     _LRUCacheWrapper[_P, _R],
 ]:
     if maxsize is None or isinstance(maxsize, int):
