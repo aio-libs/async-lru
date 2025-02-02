@@ -1,5 +1,6 @@
 import asyncio
 import dataclasses
+import inspect  # noqa: F401
 import sys
 from asyncio.coroutines import _is_coroutine  # type: ignore[attr-defined]
 from functools import _CacheInfo, _make_key, partial, partialmethod
@@ -28,8 +29,6 @@ else:
     from typing_extensions import Self
 
 if sys.version_info >= (3, 14):
-    import inspect
-
     iscoroutinefunction = inspect.iscoroutinefunction
 else:
     iscoroutinefunction = asyncio.iscoroutinefunction
