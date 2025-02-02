@@ -85,11 +85,11 @@ async def test_alru_cache_partial_typing() -> None:
         return val
 
     coro_wrapped1 = alru_cache(coro)
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         await coro_wrapped1(1, 1)  # type: ignore[call-arg]
 
     coro_wrapped2 = alru_cache(partial(coro, 2))
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         await coro_wrapped2(4) == 2  # type: ignore[call-arg]
 
 
