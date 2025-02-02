@@ -16,7 +16,6 @@ from typing import (
     TypedDict,
     TypeVar,
     Union,
-    cast,
     final,
     overload,
 )
@@ -340,7 +339,7 @@ def alru_cache(
     ttl: Optional[float] = None,
 ) -> Union[
     Callable[[Callable[_P, Coroutine[Any, Any, _R]]], _LRUCacheWrapper[_P, _R]],
-    _LRUCacheWrapper[_P, _R]
+    _LRUCacheWrapper[_P, _R],
 ]:
     if maxsize is None or isinstance(maxsize, int):
         return _make_wrapper(maxsize, typed, ttl)
