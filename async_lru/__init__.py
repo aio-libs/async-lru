@@ -295,7 +295,9 @@ def _make_wrapper(
     typed: bool,
     ttl: Optional[float] = None,
 ) -> Callable[[Callable[_P, Coroutine[object, object, _R]]], _LRUCacheWrapper[_P, _R]]:
-    def wrapper(fn: Callable[_P, Coroutine[object, object, _R]]) -> _LRUCacheWrapper[_P, _R]:
+    def wrapper(
+        fn: Callable[_P, Coroutine[object, object, _R]]
+    ) -> _LRUCacheWrapper[_P, _R]:
         origin = fn
 
         while isinstance(origin, (partial, partialmethod)):
