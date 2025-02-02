@@ -223,9 +223,7 @@ class _LRUCacheWrapper(Generic[_P, _R]):
         return await asyncio.shield(fut)
 
     @overload
-    def __get__(
-        self, instance: _T, owner: None
-    ) -> Self:
+    def __get__(self, instance: _T, owner: None) -> Self:
         ...
 
     @overload
