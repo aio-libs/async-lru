@@ -4,6 +4,11 @@ CHANGES
 
 .. towncrier release notes start
 
+2.0.5 (2025-03-16)
+==================
+
+- Fixed a memory leak on exceptions and minor performance improvement.
+
 2.0.4 (2023-07-27)
 ==================
 
