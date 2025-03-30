@@ -1,6 +1,6 @@
 import asyncio
 import dataclasses
-import inspect  # noqa: F401
+import inspect
 import sys
 from asyncio.coroutines import _is_coroutine  # type: ignore[attr-defined]
 from functools import _CacheInfo, _make_key, partial, partialmethod
@@ -27,11 +27,6 @@ if sys.version_info >= (3, 11):
     from typing import Self
 else:
     from typing_extensions import Self
-
-if sys.version_info >= (3, 14):
-    iscoroutinefunction = inspect.iscoroutinefunction
-else:
-    iscoroutinefunction = asyncio.iscoroutinefunction
 
 
 __version__ = "2.0.4"
@@ -299,13 +294,14 @@ def _make_wrapper(
     typed: bool,
     ttl: Optional[float] = None,
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
+    @inspect.markcoroutinefunction
     def wrapper(fn: _CBP[_R]) -> _LRUCacheWrapper[_R]:
         origin = fn
 
         while isinstance(origin, (partial, partialmethod)):
             origin = origin.func
 
-        if not iscoroutinefunction(origin):
+        if not inspect.iscoroutinefunction(origin):
             raise RuntimeError(f"Coroutine function is required, got {fn!r}")
 
         # functools.partialmethod support
