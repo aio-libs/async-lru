@@ -30,6 +30,8 @@ async def test_alru_cache_deco(check_lru: Callable[..., None]) -> None:
 
     if sys.version_info >= (3, 12):
         assert inspect.iscoroutinefunction(coro)
+    if sys.version_info < (3, 14):
+        assert asyncio.iscoroutinefunction(coro)
 
     check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
@@ -45,6 +47,8 @@ async def test_alru_cache_deco_called(check_lru: Callable[..., None]) -> None:
 
     if sys.version_info >= (3, 12):
         assert inspect.iscoroutinefunction(coro)
+    if sys.version_info < (3, 14):
+        assert asyncio.iscoroutinefunction(coro)
 
     check_lru(coro, hits=0, misses=0, cache=0, tasks=0)
 
@@ -61,6 +65,8 @@ async def test_alru_cache_fn_called(check_lru: Callable[..., None]) -> None:
 
     if sys.version_info >= (3, 12):
         assert inspect.iscoroutinefunction(coro_wrapped)
+    if sys.version_info < (3, 14):
+        assert asyncio.iscoroutinefunction(coro)
 
     check_lru(coro_wrapped, hits=0, misses=0, cache=0, tasks=0)
 
