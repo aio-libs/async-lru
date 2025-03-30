@@ -294,37 +294,23 @@ def _make_wrapper(
     typed: bool,
     ttl: Optional[float] = None,
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
-    if sys.version_info >= (3, 12):
-        @inspect.markcoroutinefunction
-        def wrapper(fn: _CBP[_R]) -> _LRUCacheWrapper[_R]:
-            origin = fn
-    
-            while isinstance(origin, (partial, partialmethod)):
-                origin = origin.func
-    
-            if not inspect.iscoroutinefunction(origin):
-                raise RuntimeError(f"Coroutine function is required, got {fn!r}")
-    
-            # functools.partialmethod support
-            if hasattr(fn, "_make_unbound_method"):
-                fn = fn._make_unbound_method()
-    
-            return _LRUCacheWrapper(cast(_CB[_R], fn), maxsize, typed, ttl)
-    else:
-        def wrapper(fn: _CBP[_R]) -> _LRUCacheWrapper[_R]:
-            origin = fn
-    
-            while isinstance(origin, (partial, partialmethod)):
-                origin = origin.func
-    
-            if not inspect.iscoroutinefunction(origin):
-                raise RuntimeError(f"Coroutine function is required, got {fn!r}")
-    
-            # functools.partialmethod support
-            if hasattr(fn, "_make_unbound_method"):
-                fn = fn._make_unbound_method()
-    
-            return _LRUCacheWrapper(cast(_CB[_R], fn), maxsize, typed, ttl)
+    def wrapper(fn: _CBP[_R]) -> _LRUCacheWrapper[_R]:
+        origin = fn
+
+        while isinstance(origin, (partial, partialmethod)):
+            origin = origin.func
+
+        if not inspect.iscoroutinefunction(origin):
+            raise RuntimeError(f"Coroutine function is required, got {fn!r}")
+
+        # functools.partialmethod support
+        if hasattr(fn, "_make_unbound_method"):
+            fn = fn._make_unbound_method()
+
+        wrapper = _LRUCacheWrapper(cast(_CB[_R], fn), maxsize, typed, ttl)
+        if sys.version_info >= (3, 12):
+            wrapper = inspect.markcoroutinefunction(wrapper)
+        return wrapper
 
     return wrapper
 
