@@ -17,6 +17,7 @@ from typing import (
     Union,
     final,
     overload,
+    Any
 )
 
 
@@ -64,6 +65,7 @@ class _CacheItem(Generic[_R]):
 
 @final
 class _LRUCacheWrapper(Generic[_P, _R]):
+
     def __init__(
         self,
         fn: Callable[_P, Coroutine[object, object, _R]],
@@ -108,7 +110,7 @@ class _LRUCacheWrapper(Generic[_P, _R]):
         self.__misses = 0
         self.__tasks: Set["asyncio.Task[_R]"] = set()
 
-    def cache_invalidate(self, /, *args: _P.args, **kwargs: _P.kwargs) -> bool:
+    def cache_invalidate(self, /, *args:_P.args, **kwargs:_P.kwargs) -> bool:
         key = _make_key(args, kwargs, self.__typed)
 
         cache_item = self.__cache.pop(key, None)
@@ -208,32 +210,32 @@ class _LRUCacheWrapper(Generic[_P, _R]):
             return cache_item.fut.result()
 
         fut = loop.create_future()
-        coro = self.__wrapped__(*fn_args, **fn_kwargs)
-        task = loop.create_task(coro)
+        task = loop.create_task(
+            self.__wrapped__(*fn_args, **fn_kwargs)
+        )
         self.__tasks.add(task)
         task.add_done_callback(partial(self._task_done_callback, fut, key))
 
         self.__cache[key] = _CacheItem(fut, None)
 
         if self.__maxsize is not None and len(self.__cache) > self.__maxsize:
-            dropped_key, cache_item = self.__cache.popitem(last=False)
-            cache_item.cancel()
+            self.__cache.popitem(last=False)[1].cancel()
 
         self._cache_miss(key)
         return await asyncio.shield(fut)
 
     @overload
-    def __get__(self, instance: _T, owner: None) -> Self:
+    def __get__(self, instance: Any, owner: None) -> Self:
         ...
 
     @overload
     def __get__(
-        self, instance: _T, owner: Type[_T]
+        self, instance: _T, owner: Type[Any]
     ) -> "_LRUCacheWrapperInstanceMethod[_P, _R, _T]":
         ...
 
     def __get__(
-        self, instance: _T, owner: Optional[Type[_T]]
+        self, instance: Any, owner: Optional[Type[Any]]
     ) -> Union[Self, "_LRUCacheWrapperInstanceMethod[_P, _R, _T]"]:
         if owner is None:
             return self
@@ -280,7 +282,7 @@ class _LRUCacheWrapperInstanceMethod(Generic[_P, _R, _T]):
         self.__wrapper = wrapper
 
     def cache_invalidate(self, /, *args: _P.args, **kwargs: _P.kwargs) -> bool:
-        return self.__wrapper.cache_invalidate(self.__instance, *args, **kwargs)
+        return self.__wrapper.cache_invalidate(self.__instance, *args, **kwargs) # type: ignore[arg-type]
 
     def cache_clear(self) -> None:
         self.__wrapper.cache_clear()
