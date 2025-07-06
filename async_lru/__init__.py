@@ -4,6 +4,7 @@ import sys
 from asyncio.coroutines import _is_coroutine  # type: ignore[attr-defined]
 from functools import _CacheInfo, _make_key, partial, partialmethod
 from typing import (
+    Any,
     Callable,
     Coroutine,
     Generic,
@@ -17,7 +18,6 @@ from typing import (
     Union,
     final,
     overload,
-    Any
 )
 
 
@@ -65,7 +65,6 @@ class _CacheItem(Generic[_R]):
 
 @final
 class _LRUCacheWrapper(Generic[_P, _R]):
-
     def __init__(
         self,
         fn: Callable[_P, Coroutine[object, object, _R]],
@@ -110,7 +109,7 @@ class _LRUCacheWrapper(Generic[_P, _R]):
         self.__misses = 0
         self.__tasks: Set["asyncio.Task[_R]"] = set()
 
-    def cache_invalidate(self, /, *args:_P.args, **kwargs:_P.kwargs) -> bool:
+    def cache_invalidate(self, /, *args: _P.args, **kwargs: _P.kwargs) -> bool:
         key = _make_key(args, kwargs, self.__typed)
 
         cache_item = self.__cache.pop(key, None)
@@ -210,9 +209,7 @@ class _LRUCacheWrapper(Generic[_P, _R]):
             return cache_item.fut.result()
 
         fut = loop.create_future()
-        task = loop.create_task(
-            self.__wrapped__(*fn_args, **fn_kwargs)
-        )
+        task = loop.create_task(self.__wrapped__(*fn_args, **fn_kwargs))
         self.__tasks.add(task)
         task.add_done_callback(partial(self._task_done_callback, fut, key))
 
@@ -282,7 +279,7 @@ class _LRUCacheWrapperInstanceMethod(Generic[_P, _R, _T]):
         self.__wrapper = wrapper
 
     def cache_invalidate(self, /, *args: _P.args, **kwargs: _P.kwargs) -> bool:
-        return self.__wrapper.cache_invalidate(self.__instance, *args, **kwargs) # type: ignore[arg-type]
+        return self.__wrapper.cache_invalidate(self.__instance, *args, **kwargs)  # type: ignore[arg-type]
 
     def cache_clear(self) -> None:
         self.__wrapper.cache_clear()
@@ -298,8 +295,8 @@ class _LRUCacheWrapperInstanceMethod(Generic[_P, _R, _T]):
     def cache_parameters(self) -> _CacheParameters:
         return self.__wrapper.cache_parameters()
 
-    async def __call__(self, /, *fn_args: _P.args, **fn_kwargs: _P.kwargs) -> _R:
-        return await self.__wrapper(self.__instance, *fn_args, **fn_kwargs)  # type: ignore[arg-type]
+    async def __call__(self, /, *args: _P.args, **kwargs: _P.kwargs) -> _R:
+        return self.__wrapper.cache_invalidate(self.__instance, *args, **kwargs)  # type: ignore[arg-type]
 
 
 def _make_wrapper(
