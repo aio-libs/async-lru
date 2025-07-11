@@ -320,7 +320,10 @@ def _make_wrapper(
         if hasattr(fn, "_make_unbound_method"):
             fn = fn._make_unbound_method()
 
-        return _LRUCacheWrapper(fn, maxsize, typed, ttl)
+        wrapper = _LRUCacheWrapper(fn, maxsize, typed, ttl)
+        if sys.version_info >= (3, 12):
+            wrapper = inspect.markcoroutinefunction(wrapper)
+        return wrapper
 
     return wrapper
 
