@@ -18,7 +18,7 @@ _P = ParamSpec("_P")
 
 
 @pytest.fixture
-def check_lru() -> Callable[..., None]:  # type: ignore[misc]
+def check_lru() -> Callable[..., None]:
     def _check_lru(
         wrapped: _LRUCacheWrapper[_P, _T],
         *,
