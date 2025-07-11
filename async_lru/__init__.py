@@ -216,7 +216,8 @@ class _LRUCacheWrapper(Generic[_P, _R]):
         self.__cache[key] = _CacheItem(fut, None)
 
         if self.__maxsize is not None and len(self.__cache) > self.__maxsize:
-            self.__cache.popitem(last=False)[1].cancel()
+            dropped_key, cache_item = self.__cache.popitem(last=False)
+            cache_item.cancel()
 
         self._cache_miss(key)
         return await asyncio.shield(fut)
@@ -227,12 +228,12 @@ class _LRUCacheWrapper(Generic[_P, _R]):
 
     @overload
     def __get__(
-        self, instance: _T, owner: Type[Any]
+        self, instance: _T, owner: Type[_T]
     ) -> "_LRUCacheWrapperInstanceMethod[_P, _R, _T]":
         ...
 
     def __get__(
-        self, instance: Any, owner: Optional[Type[Any]]
+        self, instance: _T, owner: Optional[Type[_T]]
     ) -> Union[Self, "_LRUCacheWrapperInstanceMethod[_P, _R, _T]"]:
         if owner is None:
             return self
