@@ -88,6 +88,21 @@ async def test_alru_cache_partial() -> None:
     assert await coro_wrapped2() == 2
 
 
+async def test_alru_cache_partial_typing() -> None:
+    """Test that mypy produces call-arg errors correctly."""
+
+    async def coro(val: int) -> int:
+        return val
+
+    coro_wrapped1 = alru_cache(coro)
+    with pytest.raises(TypeError):
+        await coro_wrapped1(1, 1)  # type: ignore[call-arg]
+
+    coro_wrapped2 = alru_cache(partial(coro, 2))
+    with pytest.raises(TypeError):
+        await coro_wrapped2(4) == 2  # type: ignore[call-arg]
+
+
 async def test_alru_cache_await_same_result_async(
     check_lru: Callable[..., None]
 ) -> None:
