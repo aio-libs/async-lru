@@ -6,5 +6,3 @@ flake8-bugbear==24.12.12
 flake8-import-order==0.19.2
 flake8-requirements==2.2.1
 mypy==1.17.1; implementation_name=="cpython"
-
-pytest-codspeed==2.3.0
