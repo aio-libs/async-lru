@@ -33,7 +33,6 @@ async def test_cache_hit_benchmark(benchmark):
         await cached_func(42)
     await benchmark.asyncio(hit)
 
-@pytest.mark.asyncio
 async def test_cache_miss_benchmark(benchmark):
     async def miss():
         await cached_func(object())
