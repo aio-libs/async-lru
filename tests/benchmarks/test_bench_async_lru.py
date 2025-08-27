@@ -2,7 +2,7 @@ import asyncio
 import pytest
 from async_lru import alru_cache
 
-pytestmark = pytest.mark.codspeed
+pytestmark = pytest.mark.benchmark
 
 # Bounded cache (LRU)
 @alru_cache(maxsize=128)
