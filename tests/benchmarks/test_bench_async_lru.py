@@ -28,7 +28,6 @@ async def uncached_func(x):
     return x
 
 # Bounded cache benchmarks
-@pytest.mark.asyncio
 async def test_cache_hit_benchmark(benchmark):
     await cached_func(42)
     async def hit():
