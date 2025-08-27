@@ -1,0 +1,40 @@
+name: CodSpeed Benchmarks
+
+on:
+  push:
+    branches:
+      - master
+      - '[0-9].[0-9]+'
+  pull_request:
+    branches:
+      - master
+      - '[0-9].[0-9]+'
+
+jobs:
+  benchmark:
+    name: Run CodSpeed Benchmarks (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+          cache-dependency-path: '**/requirements*.txt'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements-dev.txt
+          pip install .
+
+      - name: Run CodSpeed benchmarks
+        run: |
+          pytest --codspeed --codspeed-upload
+        env:
+          CODSPEED_TOKEN: ${{ secrets.CODSPEED_TOKEN }}
