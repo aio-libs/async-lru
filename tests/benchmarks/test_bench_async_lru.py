@@ -7,7 +7,9 @@ from async_lru import alru_cache
 
 pytestmark = pytest.mark.benchmark
 
-run_loop = lambda fn, *args, **kwargs: asyncio.get_event_loop().run_until_complete(_get_coro(fn(*args, **kwargs)))
+run_loop = lambda fn, *args, **kwargs: asyncio.get_event_loop().run_until_complete(
+    _get_coro(fn(*args, **kwargs))
+)
 
 
 async def _get_coro(awaitable):
