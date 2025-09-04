@@ -7,7 +7,11 @@ from async_lru import alru_cache
 
 pytestmark = pytest.mark.benchmark
 
-run_loop = lambda coro: asyncio.get_event_loop().run_until_complete(coro)
+run_loop = lambda fn, *args, **kwargs: asyncio.get_event_loop().run_until_complete(_get_coro(fn(*args, **kwargs)))
+
+
+async def _get_coro(awaitable):
+    return await awaitable
 
 
 # Bounded cache (LRU)
@@ -39,18 +43,12 @@ async def uncached_func(x):
 # Bounded cache benchmarks
 def test_cache_hit_benchmark(benchmark):
     run_loop(cached_func, 42)
-    
-    async def hit():
-        await cached_func(42)
-    
-    benchmark(run_loop, hit)
+
+    benchmark(run_loop, cached_func, 42)
 
 
 def test_cache_miss_benchmark(benchmark):
-    async def miss():
-        await cached_func(object())
-    
-    benchmark(run_loop, miss)
+    benchmark(run_loop, cached_func, object())
 
 
 def test_cache_fill_eviction_benchmark(benchmark):
@@ -59,120 +57,82 @@ def test_cache_fill_eviction_benchmark(benchmark):
     async def fill():
         for k in keys:
             await cached_func(k)
-    
+
     benchmark(run_loop, fill)
 
 
 def test_cache_clear_benchmark(benchmark):
     run_loop(cached_func, 1)
 
-    async def clear():
-        await cached_func.cache_clear()
-    
-    benchmark(run_loop, clear)
+    benchmark(cached_func.cache_clear)
 
 
 def test_cache_ttl_expiry_benchmark(benchmark):
     run_loop(cached_func_ttl, 99)
     run_loop(asyncio.sleep, 0.02)
 
-    async def ttl_expire():
-        await cached_func_ttl(99)
-    
-    benchmark(run_loop, ttl_expire)
+    benchmark(run_loop, cached_func_ttl, 99)
 
 
 def test_cache_invalidate_benchmark(benchmark):
     run_loop(cached_func, 123)
 
-    async def invalidate():
-        await cached_func.cache_invalidate(123)
-    
-    benchmark(run_loop, invalidate)
+    benchmark(cached_func.cache_invalidate, 123)
 
 
 def test_cache_info_benchmark(benchmark):
     run_loop(cached_func, 1)
-    async def info():
-        cached_func.cache_info()
-    
-    benchmark(run_loop, info)
+
+    benchmark(cached_func.cache_info)
 
 
 def test_uncached_func_benchmark(benchmark):
-    async def raw():
-        await uncached_func(42)
-    
-    benchmark(run_loop, raw)
+    benchmark(run_loop, uncached_func, 42)
 
 
 def test_concurrent_cache_hit_benchmark(benchmark):
     run_loop(cached_func, 77)
 
-    async def concurrent_hit():
-        await asyncio.gather(*(cached_func(77) for _ in range(10)))
-    
-    benchmark(run_loop, concurrent_hit)
+    benchmark(run_loop, asyncio.gather, *(cached_func(77) for _ in range(10)))
 
 
 # Unbounded cache benchmarks
 def test_cache_hit_unbounded_benchmark(benchmark):
     run_loop(cached_func_unbounded, 42)
 
-    async def hit():
-        await cached_func_unbounded(42)
-    
-    benchmark(run_loop, hit)
+    benchmark(run_loop, cached_func_unbounded, 42)
 
 
 def test_cache_miss_unbounded_benchmark(benchmark):
-    async def miss():
-        await cached_func_unbounded(object())
-    
-    benchmark(run_loop, miss)
+    benchmark(run_loop, cached_func_unbounded, object())
 
 
 def test_cache_clear_unbounded_benchmark(benchmark):
     run_loop(cached_func_unbounded, 1)
 
-    async def clear():
-        await cached_func_unbounded.cache_clear()
-    
-    benchmark(run_loop, clear)
+    benchmark(cached_func_unbounded.cache_clear)
 
 
 def test_cache_ttl_expiry_unbounded_benchmark(benchmark):
     run_loop(cached_func_unbounded_ttl, 99)
     run_loop(asyncio.sleep, 0.02)
 
-    async def ttl_expire():
-        await cached_func_unbounded_ttl(99)
-    
-    benchmark(run_loop, ttl_expire)
+    benchmark(run_loop, cached_func_unbounded_ttl, 99)
 
 
 def test_cache_invalidate_unbounded_benchmark(benchmark):
     run_loop(cached_func_unbounded, 123)
 
-    async def invalidate():
-        await cached_func_unbounded.cache_invalidate(123)
-    
-    benchmark(run_loop, invalidate)
+    benchmark(cached_func_unbounded.cache_invalidate, 123)
 
 
 def test_cache_info_unbounded_benchmark(benchmark):
     run_loop(cached_func_unbounded, 1)
 
-    async def info():
-        cached_func_unbounded.cache_info()
-    
-    benchmark(run_loop, info)
+    benchmark(cached_func_unbounded.cache_info)
 
 
 def test_concurrent_cache_hit_unbounded_benchmark(benchmark):
     run_loop(cached_func_unbounded, 77)
 
-    async def concurrent_hit():
-        await asyncio.gather(*(cached_func_unbounded(77) for _ in range(10)))
-    
-    benchmark(run_loop, concurrent_hit)
+    benchmark(run_loop, asyncio.gather, *(cached_func_unbounded(77) for _ in range(10)))
