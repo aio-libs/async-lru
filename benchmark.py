@@ -2,15 +2,14 @@ import asyncio
 
 import pytest
 
+from async_lru import alru_cache
+
 try:
     from pytest_codspeed import BenchmarkFixture
 except ImportError:  # pragma: no branch  # only hit in cibuildwheel
     pytestmark = pytest.mark.skip("pytest-codspeed needs to be installed")
-
-from async_lru import alru_cache
-
-
-pytestmark = pytest.mark.benchmark
+else:
+    pytestmark = pytest.mark.benchmark
 
 
 def run_loop(fn, *args, **kwargs):
