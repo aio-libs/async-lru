@@ -35,6 +35,6 @@ jobs:
 
       - name: Run CodSpeed benchmarks
         run: |
-          pytest --codspeed tests/benchmarks
+          pytest --codspeed benchmarks.py
         env:
           CODSPEED_TOKEN: ${{ secrets.CODSPEED_TOKEN }}
