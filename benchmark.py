@@ -12,13 +12,15 @@ else:
     pytestmark = pytest.mark.benchmark
 
 
+EVENT_LOOP = asyncio.get_event_loop()
+
+
 def run_loop(fn, *args, **kwargs):
-    return asyncio.get_event_loop().run_until_complete(
-        _get_coro(fn(*args, **kwargs))
-    )
+    return EVENT_LOOP.run_until_complete(_get_coro(fn(*args, **kwargs)))
 
 
 async def _get_coro(awaitable):
+    """A helper function that turns an awaitable into a coroutine."""
     return await awaitable
 
 
