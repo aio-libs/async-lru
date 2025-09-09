@@ -102,7 +102,7 @@ To run the benchmarks locally:
 .. code-block:: shell
 
     pip install -r requirements-dev.txt
-    pytest --codspeed benchmarks.py
+    pytest --codspeed benchmark.py
 
 The benchmark suite covers both bounded (with maxsize) and unbounded (no maxsize) cache configurations. Scenarios include:
 
