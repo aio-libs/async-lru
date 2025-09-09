@@ -95,7 +95,7 @@ otherwise.
 Benchmarks
 ----------
 
-async-lru uses [CodSpeed](https://codspeed.io/) for performance regression testing.
+async-lru uses `CodSpeed <https://codspeed.io/>`_ for performance regression testing.
 
 To run the benchmarks locally:
 
