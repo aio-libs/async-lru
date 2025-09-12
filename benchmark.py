@@ -5,6 +5,7 @@ import pytest
 
 from async_lru import alru_cache
 
+
 try:
     from pytest_codspeed import BenchmarkFixture
 except ImportError:  # pragma: no branch  # only hit in cibuildwheel
@@ -25,6 +26,7 @@ def loop():
 def run_loop(loop):
     def run_the_loop(fn, *args, **kwargs):
         return loop.run_until_complete(_get_coro(fn(*args, **kwargs)))
+    
     return run_the_loop
 
 
@@ -88,7 +90,7 @@ def test_cache_fill_eviction_benchmark(
 
 def test_cache_clear_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any]
-) -> None:    
+) -> None:
     run_loop(cached_func, 1)
 
     benchmark(cached_func.cache_clear)
