@@ -1,5 +1,5 @@
 import asyncio
-from typing import Callable
+from typing import Any, Callable
 
 import pytest
 
