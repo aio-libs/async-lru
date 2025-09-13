@@ -26,7 +26,7 @@ def loop():
 def run_loop(loop):
     def run_the_loop(fn, *args, **kwargs):
         return loop.run_until_complete(_get_coro(fn(*args, **kwargs)))
-    
+
     return run_the_loop
 
 
