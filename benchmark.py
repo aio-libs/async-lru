@@ -191,7 +191,7 @@ def test_concurrent_cache_hit_unbounded_benchmark(
 ) -> None:
     run_loop(cached_func_unbounded, 77)
 
-    def gather_coros():
+    async def gather_coros():
         return await asyncio.gather(*(cached_func_unbounded(77) for _ in range(10)))
 
     benchmark(run_loop, gather_coros)
