@@ -35,4 +35,4 @@ jobs:
         with:
           mode: instrumentation
           run: pytest --codspeed benchmark.py
-          token: ${{ secrets.CODSPEED_TOKEN }} 
+          token: ${{ secrets.CODSPEED_TOKEN }}
