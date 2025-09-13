@@ -30,8 +30,9 @@ jobs:
           pip install -r requirements-dev.txt
           pip install .
 
-      - name: Run CodSpeed benchmarks
-        run: |
-          pytest --codspeed benchmark.py
-        env:
-          CODSPEED_TOKEN: ${{ secrets.CODSPEED_TOKEN }}
+      - name: Run the benchmarks
+        uses: CodSpeedHQ/action@v4
+        with:
+          mode: instrumentation
+          run: pytest --codspeed benchmark.py
+          token: ${{ secrets.CODSPEED_TOKEN }} 
