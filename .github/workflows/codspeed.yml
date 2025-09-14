@@ -34,11 +34,12 @@ jobs:
         # these pollute the codspeed flamegraphs
         run: pip uninstall -y coverage pytest-cov
 
+      - name: Create empty pytest config
+        run: echo "[pytest]" > .empty-pytest.ini
+
       - name: Run the benchmarks
         uses: CodSpeedHQ/action@v4
-        env:
-          PYTEST_ADDOPTS: ""
         with:
           mode: instrumentation
-          run: pytest --codspeed benchmark.py --timeout=0
+          run: pytest -c .empty-pytest.ini --codspeed benchmark.py --timeout=0
           token: ${{ secrets.CODSPEED_TOKEN }}
