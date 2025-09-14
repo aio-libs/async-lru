@@ -3,7 +3,8 @@ from typing import Any, Callable
 
 import pytest
 
-from async_lru import alru_cache, _LRUCacheWrapper
+from async_lru import _LRUCacheWrapper, alru_cache
+
 
 try:
     from pytest_codspeed import BenchmarkFixture
@@ -68,7 +69,9 @@ funcs_ttl = [cached_func_ttl, cached_func_unbounded_ttl]
 
 @pytest.mark.parametrize("func", funcs, ids=ids)
 def test_cache_hit_benchmark(
-    benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: _LRUCacheWrapper[Any]
+    benchmark: BenchmarkFixture,
+    run_loop: Callable[..., Any],
+    func: _LRUCacheWrapper[Any],
 ) -> None:
     # Populate cache
     keys = list(range(10))
@@ -85,7 +88,9 @@ def test_cache_hit_benchmark(
 
 @pytest.mark.parametrize("func", funcs, ids=ids)
 def test_cache_miss_benchmark(
-    benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: _LRUCacheWrapper[Any]
+    benchmark: BenchmarkFixture,
+    run_loop: Callable[..., Any],
+    func: _LRUCacheWrapper[Any],
 ) -> None:
     unique_objects = [object() for _ in range(128)]
     func.cache_clear()
@@ -99,7 +104,9 @@ def test_cache_miss_benchmark(
 
 @pytest.mark.parametrize("func", funcs, ids=ids)
 def test_cache_clear_benchmark(
-    benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: _LRUCacheWrapper[Any]
+    benchmark: BenchmarkFixture,
+    run_loop: Callable[..., Any],
+    func: _LRUCacheWrapper[Any],
 ) -> None:
     for i in range(100):
         run_loop(func, i)
@@ -121,7 +128,9 @@ def test_cache_ttl_expiry_benchmark(
 
 @pytest.mark.parametrize("func", funcs, ids=ids)
 def test_cache_invalidate_benchmark(
-    benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: _LRUCacheWrapper[Any]
+    benchmark: BenchmarkFixture,
+    run_loop: Callable[..., Any],
+    func: _LRUCacheWrapper[Any],
 ) -> None:
     # Populate cache
     keys = list(range(123, 321))
@@ -138,7 +147,9 @@ def test_cache_invalidate_benchmark(
 
 @pytest.mark.parametrize("func", funcs, ids=ids)
 def test_cache_info_benchmark(
-    benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: _LRUCacheWrapper[Any]
+    benchmark: BenchmarkFixture,
+    run_loop: Callable[..., Any],
+    func: _LRUCacheWrapper[Any],
 ) -> None:
     # Populate cache
     keys = list(range(1000))
@@ -155,7 +166,9 @@ def test_cache_info_benchmark(
 
 @pytest.mark.parametrize("func", funcs, ids=ids)
 def test_concurrent_cache_hit_benchmark(
-    benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: _LRUCacheWrapper[Any]
+    benchmark: BenchmarkFixture,
+    run_loop: Callable[..., Any],
+    func: _LRUCacheWrapper[Any],
 ) -> None:
     # Populate cache
     keys = list(range(600, 700))
@@ -192,8 +205,11 @@ def test_cache_fill_eviction_benchmark(
 # These benchmarks directly exercise internal (sync) methods and data structures
 # not covered by the async public API benchmarks above.
 
+
 @pytest.mark.parametrize("func", funcs, ids=ids)
-def test_internal_cache_hit_microbenchmark(benchmark: BenchmarkFixture, func: _LRUCacheWrapper[Any]) -> None:
+def test_internal_cache_hit_microbenchmark(
+    benchmark: BenchmarkFixture, func: _LRUCacheWrapper[Any]
+) -> None:
     """Directly benchmark _cache_hit (internal, sync) using parameterized funcs."""
     cache_hit = func._cache_hit
 
@@ -208,7 +224,9 @@ def test_internal_cache_hit_microbenchmark(benchmark: BenchmarkFixture, func: _L
 
 
 @pytest.mark.parametrize("func", funcs, ids=ids)
-def test_internal_cache_miss_microbenchmark(benchmark: BenchmarkFixture, func: _LRUCacheWrapper[Any]) -> None:
+def test_internal_cache_miss_microbenchmark(
+    benchmark: BenchmarkFixture, func: _LRUCacheWrapper[Any]
+) -> None:
     """Directly benchmark _cache_miss (internal, sync) using parameterized funcs."""
     cache_miss = func._cache_miss
 
@@ -230,7 +248,7 @@ def test_internal_task_done_callback_microbenchmark(
     """Directly benchmark _task_done_callback (internal, sync) using parameterized funcs and task states."""
     key = 42
     run_loop(func, key)
-    
+
     fut = loop.create_future()
 
     # Create a dummy coroutine and task
