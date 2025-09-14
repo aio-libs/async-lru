@@ -93,7 +93,7 @@ def test_cache_miss_benchmark(
     async def run() -> None:
         for obj in unique_objects:
             await func(obj)
-    
+
     benchmark(run_loop, run)
 
 
