@@ -70,7 +70,6 @@ funcs_ttl = [cached_func_ttl, cached_func_unbounded_ttl]
 def test_cache_hit_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: Callable[..., Any]
 ) -> None:
-    
     # Populate cache
     keys = list(range(10))
     for key in keys:
@@ -110,7 +109,9 @@ def test_cache_clear_benchmark(
 
 @pytest.mark.parametrize("func_ttl", funcs_ttl, ids=ids)
 def test_cache_ttl_expiry_benchmark(
-    benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func_ttl: Callable[..., Any]
+    benchmark: BenchmarkFixture,
+    run_loop: Callable[..., Any],
+    func_ttl: Callable[..., Any],
 ) -> None:
     run_loop(func_ttl, 99)
     run_loop(asyncio.sleep, 0.02)
@@ -122,7 +123,6 @@ def test_cache_ttl_expiry_benchmark(
 def test_cache_invalidate_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: Callable[..., Any]
 ) -> None:
-    
     # Populate cache
     keys = list(range(123, 321))
     for i in keys:
@@ -140,14 +140,13 @@ def test_cache_invalidate_benchmark(
 def test_cache_info_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: Callable[..., Any]
 ) -> None:
-    
     # Populate cache
     keys = list(range(1000))
     for i in keys:
         run_loop(func, i)
 
     cache_info = func.cache_info
-    
+
     @benchmark
     def run() -> None:
         for _ in keys:
@@ -158,7 +157,6 @@ def test_cache_info_benchmark(
 def test_concurrent_cache_hit_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: Callable[..., Any]
 ) -> None:
-    
     # Populate cache
     keys = list(range(600, 700))
     for key in keys:
@@ -175,11 +173,10 @@ def test_concurrent_cache_hit_benchmark(
 def test_cache_fill_eviction_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any]
 ) -> None:
-
     # Populate cache
     for i in range(-128, 0):
         run_loop(cached_func, i)
-    
+
     keys = list(range(5000))
 
     async def fill():
