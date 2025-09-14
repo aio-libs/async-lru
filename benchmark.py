@@ -3,8 +3,7 @@ from typing import Any, Callable
 
 import pytest
 
-from async_lru import alru_cache
-
+from async_lru import alru_cache, _LRUCacheWrapper
 
 try:
     from pytest_codspeed import BenchmarkFixture
@@ -68,7 +67,7 @@ funcs_ttl = [cached_func_ttl, cached_func_unbounded_ttl]
 
 @pytest.mark.parametrize("func", funcs, ids=ids)
 def test_cache_hit_benchmark(
-    benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: Callable[..., Any]
+    benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: _LRUCacheWrapper[Any]
 ) -> None:
     # Populate cache
     keys = list(range(10))
@@ -85,7 +84,7 @@ def test_cache_hit_benchmark(
 
 @pytest.mark.parametrize("func", funcs, ids=ids)
 def test_cache_miss_benchmark(
-    benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: Callable[..., Any]
+    benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: _LRUCacheWrapper[Any]
 ) -> None:
     unique_objects = [object() for _ in range(128)]
     func.cache_clear()
@@ -99,7 +98,7 @@ def test_cache_miss_benchmark(
 
 @pytest.mark.parametrize("func", funcs, ids=ids)
 def test_cache_clear_benchmark(
-    benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: Callable[..., Any]
+    benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: _LRUCacheWrapper[Any]
 ) -> None:
     for i in range(100):
         run_loop(func, i)
@@ -111,7 +110,7 @@ def test_cache_clear_benchmark(
 def test_cache_ttl_expiry_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
-    func_ttl: Callable[..., Any],
+    func_ttl: _LRUCacheWrapper[Any],
 ) -> None:
     run_loop(func_ttl, 99)
     run_loop(asyncio.sleep, 0.02)
@@ -121,7 +120,7 @@ def test_cache_ttl_expiry_benchmark(
 
 @pytest.mark.parametrize("func", funcs, ids=ids)
 def test_cache_invalidate_benchmark(
-    benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: Callable[..., Any]
+    benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: _LRUCacheWrapper[Any]
 ) -> None:
     # Populate cache
     keys = list(range(123, 321))
@@ -138,7 +137,7 @@ def test_cache_invalidate_benchmark(
 
 @pytest.mark.parametrize("func", funcs, ids=ids)
 def test_cache_info_benchmark(
-    benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: Callable[..., Any]
+    benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: _LRUCacheWrapper[Any]
 ) -> None:
     # Populate cache
     keys = list(range(1000))
@@ -155,7 +154,7 @@ def test_cache_info_benchmark(
 
 @pytest.mark.parametrize("func", funcs, ids=ids)
 def test_concurrent_cache_hit_benchmark(
-    benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: Callable[..., Any]
+    benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: _LRUCacheWrapper[Any]
 ) -> None:
     # Populate cache
     keys = list(range(600, 700))
@@ -184,3 +183,79 @@ def test_cache_fill_eviction_benchmark(
             await cached_func(k)
 
     benchmark(run_loop, fill)
+
+
+# ===========================
+# Internal Microbenchmarks
+# ===========================
+# These benchmarks directly exercise internal (sync) methods and data structures
+# not covered by the async public API benchmarks above.
+
+@pytest.mark.parametrize("func", funcs, ids=ids)
+def test_internal_cache_hit_microbenchmark(benchmark: BenchmarkFixture, func: _LRUCacheWrapper[Any]) -> None:
+    """Directly benchmark _cache_hit (internal, sync) using parameterized funcs."""
+    cache_hit = func._cache_hit
+
+    # Populate cache
+    for i in range(128):
+        run_loop(func, i)
+
+    @benchmark
+    def run() -> None:
+        for i in range(1000):
+            cache_hit(i)
+
+
+@pytest.mark.parametrize("func", funcs, ids=ids)
+def test_internal_cache_miss_microbenchmark(benchmark: BenchmarkFixture, func: _LRUCacheWrapper[Any]) -> None:
+    """Directly benchmark _cache_miss (internal, sync) using parameterized funcs."""
+    cache_miss = func._cache_miss
+
+    @benchmark
+    def run() -> None:
+        for i in range(128):
+            cache_miss(i)
+
+
+@pytest.mark.parametrize("func", funcs, ids=ids)
+@pytest.mark.parametrize("task_state", ["finished", "cancelled", "exception"])
+def test_internal_task_done_callback_microbenchmark(
+    benchmark: BenchmarkFixture,
+    loop: asyncio.BaseEventLoop,
+    run_loop: Callable[..., Any],
+    func: _LRUCacheWrapper[Any],
+    task_state: str,
+) -> None:
+    """Directly benchmark _task_done_callback (internal, sync) using parameterized funcs and task states."""
+    key = 42
+    run_loop(func, key)
+    
+    fut = loop.create_future()
+
+    # Create a dummy coroutine and task
+    async def dummy_coro():
+        if task_state == "exception":
+            raise ValueError("test exception")
+        return 123
+
+    task = loop.create_task(dummy_coro())
+    if task_state == "finished":
+        loop.run_until_complete(task)
+    elif task_state == "cancelled":
+        task.cancel()
+        try:
+            loop.run_until_complete(task)
+        except asyncio.CancelledError:
+            pass
+    elif task_state == "exception":
+        try:
+            loop.run_until_complete(task)
+        except Exception:
+            pass
+
+    callback = func._task_done_callback
+
+    @benchmark
+    def run() -> None:
+        for _ in range(1000):
+            callback(fut, key, task)
