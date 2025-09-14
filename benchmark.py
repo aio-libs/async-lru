@@ -248,10 +248,6 @@ def test_internal_task_done_callback_microbenchmark(
     task_state: str,
 ) -> None:
     """Directly benchmark _task_done_callback (internal, sync) using parameterized funcs and task states."""
-    key = 42
-    run_loop(func, key)
-
-    fut = loop.create_future()
 
     # Create a dummy coroutine and task
     async def dummy_coro():
@@ -274,9 +270,12 @@ def test_internal_task_done_callback_microbenchmark(
         except Exception:
             pass
 
+    iterations = list(range(1000))
+    futs = list(zip(iterations, (loop.create_future() for _ in iterations)))
+
     callback = func._task_done_callback
 
     @benchmark
     def run() -> None:
-        for _ in range(1000):
-            callback(fut, key, task)
+        for i, fut in futs:
+            callback(fut, i, task)
