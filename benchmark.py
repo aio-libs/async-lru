@@ -216,12 +216,13 @@ def test_internal_cache_hit_microbenchmark(
     cache_hit = func._cache_hit
 
     # Populate cache
-    for i in range(128):
+    keys = list(range(128))
+    for i in keys:
         run_loop(func, i)
 
     @benchmark
     def run() -> None:
-        for i in range(1000):
+        for i in keys:
             cache_hit(i)
 
 
