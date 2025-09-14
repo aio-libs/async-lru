@@ -29,6 +29,10 @@ jobs:
         run: |
           pip install -r requirements-dev.txt
           pip install .
+      
+      - name: Uninstall coverage utils
+        # these pollute the codspeed flamegraphs
+        run: pip uninstall -y coverage pytest-cov
 
       - name: Run the benchmarks
         uses: CodSpeedHQ/action@v4
