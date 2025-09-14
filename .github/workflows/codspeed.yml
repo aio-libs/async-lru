@@ -36,5 +36,5 @@ jobs:
           PYTEST_ADDOPTS: ""
         with:
           mode: instrumentation
-          run: pytest --codspeed benchmark.py
+          run: pytest --codspeed benchmark.py --timeout=0
           token: ${{ secrets.CODSPEED_TOKEN }}
