@@ -89,6 +89,7 @@ def test_cache_miss_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: Callable[..., Any]
 ) -> None:
     unique_objects = [object() for _ in range(128)]
+    func.cache_clear()
 
     async def run() -> None:
         for obj in unique_objects:
@@ -101,7 +102,8 @@ def test_cache_miss_benchmark(
 def test_cache_clear_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func: Callable[..., Any]
 ) -> None:
-    run_loop(func, 1)
+    for i in range(100):
+        run_loop(func, i)
 
     benchmark(func.cache_clear)
 
