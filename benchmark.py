@@ -61,8 +61,9 @@ async def uncached_func(x):
     return x
 
 
-funcs = [cached_func, cached_func_unbounded]
 ids = ["bounded", "unbounded"]
+funcs = [cached_func, cached_func_unbounded]
+funcs_ttl = [cached_func_ttl, cached_func_unbounded_ttl]
 
 
 @pytest.mark.parametrize("func", funcs, ids=ids)
@@ -105,7 +106,7 @@ def test_cache_clear_benchmark(
     benchmark(func.cache_clear)
 
 
-@pytest.mark.parametrize("func_ttl", [cached_func_ttl, cached_func_unbounded_ttl], ids=ids)
+@pytest.mark.parametrize("func_ttl", funcs_ttl, ids=ids)
 def test_cache_ttl_expiry_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any], func_ttl: Callable[..., Any]
 ) -> None:
