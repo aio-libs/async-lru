@@ -66,7 +66,7 @@ def test_cache_hit_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any]
 ) -> None:
     
-    # Setup cache items
+    # Populate cache
     keys = list(range(10))
     for key in keys:
         run_loop(cached_func, key)
@@ -123,9 +123,17 @@ def test_cache_ttl_expiry_benchmark(
 def test_cache_invalidate_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any]
 ) -> None:
-    run_loop(cached_func, 123)
+    
+    # Populate cache
+    for i in range(123, 321):
+        run_loop(cached_func_unbounded, i)
 
-    benchmark(cached_func.cache_invalidate, 123)
+    invalidate = cached_func.cache_invalidate
+
+    @benchmark
+    def run() -> None:
+        for i in range(123, 321):
+            invalidate(i)
 
 
 def test_cache_info_benchmark(
@@ -165,7 +173,13 @@ def test_cache_hit_unbounded_benchmark(
 def test_cache_miss_unbounded_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any]
 ) -> None:
-    benchmark(run_loop, cached_func_unbounded, object())
+    unique_objects = [object() for _ in range(1000)]
+
+    async def run() -> None:
+        for obj in unique_objects:
+            cached_func_unbounded(obj)
+    
+    benchmark(run_loop, run)
 
 
 def test_cache_clear_unbounded_benchmark(
@@ -188,15 +202,26 @@ def test_cache_ttl_expiry_unbounded_benchmark(
 def test_cache_invalidate_unbounded_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any]
 ) -> None:
-    run_loop(cached_func_unbounded, 123)
+    
+    # Populate cache
+    for i in range(123, 321):
+        run_loop(cached_func_unbounded, i)
 
-    benchmark(cached_func_unbounded.cache_invalidate, 123)
+    invalidate = cached_func_unbounded.cache_invalidate
+
+    @benchmark
+    def run() -> None:
+        for i in range(123, 321):
+            invalidate(i)
 
 
 def test_cache_info_unbounded_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any]
 ) -> None:
-    run_loop(cached_func_unbounded, 1)
+    
+    # Populate cache
+    for i in range(1000):
+        run_loop(cached_func_unbounded, i)
 
     benchmark(cached_func_unbounded.cache_info)
 
@@ -204,9 +229,16 @@ def test_cache_info_unbounded_benchmark(
 def test_concurrent_cache_hit_unbounded_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any]
 ) -> None:
+    
+    # Populate cache
+    keys = list(range(6000, 7000))
+    for key in keys:
+        run_loop(cached_func, key)
+
     run_loop(cached_func_unbounded, 77)
 
     async def gather_coros():
-        return await asyncio.gather(*(cached_func_unbounded(77) for _ in range(10)))
+        for _ in range(10):
+            return await asyncio.gather(*(cached_func_unbounded(i) for i in range(0, 1000)))
 
     benchmark(run_loop, gather_coros)
