@@ -34,5 +34,5 @@ jobs:
         uses: CodSpeedHQ/action@v4
         with:
           mode: instrumentation
-          run: pytest --codspeed benchmark.py
+          run: pytest --codspeed benchmark.py -- -p no:pytest_cov
           token: ${{ secrets.CODSPEED_TOKEN }}
