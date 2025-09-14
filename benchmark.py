@@ -160,8 +160,6 @@ def test_concurrent_cache_hit_benchmark(
     for key in keys:
         run_loop(func, key)
 
-    run_loop(func, 77)
-
     async def gather_coros():
         gather = asyncio.gather
         for _ in range(10):
@@ -173,6 +171,11 @@ def test_concurrent_cache_hit_benchmark(
 def test_cache_fill_eviction_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any]
 ) -> None:
+
+    # Populate cache
+    for i in range(-128, 0):
+        run_loop(cached_func, i)
+    
     keys = list(range(5000))
 
     async def fill():
@@ -180,10 +183,3 @@ def test_cache_fill_eviction_benchmark(
             await cached_func(k)
 
     benchmark(run_loop, fill)
-
-
-# Uncached func benchmark for reference data
-def test_uncached_func_benchmark(
-    benchmark: BenchmarkFixture, run_loop: Callable[..., Any]
-) -> None:
-    benchmark(run_loop, uncached_func, 42)
