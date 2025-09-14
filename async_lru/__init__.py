@@ -162,7 +162,8 @@ class _LRUCacheWrapper(Generic[_R]):
 
     def _cache_hit(self, key: Hashable) -> None:
         self.__hits += 1
-        self.__cache.move_to_end(key)
+        if self.__maxsize is not None:
+            self.__cache.move_to_end(key)
 
     def _cache_miss(self, key: Hashable) -> None:
         self.__misses += 1
