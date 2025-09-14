@@ -65,21 +65,36 @@ async def uncached_func(x):
 def test_cache_hit_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any]
 ) -> None:
-    run_loop(cached_func, 42)
+    
+    # Setup cache items
+    keys = list(range(10))
+    for key in keys:
+        run_loop(cached_func, key)
 
-    benchmark(run_loop, cached_func, 42)
+    async def run() -> None:
+        for _ in range(100):
+            for key in keys:
+                await cached_func(key)
+
+    benchmark(run_loop, run)
 
 
 def test_cache_miss_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any]
 ) -> None:
-    benchmark(run_loop, cached_func, object())
+    unique_objects = [object() for _ in range(1000)]
+
+    async def run() -> None:
+        for obj in unique_objects:
+            await cached_func(obj)
+    
+    benchmark(run_loop, run)
 
 
 def test_cache_fill_eviction_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any]
 ) -> None:
-    keys = list(range(256))
+    keys = list(range(5000))
 
     async def fill():
         for k in keys:
