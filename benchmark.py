@@ -122,14 +122,15 @@ def test_cache_invalidate_benchmark(
 ) -> None:
     
     # Populate cache
-    for i in range(123, 321):
+    keys = list(range(123, 321))
+    for i in keys:
         run_loop(func, i)
 
     invalidate = func.cache_invalidate
 
     @benchmark
     def run() -> None:
-        for i in range(123, 321):
+        for i in keys:
             invalidate(i)
 
 
@@ -139,14 +140,15 @@ def test_cache_info_benchmark(
 ) -> None:
     
     # Populate cache
-    for i in range(1000):
+    keys = list(range(1000))
+    for i in keys:
         run_loop(func, i)
 
     cache_info = func.cache_info
     
     @benchmark
     def run() -> None:
-        for _ in range(1000):
+        for _ in keys:
             cache_info()
 
 
@@ -163,7 +165,7 @@ def test_concurrent_cache_hit_benchmark(
     async def gather_coros():
         gather = asyncio.gather
         for _ in range(10):
-            return await gather(*map(func, range(600, 700)))
+            return await gather(*map(func, keys))
 
     benchmark(run_loop, gather_coros)
 
