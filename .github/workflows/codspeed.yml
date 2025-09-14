@@ -32,7 +32,9 @@ jobs:
 
       - name: Run the benchmarks
         uses: CodSpeedHQ/action@v4
+        env:
+          PYTEST_ADDOPTS: ""
         with:
           mode: instrumentation
-          run: pytest --codspeed benchmark.py -- -p no:pytest_cov
-          token: ${{ secrets.CODSPEED_TOKEN }}
+          run: pytest --codspeed benchmark.py
+          token: ${{ secrets.CODSPEED_TOKEN }}"
