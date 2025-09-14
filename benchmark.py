@@ -208,7 +208,9 @@ def test_cache_fill_eviction_benchmark(
 
 @pytest.mark.parametrize("func", funcs, ids=ids)
 def test_internal_cache_hit_microbenchmark(
-    benchmark: BenchmarkFixture, func: _LRUCacheWrapper[Any]
+    benchmark: BenchmarkFixture,
+    run_loop: Callable[..., Any],
+    func: _LRUCacheWrapper[Any],
 ) -> None:
     """Directly benchmark _cache_hit (internal, sync) using parameterized funcs."""
     cache_hit = func._cache_hit
