@@ -24,15 +24,16 @@ def loop():
 
 @pytest.fixture
 def run_loop(loop):
+    async def _get_coro(awaitable):
+        """A helper function that turns an awaitable into a coroutine."""
+        return await awaitable
+
     def run_the_loop(fn, *args, **kwargs):
-        return loop.run_until_complete(_get_coro(fn(*args, **kwargs)))
+        awaitable = fn(*args, **kwargs)
+        coro = awaitable if asyncio.iscoroutine(awaitable) else _get_coro(awaitable)
+        return loop.run_until_complete(coro)
 
     return run_the_loop
-
-
-async def _get_coro(awaitable):
-    """A helper function that turns an awaitable into a coroutine."""
-    return await awaitable
 
 
 # Bounded cache (LRU)
