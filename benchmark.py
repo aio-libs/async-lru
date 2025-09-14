@@ -243,7 +243,6 @@ def test_internal_cache_miss_microbenchmark(
 def test_internal_task_done_callback_microbenchmark(
     benchmark: BenchmarkFixture,
     loop: asyncio.BaseEventLoop,
-    run_loop: Callable[..., Any],
     func: _LRUCacheWrapper[Any],
     task_state: str,
 ) -> None:
@@ -270,7 +269,7 @@ def test_internal_task_done_callback_microbenchmark(
         except Exception:
             pass
 
-    iterations = list(range(1000))
+    iterations = range(1000)
     futs = list(zip(iterations, (loop.create_future() for _ in iterations)))
 
     callback = func._task_done_callback
