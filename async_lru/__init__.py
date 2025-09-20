@@ -56,6 +56,7 @@ class _CacheParameters(TypedDict):
 class _CacheItem(Generic[_R]):
     fut: "asyncio.Future[_R]"
     later_call: Optional[asyncio.Handle]
+    waiters: int
 
     def cancel(self) -> None:
         if self.later_call is not None:
@@ -205,7 +206,13 @@ class _LRUCacheWrapper(Generic[_R]):
         if cache_item is not None:
             self._cache_hit(key)
             if not cache_item.fut.done():
-                return await asyncio.shield(cache_item.fut)
+                cache_item.waiters += 1
+                try:
+                    return await asyncio.shield(cache_item.fut)
+                except CancelledError:
+                    _handle_cancelled_error(cache_item, task)
+                finally:
+                    cache_item.waiters -= 1
 
             return cache_item.fut.result()
 
@@ -215,14 +222,21 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__tasks.add(task)
         task.add_done_callback(partial(self._task_done_callback, fut, key))
 
-        self.__cache[key] = _CacheItem(fut, None)
+        cache_item = _CacheItem(fut, None, 1)
+        self.__cache[key] = cache_item
 
         if self.__maxsize is not None and len(self.__cache) > self.__maxsize:
             dropped_key, cache_item = self.__cache.popitem(last=False)
             cache_item.cancel()
 
         self._cache_miss(key)
-        return await asyncio.shield(fut)
+
+        try:
+            return await asyncio.shield(fut)
+        except CancelledError:
+            _handle_cancelled_error(cache_item, task)
+        finally:
+            cache_item.waiters -= 1
 
     def __get__(
         self, instance: _T, owner: Optional[Type[_T]]
@@ -231,6 +245,13 @@ class _LRUCacheWrapper(Generic[_R]):
             return self
         else:
             return _LRUCacheWrapperInstanceMethod(self, instance)
+
+
+def _handle_cancelled_error(cache_item: _CacheItem, task: asyncio.Task[Any]) -> None:
+    if cache_item.waiters == 1 and not task.done():
+        task.cancel()
+        cache_item.cancel()
+        self.__cache.pop(key)
 
 
 @final
