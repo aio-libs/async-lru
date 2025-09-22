@@ -76,7 +76,7 @@ async def uncached_func(x):
     return x
 
 
-ids = ["bounded", "unbounded"]
+ids = ["func-bounded", "func-unbounded", "meth-bounded", "meth-unbounded"]
 funcs = [cached_func, cached_func_unbounded, Methods.cached_meth, Methods.cached_meth_unbounded]
 funcs_ttl = [cached_func_ttl, cached_func_unbounded_ttl, Methods.cached_meth_ttl, Methods.cached_meth_unbounded_ttl]
 
