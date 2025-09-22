@@ -58,13 +58,27 @@ async def cached_func_unbounded_ttl(x):
     return x
 
 
+class Bench:
+    @alru_cache(maxsize=128)
+    async def cached_meth(self, x):
+        return x
+    @alru_cache(maxsize=16, ttl=0.01)
+    async def cached_meth_ttl(self, x):
+        return x
+    @alru_cache()
+    async def cached_meth_unbounded(self, x):
+        return x
+    @alru_cache(ttl=0.01)
+    async def cached_meth_unbounded_ttl(self, x):
+        return x
+    
 async def uncached_func(x):
     return x
 
 
 ids = ["bounded", "unbounded"]
-funcs = [cached_func, cached_func_unbounded]
-funcs_ttl = [cached_func_ttl, cached_func_unbounded_ttl]
+funcs = [cached_func, cached_func_unbounded, Bench.cached_meth, Bench.cached_meth_unbounded]
+funcs_ttl = [cached_func_ttl, cached_func_unbounded_ttl, Bench.cached_meth_ttl, Bench.cached_meth_unbounded_ttl]
 
 
 @pytest.mark.parametrize("func", funcs, ids=ids)
