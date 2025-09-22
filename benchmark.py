@@ -219,8 +219,13 @@ def test_cache_fill_eviction_benchmark(
 # These benchmarks directly exercise internal (sync) methods and data structures
 # not covered by the async public API benchmarks above.
 
+# The relevant internal methods do not exist on _LRUCacheWrapperInstanceMethod,
+# so we can skip methods for this part of the benchmark suite.
+only_funcs = funcs[:2]
+func_ids = ids[:2]
 
-@pytest.mark.parametrize("func", funcs, ids=ids)
+
+@pytest.mark.parametrize("func", only_funcs, ids=func_ids)
 def test_internal_cache_hit_microbenchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -240,7 +245,7 @@ def test_internal_cache_hit_microbenchmark(
             cache_hit(i)
 
 
-@pytest.mark.parametrize("func", funcs, ids=ids)
+@pytest.mark.parametrize("func", only_funcs, ids=func_ids)
 def test_internal_cache_miss_microbenchmark(
     benchmark: BenchmarkFixture, func: _LRUCacheWrapper[Any]
 ) -> None:
@@ -253,7 +258,7 @@ def test_internal_cache_miss_microbenchmark(
             cache_miss(i)
 
 
-@pytest.mark.parametrize("func", funcs, ids=ids)
+@pytest.mark.parametrize("func", only_funcs, ids=func_ids)
 @pytest.mark.parametrize("task_state", ["finished", "cancelled", "exception"])
 def test_internal_task_done_callback_microbenchmark(
     benchmark: BenchmarkFixture,
