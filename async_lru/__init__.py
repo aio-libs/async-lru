@@ -1,7 +1,7 @@
 import asyncio
 import dataclasses
+import inspect
 import sys
-from asyncio.coroutines import _is_coroutine  # type: ignore[attr-defined]
 from functools import _CacheInfo, _make_key, partial, partialmethod
 from typing import (
     Any,
@@ -27,8 +27,11 @@ if sys.version_info >= (3, 11):
 else:
     from typing_extensions import Self
 
+if sys.version_info < (3, 14):
+    from asyncio.coroutines import _is_coroutine  # type: ignore[attr-defined]
 
-__version__ = "2.0.4"
+
+__version__ = "2.0.5"
 
 __all__ = ("alru_cache",)
 
@@ -95,7 +98,8 @@ class _LRUCacheWrapper(Generic[_R]):
             pass
         # set __wrapped__ last so we don't inadvertently copy it
         # from the wrapped function when updating __dict__
-        self._is_coroutine = _is_coroutine
+        if sys.version_info < (3, 14):
+            self._is_coroutine = _is_coroutine
         self.__wrapped__ = fn
         self.__maxsize = maxsize
         self.__typed = typed
@@ -168,21 +172,23 @@ class _LRUCacheWrapper(Generic[_R]):
     ) -> None:
         self.__tasks.discard(task)
 
+        if task.cancelled():
+            fut.cancel()
+            self.__cache.pop(key, None)
+            return
+
+        exc = task.exception()
+        if exc is not None:
+            fut.set_exception(exc)
+            self.__cache.pop(key, None)
+            return
+
         cache_item = self.__cache.get(key)
         if self.__ttl is not None and cache_item is not None:
             loop = asyncio.get_running_loop()
             cache_item.later_call = loop.call_later(
                 self.__ttl, self.__cache.pop, key, None
             )
-
-        if task.cancelled():
-            fut.cancel()
-            return
-
-        exc = task.exception()
-        if exc is not None:
-            fut.set_exception(exc)
-            return
 
         fut.set_result(task.result())
 
@@ -197,19 +203,11 @@ class _LRUCacheWrapper(Generic[_R]):
         cache_item = self.__cache.get(key)
 
         if cache_item is not None:
+            self._cache_hit(key)
             if not cache_item.fut.done():
-                self._cache_hit(key)
                 return await asyncio.shield(cache_item.fut)
 
-            exc = cache_item.fut._exception
-
-            if exc is None:
-                self._cache_hit(key)
-                return cache_item.fut.result()
-            else:
-                # exception here
-                cache_item = self.__cache.pop(key)
-                cache_item.cancel()
+            return cache_item.fut.result()
 
         fut = loop.create_future()
         coro = self.__wrapped__(*fn_args, **fn_kwargs)
@@ -268,7 +266,8 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
             pass
         # set __wrapped__ last so we don't inadvertently copy it
         # from the wrapped function when updating __dict__
-        self._is_coroutine = _is_coroutine
+        if sys.version_info < (3, 14):
+            self._is_coroutine = _is_coroutine
         self.__wrapped__ = wrapper.__wrapped__
         self.__instance = instance
         self.__wrapper = wrapper
@@ -305,14 +304,17 @@ def _make_wrapper(
         while isinstance(origin, (partial, partialmethod)):
             origin = origin.func
 
-        if not asyncio.iscoroutinefunction(origin):
+        if not inspect.iscoroutinefunction(origin):
             raise RuntimeError(f"Coroutine function is required, got {fn!r}")
 
         # functools.partialmethod support
         if hasattr(fn, "_make_unbound_method"):
             fn = fn._make_unbound_method()
 
-        return _LRUCacheWrapper(cast(_CB[_R], fn), maxsize, typed, ttl)
+        wrapper = _LRUCacheWrapper(cast(_CB[_R], fn), maxsize, typed, ttl)
+        if sys.version_info >= (3, 12):
+            wrapper = inspect.markcoroutinefunction(wrapper)
+        return wrapper
 
     return wrapper
 
