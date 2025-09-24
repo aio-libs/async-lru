@@ -26,13 +26,7 @@ jobs:
           cache-dependency-path: '**/requirements*.txt'
 
       - name: Install dependencies
-        run: |
-          pip install -r requirements-dev.txt
-          pip install .
-
-      - name: Uninstall coverage utils
-        # these pollute the codspeed flamegraphs
-        run: pip uninstall -y coverage pytest-cov
+        run: pip install -r requirements-benchmarks.txt
 
       - name: Create empty pytest config
         run: echo "[pytest]" > .empty-pytest.ini
