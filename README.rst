@@ -95,14 +95,14 @@ otherwise.
 Benchmarks
 ----------
 
-async-lru uses [CodSpeed](https://codspeed.io/) for performance regression testing.
+async-lru uses `CodSpeed <https://codspeed.io/>`_ for performance regression testing.
 
 To run the benchmarks locally:
 
 .. code-block:: shell
 
     pip install -r requirements-dev.txt
-    pytest --codspeed
+    pytest --codspeed benchmark.py
 
 The benchmark suite covers both bounded (with maxsize) and unbounded (no maxsize) cache configurations. Scenarios include:
 
@@ -116,7 +116,7 @@ The benchmark suite covers both bounded (with maxsize) and unbounded (no maxsize
 - Concurrent cache hits
 - Baseline (uncached async function)
 
-On CI, benchmarks are run automatically via GitHub Actions on all supported Python versions (3.9–3.13), and results are uploaded to CodSpeed (if a `CODSPEED_TOKEN` is configured). You can view performance history and detect regressions on the CodSpeed dashboard.
+On CI, benchmarks are run automatically via GitHub Actions on Python 3.13, and results are uploaded to CodSpeed (if a `CODSPEED_TOKEN` is configured). You can view performance history and detect regressions on the CodSpeed dashboard.
 
 Thanks
 ------

@@ -14,9 +14,6 @@ jobs:
   benchmark:
     name: Run CodSpeed Benchmarks (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,17 +21,19 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.13'
           cache: 'pip'
           cache-dependency-path: '**/requirements*.txt'
 
       - name: Install dependencies
-        run: |
-          pip install -r requirements-dev.txt
-          pip install .
+        run: pip install -r requirements-benchmarks.txt
 
-      - name: Run CodSpeed benchmarks
-        run: |
-          pytest --codspeed --codspeed-upload
-        env:
-          CODSPEED_TOKEN: ${{ secrets.CODSPEED_TOKEN }}
+      - name: Create empty pytest config
+        run: echo "[pytest]" > .empty-pytest.ini
+
+      - name: Run the benchmarks
+        uses: CodSpeedHQ/action@v4
+        with:
+          mode: instrumentation
+          run: pytest -c .empty-pytest.ini --codspeed benchmark.py --timeout=0
+          token: ${{ secrets.CODSPEED_TOKEN }}
