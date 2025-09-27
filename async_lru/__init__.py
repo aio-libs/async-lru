@@ -189,9 +189,7 @@ class _LRUCacheWrapper(Generic[_R]):
         ttl = self.__ttl
         if ttl is not None and cache_item is not None:
             loop = asyncio.get_running_loop()
-            cache_item.later_call = loop.call_later(
-                ttl, cache.pop, key, None
-            )
+            cache_item.later_call = loop.call_later(ttl, cache.pop, key, None)
 
         fut.set_result(task.result())
 
