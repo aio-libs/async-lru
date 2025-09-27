@@ -92,6 +92,32 @@ The library supports explicit invalidation for specific function call by
 The method returns `True` if corresponding arguments set was cached already, `False`
 otherwise.
 
+Benchmarks
+----------
+
+async-lru uses `CodSpeed <https://codspeed.io/>`_ for performance regression testing.
+
+To run the benchmarks locally:
+
+.. code-block:: shell
+
+    pip install -r requirements-dev.txt
+    pytest --codspeed benchmark.py
+
+The benchmark suite covers both bounded (with maxsize) and unbounded (no maxsize) cache configurations. Scenarios include:
+
+- Cache hit
+- Cache miss
+- Cache fill/eviction (cycling through more keys than maxsize)
+- Cache clear
+- TTL expiry
+- Cache invalidation
+- Cache info retrieval
+- Concurrent cache hits
+- Baseline (uncached async function)
+
+On CI, benchmarks are run automatically via GitHub Actions on Python 3.13, and results are uploaded to CodSpeed (if a `CODSPEED_TOKEN` is configured). You can view performance history and detect regressions on the CodSpeed dashboard.
+
 Thanks
 ------
 
