@@ -1,6 +1,9 @@
 import asyncio
+
 import pytest
+
 from async_lru import alru_cache
+
 
 @pytest.mark.parametrize("num_to_cancel", [0, 1, 2, 3])
 async def test_cancel(num_to_cancel: int) -> None:
@@ -29,6 +32,7 @@ async def test_cancel(num_to_cancel: int) -> None:
 
     # check state
     assert cache_item_task_finished == (num_to_cancel < 3)
+
 
 @pytest.mark.asyncio
 async def test_cancel_single_waiter_triggers_handle_cancelled_error():
