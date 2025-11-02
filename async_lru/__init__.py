@@ -217,7 +217,6 @@ class _LRUCacheWrapper(Generic[_R]):
         if cache_item is not None:
             self._cache_hit(key)
             if not cache_item.fut.done():
-
                 # Each logical waiter increments waiters on entry.
                 cache_item.waiters += 1
 
