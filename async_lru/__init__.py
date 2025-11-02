@@ -211,6 +211,7 @@ class _LRUCacheWrapper(Generic[_R]):
                     return await asyncio.shield(cache_item.fut)
                 except CancelledError:
                     _handle_cancelled_error(cache_item, task)
+                    raise
                 finally:
                     cache_item.waiters -= 1
 
@@ -235,6 +236,7 @@ class _LRUCacheWrapper(Generic[_R]):
             return await asyncio.shield(fut)
         except CancelledError:
             _handle_cancelled_error(cache_item, task)
+            raise
         finally:
             cache_item.waiters -= 1
 
