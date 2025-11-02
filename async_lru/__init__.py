@@ -57,6 +57,7 @@ class _CacheItem(Generic[_R]):
     fut: "asyncio.Future[_R]"
     later_call: Optional[asyncio.Handle]
     waiters: int
+    task: "asyncio.Task[_R]"
 
     def cancel(self) -> None:
         if self.later_call is not None:
@@ -193,7 +194,17 @@ class _LRUCacheWrapper(Generic[_R]):
 
         fut.set_result(task.result())
 
+    def _handle_cancelled_error(self, key: Hashable, cache_item: "_CacheItem") -> None:
+        # Called when a waiter is cancelled.
+        # If this is the last waiter and the underlying task is not done,
+        # cancel the underlying task and remove the cache entry.
+        if cache_item.waiters == 1 and not cache_item.task.done():
+            cache_item.cancel()  # Cancel TTL expiration
+            cache_item.task.cancel()  # Cancel the running coroutine
+            self.__cache.pop(key, None)  # Remove from cache
+
     async def __call__(self, /, *fn_args: Any, **fn_kwargs: Any) -> _R:
+        # Main entry point for cached coroutine calls.
         if self.__closed:
             raise RuntimeError(f"alru_cache is closed for {self}")
 
@@ -206,15 +217,21 @@ class _LRUCacheWrapper(Generic[_R]):
         if cache_item is not None:
             self._cache_hit(key)
             if not cache_item.fut.done():
+
+                # Each logical waiter increments waiters on entry.
                 cache_item.waiters += 1
+                
                 try:
+                    # All waiters await the same future.
                     return await asyncio.shield(cache_item.fut)
                 except asyncio.CancelledError:
-                    _handle_cancelled_error(cache_item, task)
+                    # If a waiter is cancelled, handle possible last-waiter cleanup.
+                    self._handle_cancelled_error(key, cache_item)
                     raise
                 finally:
+                    # Each logical waiter decrements waiters on exit (normal or cancelled).
                     cache_item.waiters -= 1
-
+            # If the future is already done, just return the result.
             return cache_item.fut.result()
 
         fut = loop.create_future()
@@ -223,19 +240,19 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__tasks.add(task)
         task.add_done_callback(partial(self._task_done_callback, fut, key))
 
-        cache_item = _CacheItem(fut, None, 1)
+        cache_item = _CacheItem(fut, None, 1, task)
         self.__cache[key] = cache_item
 
         if self.__maxsize is not None and len(self.__cache) > self.__maxsize:
-            dropped_key, cache_item = self.__cache.popitem(last=False)
-            cache_item.cancel()
+            dropped_key, dropped_cache_item = self.__cache.popitem(last=False)
+            dropped_cache_item.cancel()
 
         self._cache_miss(key)
 
         try:
             return await asyncio.shield(fut)
         except asyncio.CancelledError:
-            _handle_cancelled_error(cache_item, task)
+            self._handle_cancelled_error(key, cache_item)
             raise
         finally:
             cache_item.waiters -= 1
@@ -247,13 +264,6 @@ class _LRUCacheWrapper(Generic[_R]):
             return self
         else:
             return _LRUCacheWrapperInstanceMethod(self, instance)
-
-
-def _handle_cancelled_error(cache_item: _CacheItem, task: asyncio.Task[Any]) -> None:
-    if cache_item.waiters == 1 and not task.done():
-        task.cancel()
-        cache_item.cancel()
-        self.__cache.pop(key)
 
 
 @final
