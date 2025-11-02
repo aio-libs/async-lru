@@ -220,7 +220,7 @@ class _LRUCacheWrapper(Generic[_R]):
 
                 # Each logical waiter increments waiters on entry.
                 cache_item.waiters += 1
-                
+
                 try:
                     # All waiters await the same future.
                     return await asyncio.shield(cache_item.fut)
