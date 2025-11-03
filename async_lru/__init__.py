@@ -2,7 +2,7 @@ import asyncio
 import dataclasses
 import inspect
 import sys
-from functools import _CacheInfo, _make_key, partialmethod
+from functools import _CacheInfo, _make_key, partial, partialmethod
 from typing import (
     Any,
     Callable,
