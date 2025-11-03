@@ -169,7 +169,7 @@ class _LRUCacheWrapper(Generic[_R]):
 
     def _get_done_callback(
         self, fut: "asyncio.Future[_R]", key: Hashable
-    ) -> Callable[["asyncio.Task[_R]"], None]:
+    ) -> Callable[["asyncio.Future[_R]"], None]:
         def _task_done_callback(task: "asyncio.Task[_R]") -> None:
             self.__tasks.discard(task)
 
@@ -193,7 +193,7 @@ class _LRUCacheWrapper(Generic[_R]):
 
             fut.set_result(task.result())
 
-        return _task_done_callback
+        return _task_done_callback  # type: ignore [return-value]
 
     async def __call__(self, /, *fn_args: Any, **fn_kwargs: Any) -> _R:
         if self.__closed:
