@@ -173,25 +173,25 @@ class _LRUCacheWrapper(Generic[_R]):
         
         def _task_done_callback(task: "asyncio.Task[_R]") -> None:
             self.__tasks.discard(task)
-    
+
             if task.cancelled():
                 fut.cancel()
                 self.__cache.pop(key, None)
                 return
-    
+
             exc = task.exception()
             if exc is not None:
                 fut.set_exception(exc)
                 self.__cache.pop(key, None)
                 return
-    
+
             cache_item = self.__cache.get(key)
             if self.__ttl is not None and cache_item is not None:
                 loop = asyncio.get_running_loop()
                 cache_item.later_call = loop.call_later(
                     self.__ttl, self.__cache.pop, key, None
                 )
-    
+
             fut.set_result(task.result())
 
         return _task_done_callback
