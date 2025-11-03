@@ -15,7 +15,7 @@ async def test_done_callback_cancelled() -> None:
 
     key = 1
 
-    task.add_done_callback(partial(wrapped._task_done_callback, fut, key))
+    task.add_done_callback(wrapped._get_done_callback(fut, key))
     wrapped._LRUCacheWrapper__tasks.add(task)  # type: ignore[attr-defined]
 
     task.cancel()
@@ -33,7 +33,7 @@ async def test_done_callback_exception() -> None:
 
     key = 1
 
-    task.add_done_callback(partial(wrapped._task_done_callback, fut, key))
+    task.add_done_callback(wrapped._get_done_callback(fut, key))
     wrapped._LRUCacheWrapper__tasks.add(task)  # type: ignore[attr-defined]
 
     exc = ZeroDivisionError()
@@ -59,7 +59,7 @@ async def test_done_callback() -> None:
     key = 1
     fut = loop.create_future()
 
-    task.add_done_callback(partial(wrapped._task_done_callback, fut, key))
+    task.add_done_callback(wrapped._get_done_callback(fut, key))
     wrapped._LRUCacheWrapper__tasks.add(task)  # type: ignore[attr-defined]
 
     task.set_result(1)
