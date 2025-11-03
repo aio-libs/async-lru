@@ -167,30 +167,34 @@ class _LRUCacheWrapper(Generic[_R]):
     def _cache_miss(self, key: Hashable) -> None:
         self.__misses += 1
 
-    def _task_done_callback(
-        self, fut: "asyncio.Future[_R]", key: Hashable, task: "asyncio.Task[_R]"
-    ) -> None:
-        self.__tasks.discard(task)
+    def _get_done_callback(
+        self, fut: "asyncio.Future[_R]", key: Hashable
+    ) -> Callable[["asyncio.Task[_R]"], None]:
+        
+        def _task_done_callback(task: "asyncio.Task[_R]") -> None:
+            self.__tasks.discard(task)
+    
+            if task.cancelled():
+                fut.cancel()
+                self.__cache.pop(key, None)
+                return
+    
+            exc = task.exception()
+            if exc is not None:
+                fut.set_exception(exc)
+                self.__cache.pop(key, None)
+                return
+    
+            cache_item = self.__cache.get(key)
+            if self.__ttl is not None and cache_item is not None:
+                loop = asyncio.get_running_loop()
+                cache_item.later_call = loop.call_later(
+                    self.__ttl, self.__cache.pop, key, None
+                )
+    
+            fut.set_result(task.result())
 
-        if task.cancelled():
-            fut.cancel()
-            self.__cache.pop(key, None)
-            return
-
-        exc = task.exception()
-        if exc is not None:
-            fut.set_exception(exc)
-            self.__cache.pop(key, None)
-            return
-
-        cache_item = self.__cache.get(key)
-        if self.__ttl is not None and cache_item is not None:
-            loop = asyncio.get_running_loop()
-            cache_item.later_call = loop.call_later(
-                self.__ttl, self.__cache.pop, key, None
-            )
-
-        fut.set_result(task.result())
+        return _task_done_callback
 
     async def __call__(self, /, *fn_args: Any, **fn_kwargs: Any) -> _R:
         if self.__closed:
@@ -213,7 +217,7 @@ class _LRUCacheWrapper(Generic[_R]):
         coro = self.__wrapped__(*fn_args, **fn_kwargs)
         task: asyncio.Task[_R] = loop.create_task(coro)
         self.__tasks.add(task)
-        task.add_done_callback(partial(self._task_done_callback, fut, key))
+        task.add_done_callback(self._get_done_callback(fut, key))
 
         self.__cache[key] = _CacheItem(fut, None)
 
