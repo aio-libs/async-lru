@@ -204,7 +204,6 @@ class _LRUCacheWrapper(Generic[_R]):
             self.__cache.pop(key, None)  # Remove from cache
 
     async def __call__(self, /, *fn_args: Any, **fn_kwargs: Any) -> _R:
-        # Main entry point for cached coroutine calls.
         if self.__closed:
             raise RuntimeError(f"alru_cache is closed for {self}")
 
