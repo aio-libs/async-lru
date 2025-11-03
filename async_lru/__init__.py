@@ -54,10 +54,9 @@ class _CacheParameters(TypedDict):
 @final
 @dataclasses.dataclass
 class _CacheItem(Generic[_R]):
-    fut: "asyncio.Future[_R]"
+    task: "asyncio.Task[_R]"
     later_call: Optional[asyncio.Handle]
     waiters: int
-    task: "asyncio.Task[_R]"
 
     def cancel(self) -> None:
         if self.later_call is not None:
@@ -170,18 +169,9 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__misses += 1
 
     def _task_done_callback(
-        self, fut: "asyncio.Future[_R]", key: Hashable, task: "asyncio.Task[_R]"
+        self, key: Hashable, task: "asyncio.Task[_R]"
     ) -> None:
-        self.__tasks.discard(task)
-
-        if task.cancelled():
-            fut.cancel()
-            self.__cache.pop(key, None)
-            return
-
-        exc = task.exception()
-        if exc is not None:
-            fut.set_exception(exc)
+        if task.cancelled() or task.exception() is not None:
             self.__cache.pop(key, None)
             return
 
@@ -191,8 +181,6 @@ class _LRUCacheWrapper(Generic[_R]):
             cache_item.later_call = loop.call_later(
                 self.__ttl, self.__cache.pop, key, None
             )
-
-        fut.set_result(task.result())
 
     def _handle_cancelled_error(self, key: Hashable, cache_item: "_CacheItem") -> None:
         # Called when a waiter is cancelled.
@@ -215,13 +203,13 @@ class _LRUCacheWrapper(Generic[_R]):
 
         if cache_item is not None:
             self._cache_hit(key)
-            if not cache_item.fut.done():
+            if not cache_item.task.done():
                 # Each logical waiter increments waiters on entry.
                 cache_item.waiters += 1
 
                 try:
-                    # All waiters await the same future.
-                    return await asyncio.shield(cache_item.fut)
+                    # All waiters await the same shielded task.
+                    return await asyncio.shield(cache_item.task)
                 except asyncio.CancelledError:
                     # If a waiter is cancelled, handle possible last-waiter cleanup.
                     self._handle_cancelled_error(key, cache_item)
@@ -229,16 +217,15 @@ class _LRUCacheWrapper(Generic[_R]):
                 finally:
                     # Each logical waiter decrements waiters on exit (normal or cancelled).
                     cache_item.waiters -= 1
-            # If the future is already done, just return the result.
-            return cache_item.fut.result()
+            # If the task is already done, just return the result.
+            return cache_item.task.result()
 
-        fut = loop.create_future()
         coro = self.__wrapped__(*fn_args, **fn_kwargs)
         task: asyncio.Task[_R] = loop.create_task(coro)
         self.__tasks.add(task)
-        task.add_done_callback(partial(self._task_done_callback, fut, key))
+        task.add_done_callback(partial(self._task_done_callback, key))
 
-        cache_item = _CacheItem(fut, None, 1, task)
+        cache_item = _CacheItem(task, None, 1)
         self.__cache[key] = cache_item
 
         if self.__maxsize is not None and len(self.__cache) > self.__maxsize:
@@ -248,7 +235,7 @@ class _LRUCacheWrapper(Generic[_R]):
         self._cache_miss(key)
 
         try:
-            return await asyncio.shield(fut)
+            return await asyncio.shield(task)
         except asyncio.CancelledError:
             self._handle_cancelled_error(key, cache_item)
             raise
