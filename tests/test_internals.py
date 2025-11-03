@@ -1,5 +1,4 @@
 import asyncio
-from functools import partial
 from unittest import mock
 
 import pytest
