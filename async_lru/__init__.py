@@ -170,7 +170,7 @@ class _LRUCacheWrapper(Generic[_R]):
     def _get_done_callback(
         self, fut: "asyncio.Future[_R]", key: Hashable
     ) -> Callable[["asyncio.Task[_R]"], None]:
-        
+
         def _task_done_callback(task: "asyncio.Task[_R]") -> None:
             self.__tasks.discard(task)
 
