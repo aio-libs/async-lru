@@ -11,6 +11,7 @@ from typing import (
     Hashable,
     Optional,
     OrderedDict,
+    List,
     Set,
     Type,
     TypedDict,
