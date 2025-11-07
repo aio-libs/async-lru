@@ -233,7 +233,7 @@ class _LRUCacheWrapper(Generic[_R]):
             return _LRUCacheWrapperInstanceMethod(self, instance)
 
 @final
-class _LRUCacheWrapperUnbounded(_LRUCacheWrapperBase[_R]):
+class _LRUCacheWrapperUnbounded(_LRUCacheWrapper[_R]):
     def _cache_hit(self, key: Hashable) -> None:
         self.__hits += 1
 
