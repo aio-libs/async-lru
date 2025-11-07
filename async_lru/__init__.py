@@ -222,7 +222,7 @@ class _LRUCacheWrapper(Generic[_R]):
         coro = self.__wrapped__(*fn_args, **fn_kwargs)
         task: asyncio.Task[_R] = loop.create_task(coro)
         self.__tasks.add(task)
-        task.add_done_callback(self._done_callback(fut, key))
+        task.add_done_callback(self._get_done_callback(fut, key))
 
         self.__cache[key] = _CacheItem(fut, None)
 
