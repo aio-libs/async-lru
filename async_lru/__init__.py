@@ -114,7 +114,13 @@ class _LRUCacheWrapper(Generic[_R]):
     @property
     def __tasks(self) -> List["asyncio.Task[_R]"]:
         # NOTE: I don't think we need to form a set first here but not too sure we want it for guarantees
-        return list({cache_item.task for cache_item in self.__cache.values() if not cache_item.task.done()})
+        return list(
+            {
+                cache_item.task
+                for cache_item in self.__cache.values()
+                if not cache_item.task.done()
+            }
+        )
 
     def cache_invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
         key = _make_key(args, kwargs, self.__typed)
@@ -172,9 +178,7 @@ class _LRUCacheWrapper(Generic[_R]):
     def _cache_miss(self, key: Hashable) -> None:
         self.__misses += 1
 
-    def _task_done_callback(
-        self, key: Hashable, task: "asyncio.Task[_R]"
-    ) -> None:
+    def _task_done_callback(self, key: Hashable, task: "asyncio.Task[_R]") -> None:
         if task.cancelled() or task.exception() is not None:
             self.__cache.pop(key, None)
             return
