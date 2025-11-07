@@ -195,7 +195,7 @@ class _LRUCacheWrapper(Generic[_R]):
         fut.set_result(task.result())
 
     def _handle_cancelled_error(
-        self, key: Hashable, cache_item: "_CacheItem[Any]",
+        self, key: Hashable, cache_item: "_CacheItem[Any]"
     ) -> None:
         # Called when a waiter is cancelled.
         # If this is the last waiter and the underlying task is not done,
