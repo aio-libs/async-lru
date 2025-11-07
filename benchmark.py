@@ -92,7 +92,7 @@ all_funcs = [
     cached_func_unbounded,
     Methods.cached_meth,
     Methods.cached_meth_unbounded,
-    *funcs_ttl
+    *funcs_ttl,
 ]
 
 ids = [
@@ -247,7 +247,7 @@ def test_cache_fill_eviction_benchmark(
 
 # The relevant internal methods do not exist on _LRUCacheWrapperInstanceMethod,
 # so we can skip methods for this part of the benchmark suite.
-only_funcs = funcs[:2] + funcs[4:5]
+only_funcs = all_funcs[:2] + all_funcs[4:5]
 func_ids = ids[:2] + ids[4:5]
 
 
