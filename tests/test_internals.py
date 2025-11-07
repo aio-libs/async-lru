@@ -11,11 +11,10 @@ async def test_done_callback_cancelled() -> None:
     wrapped = _LRUCacheWrapper(mock.ANY, None, False, None)
     loop = asyncio.get_running_loop()
     task = loop.create_future()
-    fut = loop.create_future()
 
     key = 1
 
-    task.add_done_callback(partial(wrapped._task_done_callback, fut, key))
+    task.add_done_callback(partial(wrapped._task_done_callback, key))
 
     task.cancel()
 
@@ -32,7 +31,7 @@ async def test_done_callback_exception() -> None:
 
     key = 1
 
-    task.add_done_callback(partial(wrapped._task_done_callback, fut, key))
+    task.add_done_callback(partial(wrapped._task_done_callback, key))
 
     exc = ZeroDivisionError()
 
