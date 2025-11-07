@@ -27,7 +27,6 @@ async def test_done_callback_exception() -> None:
     wrapped = _LRUCacheWrapper(mock.ANY, None, False, None)
     loop = asyncio.get_running_loop()
     task = loop.create_future()
-    fut = loop.create_future()
 
     key = 1
 
