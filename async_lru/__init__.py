@@ -64,9 +64,6 @@ class _CacheItem(Generic[_R]):
 
 
 @final
-class _DoneCallback:
-    def __init__(self, 
-@final
 class _LRUCacheWrapper(Generic[_R]):
     def __init__(
         self,
