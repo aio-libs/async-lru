@@ -35,7 +35,7 @@ async def test_cancel(num_to_cancel: int) -> None:
 
 
 @pytest.mark.asyncio
-async def test_cancel_single_waiter_triggers_handle_cancelled_error():
+async def test_cancel_single_waiter_triggers_handle_cancelled_error() -> None:
     # This test ensures the _handle_cancelled_error path (waiters == 1) is exercised.
     cache_item_task_finished = False
 
