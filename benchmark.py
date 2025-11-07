@@ -81,22 +81,33 @@ async def uncached_func(x):
     return x
 
 
-ids = ["func-bounded", "func-unbounded", "meth-bounded", "meth-unbounded"]
-funcs = [
-    cached_func,
-    cached_func_unbounded,
-    Methods.cached_meth,
-    Methods.cached_meth_unbounded,
-]
 funcs_ttl = [
     cached_func_ttl,
     cached_func_unbounded_ttl,
     Methods.cached_meth_ttl,
     Methods.cached_meth_unbounded_ttl,
 ]
+all_funcs = [
+    cached_func,
+    cached_func_unbounded,
+    Methods.cached_meth,
+    Methods.cached_meth_unbounded,
+    *funcs_ttl
+]
+
+ids = [
+    "func-bounded",
+    "func-unbounded",
+    "meth-bounded",
+    "meth-unbounded",
+    "func-bounded-ttl",
+    "func-unbounded-ttl",
+    "meth-bounded-ttl",
+    "meth-unbounded-ttl",
+]
 
 
-@pytest.mark.parametrize("func", funcs, ids=ids)
+@pytest.mark.parametrize("func", all_funcs, ids=ids)
 def test_cache_hit_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -115,7 +126,7 @@ def test_cache_hit_benchmark(
     benchmark(run_loop, run)
 
 
-@pytest.mark.parametrize("func", funcs, ids=ids)
+@pytest.mark.parametrize("func", all_funcs, ids=ids)
 def test_cache_miss_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -131,7 +142,7 @@ def test_cache_miss_benchmark(
     benchmark(run_loop, run)
 
 
-@pytest.mark.parametrize("func", funcs, ids=ids)
+@pytest.mark.parametrize("func", all_funcs, ids=ids)
 def test_cache_clear_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -155,7 +166,7 @@ def test_cache_ttl_expiry_benchmark(
     benchmark(run_loop, func_ttl, 99)
 
 
-@pytest.mark.parametrize("func", funcs, ids=ids)
+@pytest.mark.parametrize("func", all_funcs, ids=ids)
 def test_cache_invalidate_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -174,7 +185,7 @@ def test_cache_invalidate_benchmark(
             invalidate(i)
 
 
-@pytest.mark.parametrize("func", funcs, ids=ids)
+@pytest.mark.parametrize("func", all_funcs, ids=ids)
 def test_cache_info_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -193,7 +204,7 @@ def test_cache_info_benchmark(
             cache_info()
 
 
-@pytest.mark.parametrize("func", funcs, ids=ids)
+@pytest.mark.parametrize("func", all_funcs, ids=ids)
 def test_concurrent_cache_hit_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -236,8 +247,8 @@ def test_cache_fill_eviction_benchmark(
 
 # The relevant internal methods do not exist on _LRUCacheWrapperInstanceMethod,
 # so we can skip methods for this part of the benchmark suite.
-only_funcs = funcs[:2]
-func_ids = ids[:2]
+only_funcs = funcs[:2] + funcs[4:5]
+func_ids = ids[:2] + ids[4:5]
 
 
 @pytest.mark.parametrize("func", only_funcs, ids=func_ids)
