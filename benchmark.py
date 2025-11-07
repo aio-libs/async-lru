@@ -306,7 +306,7 @@ def test_internal_task_done_callback_microbenchmark(
 
     iterations = range(1000)
     create_future = loop.create_future
-    callback_fn = func._done_callback
+    callback_fn = func._get_done_callback
 
     @benchmark
     def run() -> None:
