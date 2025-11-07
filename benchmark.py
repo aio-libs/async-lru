@@ -4,7 +4,7 @@ from typing import Any, Callable
 
 import pytest
 
-from async_lru import _LRUCacheWrapper, alru_cache
+from async_lru import _DoneCallback, _LRUCacheWrapper, alru_cache
 
 
 try:
@@ -306,10 +306,9 @@ def test_internal_task_done_callback_microbenchmark(
 
     iterations = range(1000)
     create_future = loop.create_future
-    callback_fn = func._get_done_callback
 
     @benchmark
     def run() -> None:
         for i in iterations:
-            callback = callback_fn(create_future(), i)
+            callback = _DoneCallback(func, create_future(), i)
             callback(task)
