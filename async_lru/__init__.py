@@ -168,7 +168,7 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__misses += 1
 
     class _done_callback:
-        def __init__(self, wrapper: _LRUCacheWrapper[_R], fut: "asyncio.Future[_R]", key: Hashable) -> None:
+        def __init__(self, wrapper: "_LRUCacheWrapper[_R]", fut: "asyncio.Future[_R]", key: Hashable) -> None:
             self.wrapper = wrapper
             self.fut = fut
             self.key = key
