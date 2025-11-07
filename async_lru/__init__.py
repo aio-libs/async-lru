@@ -63,7 +63,6 @@ class _CacheItem(Generic[_R]):
             self.later_call = None
 
 
-@final
 class _LRUCacheWrapper(Generic[_R]):
     def __init__(
         self,
@@ -162,8 +161,7 @@ class _LRUCacheWrapper(Generic[_R]):
 
     def _cache_hit(self, key: Hashable) -> None:
         self.__hits += 1
-        if self.__maxsize is not None:
-            self.__cache.move_to_end(key)
+        self.__cache.move_to_end(key)
 
     def _cache_miss(self, key: Hashable) -> None:
         self.__misses += 1
@@ -233,6 +231,11 @@ class _LRUCacheWrapper(Generic[_R]):
         else:
             return _LRUCacheWrapperInstanceMethod(self, instance)
 
+@final
+class _LRUCacheWrapperUnbounded(_LRUCacheWrapperBase[_R]):
+    def _cache_hit(self, key: Hashable) -> None:
+        self.__hits += 1
+
 
 @final
 class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
@@ -294,11 +297,28 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
         return await self.__wrapper(self.__instance, *fn_args, **fn_kwargs)
 
 
+@overload
+def _make_wrapper(
+    maxsize: int,
+    typed: bool,
+    ttl: Optional[float] = None,
+) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]: ...
+    
+@overload
+def _make_wrapper(
+    maxsize: Literal[None],
+    typed: bool,
+    ttl: Optional[float] = None,
+) -> Callable[[_CBP[_R]], _LRUCacheWrapperUnbounded[_R]]: ...
+    
 def _make_wrapper(
     maxsize: Optional[int],
     typed: bool,
     ttl: Optional[float] = None,
-) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
+) -> Union[
+    Callable[[_CBP[_R]], _LRUCacheWrapper[_R]],
+    Callable[[_CBP[_R]], _LRUCacheWrapperUnbounded[_R]],
+]:
     def wrapper(fn: _CBP[_R]) -> _LRUCacheWrapper[_R]:
         origin = fn
 
@@ -312,12 +332,23 @@ def _make_wrapper(
         if hasattr(fn, "_make_unbound_method"):
             fn = fn._make_unbound_method()
 
-        wrapper = _LRUCacheWrapper(cast(_CB[_R], fn), maxsize, typed, ttl)
+        wrapper_cls = _LRUCacheWrapperUnbounded if maxsize is None else _LRUCacheWrapper
+        wrapper = wrapper_cls(cast(_CB[_R], fn), maxsize, typed, ttl)
         if sys.version_info >= (3, 12):
             wrapper = inspect.markcoroutinefunction(wrapper)
         return wrapper
 
     return wrapper
+
+
+@overload
+def alru_cache(
+    maxsize: Literal[None],
+    typed: bool = False,
+    *,
+    ttl: Optional[float] = None,
+) -> Callable[[_CBP[_R]], _LRUCacheWrapperUnbounded[_R]]:
+    ...
 
 
 @overload
@@ -343,7 +374,11 @@ def alru_cache(
     typed: bool = False,
     *,
     ttl: Optional[float] = None,
-) -> Union[Callable[[_CBP[_R]], _LRUCacheWrapper[_R]], _LRUCacheWrapper[_R]]:
+) -> Union[
+    Callable[[_CBP[_R]], _LRUCacheWrapper[_R]],
+    Callable[[_CBP[_R]], _LRUCacheWrapperUnbounded[_R]],
+    _LRUCacheWrapper[_R],
+]:
     if maxsize is None or isinstance(maxsize, int):
         return _make_wrapper(maxsize, typed, ttl)
     else:
