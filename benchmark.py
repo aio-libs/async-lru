@@ -154,7 +154,7 @@ def test_cache_clear_benchmark(
     benchmark(func.cache_clear)
 
 
-@pytest.mark.parametrize("func_ttl", funcs_ttl, ids=[f"{i}-ttl" for i in ids])
+@pytest.mark.parametrize("func_ttl", funcs_ttl, ids=ids[-4:])
 def test_cache_ttl_expiry_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
