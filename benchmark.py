@@ -81,7 +81,7 @@ async def uncached_func(x):
     return x
 
 
-funcs_no_ttl [
+funcs_no_ttl = [
     cached_func,
     cached_func_unbounded,
     Methods.cached_meth,
