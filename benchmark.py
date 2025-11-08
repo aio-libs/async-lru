@@ -108,10 +108,10 @@ ttl_ids = [
 ]
 
 all_funcs = [*funcs_no_ttl, *funcs_ttl]
-ids = [*no_ttl_ids, *ttl_ids]
+all_ids = [*no_ttl_ids, *ttl_ids]
 
 
-@pytest.mark.parametrize("func", all_funcs, ids=ids)
+@pytest.mark.parametrize("func", all_funcs, ids=all_ids)
 def test_cache_hit_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -130,7 +130,7 @@ def test_cache_hit_benchmark(
     benchmark(run_loop, run)
 
 
-@pytest.mark.parametrize("func", all_funcs, ids=ids)
+@pytest.mark.parametrize("func", all_funcs, ids=all_ids)
 def test_cache_miss_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -146,7 +146,7 @@ def test_cache_miss_benchmark(
     benchmark(run_loop, run)
 
 
-@pytest.mark.parametrize("func", all_funcs, ids=ids)
+@pytest.mark.parametrize("func", all_funcs, ids=all_ids)
 def test_cache_clear_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -158,7 +158,7 @@ def test_cache_clear_benchmark(
     benchmark(func.cache_clear)
 
 
-@pytest.mark.parametrize("func_ttl", funcs_ttl, ids=ids[-4:])
+@pytest.mark.parametrize("func_ttl", funcs_ttl, ids=ttl_ids)
 def test_cache_ttl_expiry_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -170,7 +170,7 @@ def test_cache_ttl_expiry_benchmark(
     benchmark(run_loop, func_ttl, 99)
 
 
-@pytest.mark.parametrize("func", all_funcs, ids=ids)
+@pytest.mark.parametrize("func", all_funcs, ids=all_ids)
 def test_cache_invalidate_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -189,7 +189,7 @@ def test_cache_invalidate_benchmark(
             invalidate(i)
 
 
-@pytest.mark.parametrize("func", all_funcs, ids=ids)
+@pytest.mark.parametrize("func", all_funcs, ids=all_ids)
 def test_cache_info_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -208,7 +208,7 @@ def test_cache_info_benchmark(
             cache_info()
 
 
-@pytest.mark.parametrize("func", all_funcs, ids=ids)
+@pytest.mark.parametrize("func", all_funcs, ids=all_ids)
 def test_concurrent_cache_hit_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
