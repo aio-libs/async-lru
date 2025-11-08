@@ -81,30 +81,34 @@ async def uncached_func(x):
     return x
 
 
+funcs_no_ttl [
+    cached_func,
+    cached_func_unbounded,
+    Methods.cached_meth,
+    Methods.cached_meth_unbounded,
+]
+no_ttl_ids = [
+    "func-bounded",
+    "func-unbounded",
+    "meth-bounded",
+    "meth-unbounded",
+]
+
 funcs_ttl = [
     cached_func_ttl,
     cached_func_unbounded_ttl,
     Methods.cached_meth_ttl,
     Methods.cached_meth_unbounded_ttl,
 ]
-all_funcs = [
-    cached_func,
-    cached_func_unbounded,
-    Methods.cached_meth,
-    Methods.cached_meth_unbounded,
-    *funcs_ttl,
-]
-
-ids = [
-    "func-bounded",
-    "func-unbounded",
-    "meth-bounded",
-    "meth-unbounded",
+ttl_ids = [
     "func-bounded-ttl",
     "func-unbounded-ttl",
     "meth-bounded-ttl",
     "meth-unbounded-ttl",
 ]
+
+all_funcs = [*funcs_no_ttl, *funcs_ttl]
+ids = [*no_ttl_ids, *ttl_ids]
 
 
 @pytest.mark.parametrize("func", all_funcs, ids=ids)
