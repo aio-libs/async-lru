@@ -1,15 +1,26 @@
+import sys
 from functools import _CacheInfo
-from typing import Callable
+from typing import Callable, TypeVar
 
 import pytest
 
-from async_lru import _R, _LRUCacheWrapper
+from async_lru import _LRUCacheWrapper
+
+
+if sys.version_info >= (3, 10):
+    from typing import ParamSpec
+else:
+    from typing_extensions import ParamSpec
+
+
+_T = TypeVar("_T")
+_P = ParamSpec("_P")
 
 
 @pytest.fixture
 def check_lru() -> Callable[..., None]:
     def _check_lru(
-        wrapped: _LRUCacheWrapper[_R],
+        wrapped: _LRUCacheWrapper[_P, _T],
         *,
         hits: int,
         misses: int,

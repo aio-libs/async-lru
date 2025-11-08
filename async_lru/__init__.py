@@ -4,7 +4,6 @@ import inspect
 import sys
 from functools import _CacheInfo, _make_key, partial, partialmethod
 from typing import (
-    Any,
     Callable,
     Coroutine,
     Generic,
@@ -16,10 +15,15 @@ from typing import (
     TypedDict,
     TypeVar,
     Union,
-    cast,
     final,
     overload,
 )
+
+
+if sys.version_info >= (3, 10):
+    from typing import ParamSpec
+else:
+    from typing_extensions import ParamSpec
 
 
 if sys.version_info >= (3, 11):
@@ -38,9 +42,7 @@ __all__ = ("alru_cache",)
 
 _T = TypeVar("_T")
 _R = TypeVar("_R")
-_Coro = Coroutine[Any, Any, _R]
-_CB = Callable[..., _Coro[_R]]
-_CBP = Union[_CB[_R], "partial[_Coro[_R]]", "partialmethod[_Coro[_R]]"]
+_P = ParamSpec("_P")
 
 
 @final
@@ -64,10 +66,10 @@ class _CacheItem(Generic[_R]):
 
 
 @final
-class _LRUCacheWrapper(Generic[_R]):
+class _LRUCacheWrapper(Generic[_P, _R]):
     def __init__(
         self,
-        fn: _CB[_R],
+        fn: Callable[_P, Coroutine[object, object, _R]],
         maxsize: Optional[int],
         typed: bool,
         ttl: Optional[float],
@@ -110,7 +112,7 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__misses = 0
         self.__tasks: Set["asyncio.Task[_R]"] = set()
 
-    def cache_invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
+    def cache_invalidate(self, /, *args: _P.args, **kwargs: _P.kwargs) -> bool:
         key = _make_key(args, kwargs, self.__typed)
 
         cache_item = self.__cache.pop(key, None)
@@ -192,7 +194,7 @@ class _LRUCacheWrapper(Generic[_R]):
 
         fut.set_result(task.result())
 
-    async def __call__(self, /, *fn_args: Any, **fn_kwargs: Any) -> _R:
+    async def __call__(self, /, *fn_args: _P.args, **fn_kwargs: _P.kwargs) -> _R:
         if self.__closed:
             raise RuntimeError(f"alru_cache is closed for {self}")
 
@@ -211,7 +213,7 @@ class _LRUCacheWrapper(Generic[_R]):
 
         fut = loop.create_future()
         coro = self.__wrapped__(*fn_args, **fn_kwargs)
-        task: asyncio.Task[_R] = loop.create_task(coro)
+        task = loop.create_task(coro)
         self.__tasks.add(task)
         task.add_done_callback(partial(self._task_done_callback, fut, key))
 
@@ -224,9 +226,19 @@ class _LRUCacheWrapper(Generic[_R]):
         self._cache_miss(key)
         return await asyncio.shield(fut)
 
+    @overload
+    def __get__(self, instance: _T, owner: None) -> Self:
+        ...
+
+    @overload
+    def __get__(
+        self, instance: _T, owner: Type[_T]
+    ) -> "_LRUCacheWrapperInstanceMethod[_P, _R, _T]":
+        ...
+
     def __get__(
         self, instance: _T, owner: Optional[Type[_T]]
-    ) -> Union[Self, "_LRUCacheWrapperInstanceMethod[_R, _T]"]:
+    ) -> Union[Self, "_LRUCacheWrapperInstanceMethod[_P, _R, _T]"]:
         if owner is None:
             return self
         else:
@@ -234,10 +246,10 @@ class _LRUCacheWrapper(Generic[_R]):
 
 
 @final
-class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
+class _LRUCacheWrapperInstanceMethod(Generic[_P, _R, _T]):
     def __init__(
         self,
-        wrapper: _LRUCacheWrapper[_R],
+        wrapper: _LRUCacheWrapper[_P, _R],
         instance: _T,
     ) -> None:
         try:
@@ -272,7 +284,7 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
         self.__instance = instance
         self.__wrapper = wrapper
 
-    def cache_invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
+    def cache_invalidate(self, /, *args: _P.args, **kwargs: _P.kwargs) -> bool:
         return self.__wrapper.cache_invalidate(self.__instance, *args, **kwargs)
 
     def cache_clear(self) -> None:
@@ -289,16 +301,18 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
     def cache_parameters(self) -> _CacheParameters:
         return self.__wrapper.cache_parameters()
 
-    async def __call__(self, /, *fn_args: Any, **fn_kwargs: Any) -> _R:
-        return await self.__wrapper(self.__instance, *fn_args, **fn_kwargs)
+    async def __call__(self, /, *fn_args: _P.args, **fn_kwargs: _P.kwargs) -> _R:
+        return await self.__wrapper(self.__instance, *fn_args, **fn_kwargs)  # type: ignore[arg-type]
 
 
 def _make_wrapper(
     maxsize: Optional[int],
     typed: bool,
     ttl: Optional[float] = None,
-) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
-    def wrapper(fn: _CBP[_R]) -> _LRUCacheWrapper[_R]:
+) -> Callable[[Callable[_P, Coroutine[object, object, _R]]], _LRUCacheWrapper[_P, _R]]:
+    def wrapper(
+        fn: Callable[_P, Coroutine[object, object, _R]]
+    ) -> _LRUCacheWrapper[_P, _R]:
         origin = fn
 
         while isinstance(origin, (partial, partialmethod)):
@@ -311,7 +325,7 @@ def _make_wrapper(
         if hasattr(fn, "_make_unbound_method"):
             fn = fn._make_unbound_method()
 
-        wrapper = _LRUCacheWrapper(cast(_CB[_R], fn), maxsize, typed, ttl)
+        wrapper = _LRUCacheWrapper(fn, maxsize, typed, ttl)
         if sys.version_info >= (3, 12):
             wrapper = inspect.markcoroutinefunction(wrapper)
         return wrapper
@@ -325,30 +339,34 @@ def alru_cache(
     typed: bool = False,
     *,
     ttl: Optional[float] = None,
-) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
+) -> Callable[[Callable[_P, Coroutine[object, object, _R]]], _LRUCacheWrapper[_P, _R]]:
     ...
 
 
 @overload
 def alru_cache(
-    maxsize: _CBP[_R],
+    maxsize: Callable[_P, Coroutine[object, object, _R]],
     /,
-) -> _LRUCacheWrapper[_R]:
+) -> _LRUCacheWrapper[_P, _R]:
     ...
 
 
 def alru_cache(
-    maxsize: Union[Optional[int], _CBP[_R]] = 128,
+    maxsize: Union[Optional[int], Callable[_P, Coroutine[object, object, _R]]] = 128,
     typed: bool = False,
     *,
     ttl: Optional[float] = None,
-) -> Union[Callable[[_CBP[_R]], _LRUCacheWrapper[_R]], _LRUCacheWrapper[_R]]:
+) -> Union[
+    Callable[[Callable[_P, Coroutine[object, object, _R]]], _LRUCacheWrapper[_P, _R]],
+    _LRUCacheWrapper[_P, _R],
+]:
     if maxsize is None or isinstance(maxsize, int):
         return _make_wrapper(maxsize, typed, ttl)
     else:
-        fn = cast(_CB[_R], maxsize)
+        fn = maxsize
 
-        if callable(fn) or hasattr(fn, "_make_unbound_method"):
+        # partialmethod is not callable() at runtime.
+        if callable(fn) or hasattr(fn, "_make_unbound_method"):  # type: ignore[unreachable]
             return _make_wrapper(128, False, None)(fn)
 
         raise NotImplementedError(f"{fn!r} decorating is not supported")
