@@ -253,7 +253,7 @@ def test_cache_fill_eviction_benchmark(
 # so we can skip methods for this part of the benchmark suite.
 # We also skip wrappers with ttl because it raises KeyError.
 only_funcs_no_ttl = all_funcs[:2]
-func_ids_no_ttl = ids[:2]
+func_ids_no_ttl = all_ids[:2]
 
 
 @pytest.mark.parametrize("func", only_funcs_no_ttl, ids=func_ids_no_ttl)
@@ -289,7 +289,7 @@ def test_internal_cache_miss_microbenchmark(
             cache_miss(i)
 
 
-@pytest.mark.parametrize("func", only_funcs_no_ttl, ids=func_ids_no_ttl_no_ttl)
+@pytest.mark.parametrize("func", only_funcs_no_ttl, ids=func_ids_no_ttl)
 @pytest.mark.parametrize("task_state", ["finished", "cancelled", "exception"])
 def test_internal_task_done_callback_microbenchmark(
     benchmark: BenchmarkFixture,
