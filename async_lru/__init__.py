@@ -200,14 +200,18 @@ class _LRUCacheWrapper(Generic[_R]):
 
         key = _make_key(fn_args, fn_kwargs, self.__typed)
 
-        cache_item = self.__cache.get(key)
+        cache = self.__cache
+
+        cache_item = cache.get(key)
 
         if cache_item is not None:
             self._cache_hit(key)
-            if not cache_item.fut.done():
-                return await asyncio.shield(cache_item.fut)
 
-            return cache_item.fut.result()
+            fut = cache_item.fut
+            if not fut.done():
+                return await asyncio.shield(fut)
+
+            return fut.result()
 
         fut = loop.create_future()
         coro = self.__wrapped__(*fn_args, **fn_kwargs)
@@ -215,10 +219,11 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__tasks.add(task)
         task.add_done_callback(partial(self._task_done_callback, fut, key))
 
-        self.__cache[key] = _CacheItem(fut, None)
+        cache[key] = _CacheItem(fut, None)
 
-        if self.__maxsize is not None and len(self.__cache) > self.__maxsize:
-            dropped_key, cache_item = self.__cache.popitem(last=False)
+        maxsize = self.__maxsize
+        if maxsize is not None and len(cache) > maxsize:
+            dropped_key, cache_item = cache.popitem(last=False)
             cache_item.cancel()
 
         self._cache_miss(key)
