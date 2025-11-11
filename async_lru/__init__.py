@@ -192,15 +192,16 @@ class _LRUCacheWrapper(Generic[_R]):
     async def _shield_and_handle_cancelled_error(
         cache_item: _CacheItem[_T], key: Hashable
     ) -> _T:
+        task = cache_item.task
         try:
             # All waiters await the same shielded task.
-            return await asyncio.shield(cache_item.task)
+            return await asyncio.shield(task)
         except asyncio.CancelledError:
             # If this is the last waiter and the underlying task is not done,
             # cancel the underlying task and remove the cache entry.
-            if cache_item.waiters == 1 and not cache_item.task.done():
+            if cache_item.waiters == 1 and not task.done():
                 cache_item.cancel()  # Cancel TTL expiration
-                cache_item.task.cancel()  # Cancel the running coroutine
+                task.cancel()  # Cancel the running coroutine
                 self.__cache.pop(key, None)  # Remove from cache
             raise
         finally:
