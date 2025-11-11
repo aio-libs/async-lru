@@ -11,30 +11,26 @@ async def test_done_callback_cancelled() -> None:
     wrapped = _LRUCacheWrapper(mock.ANY, None, False, None)
     loop = asyncio.get_running_loop()
     task = loop.create_future()
-    fut = loop.create_future()
 
     key = 1
 
-    task.add_done_callback(partial(wrapped._task_done_callback, fut, key))
-    wrapped._LRUCacheWrapper__tasks.add(task)  # type: ignore[attr-defined]
+    task.add_done_callback(partial(wrapped._task_done_callback, key))
 
     task.cancel()
 
     await asyncio.sleep(0)
 
-    assert fut.cancelled()
+    assert task not in wrapped._LRUCacheWrapper__tasks  # type: ignore[attr-defined]
 
 
 async def test_done_callback_exception() -> None:
     wrapped = _LRUCacheWrapper(mock.ANY, None, False, None)
     loop = asyncio.get_running_loop()
     task = loop.create_future()
-    fut = loop.create_future()
 
     key = 1
 
-    task.add_done_callback(partial(wrapped._task_done_callback, fut, key))
-    wrapped._LRUCacheWrapper__tasks.add(task)  # type: ignore[attr-defined]
+    task.add_done_callback(partial(wrapped._task_done_callback, key))
 
     exc = ZeroDivisionError()
 
@@ -42,31 +38,7 @@ async def test_done_callback_exception() -> None:
 
     await asyncio.sleep(0)
 
-    with pytest.raises(ZeroDivisionError):
-        await fut
-
-    with pytest.raises(ZeroDivisionError):
-        fut.result()
-
-    assert fut.exception() is exc
-
-
-async def test_done_callback() -> None:
-    wrapped = _LRUCacheWrapper(mock.ANY, None, False, None)
-    loop = asyncio.get_running_loop()
-    task = loop.create_future()
-
-    key = 1
-    fut = loop.create_future()
-
-    task.add_done_callback(partial(wrapped._task_done_callback, fut, key))
-    wrapped._LRUCacheWrapper__tasks.add(task)  # type: ignore[attr-defined]
-
-    task.set_result(1)
-
-    await asyncio.sleep(0)
-
-    assert fut.result() == 1
+    assert task not in wrapped._LRUCacheWrapper__tasks  # type: ignore[attr-defined]
 
 
 async def test_cache_invalidate_typed() -> None:
