@@ -81,22 +81,37 @@ async def uncached_func(x):
     return x
 
 
-ids = ["func-bounded", "func-unbounded", "meth-bounded", "meth-unbounded"]
-funcs = [
+funcs_no_ttl = [
     cached_func,
     cached_func_unbounded,
     Methods.cached_meth,
     Methods.cached_meth_unbounded,
 ]
+no_ttl_ids = [
+    "func-bounded",
+    "func-unbounded",
+    "meth-bounded",
+    "meth-unbounded",
+]
+
 funcs_ttl = [
     cached_func_ttl,
     cached_func_unbounded_ttl,
     Methods.cached_meth_ttl,
     Methods.cached_meth_unbounded_ttl,
 ]
+ttl_ids = [
+    "func-bounded-ttl",
+    "func-unbounded-ttl",
+    "meth-bounded-ttl",
+    "meth-unbounded-ttl",
+]
+
+all_funcs = [*funcs_no_ttl, *funcs_ttl]
+all_ids = [*no_ttl_ids, *ttl_ids]
 
 
-@pytest.mark.parametrize("func", funcs, ids=ids)
+@pytest.mark.parametrize("func", all_funcs, ids=all_ids)
 def test_cache_hit_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -115,7 +130,7 @@ def test_cache_hit_benchmark(
     benchmark(run_loop, run)
 
 
-@pytest.mark.parametrize("func", funcs, ids=ids)
+@pytest.mark.parametrize("func", all_funcs, ids=all_ids)
 def test_cache_miss_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -131,7 +146,7 @@ def test_cache_miss_benchmark(
     benchmark(run_loop, run)
 
 
-@pytest.mark.parametrize("func", funcs, ids=ids)
+@pytest.mark.parametrize("func", all_funcs, ids=all_ids)
 def test_cache_clear_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -143,7 +158,7 @@ def test_cache_clear_benchmark(
     benchmark(func.cache_clear)
 
 
-@pytest.mark.parametrize("func_ttl", funcs_ttl, ids=ids)
+@pytest.mark.parametrize("func_ttl", funcs_ttl, ids=ttl_ids)
 def test_cache_ttl_expiry_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -155,7 +170,7 @@ def test_cache_ttl_expiry_benchmark(
     benchmark(run_loop, func_ttl, 99)
 
 
-@pytest.mark.parametrize("func", funcs, ids=ids)
+@pytest.mark.parametrize("func", all_funcs, ids=all_ids)
 def test_cache_invalidate_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -174,7 +189,7 @@ def test_cache_invalidate_benchmark(
             invalidate(i)
 
 
-@pytest.mark.parametrize("func", funcs, ids=ids)
+@pytest.mark.parametrize("func", all_funcs, ids=all_ids)
 def test_cache_info_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -193,7 +208,7 @@ def test_cache_info_benchmark(
             cache_info()
 
 
-@pytest.mark.parametrize("func", funcs, ids=ids)
+@pytest.mark.parametrize("func", all_funcs, ids=all_ids)
 def test_concurrent_cache_hit_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -236,11 +251,12 @@ def test_cache_fill_eviction_benchmark(
 
 # The relevant internal methods do not exist on _LRUCacheWrapperInstanceMethod,
 # so we can skip methods for this part of the benchmark suite.
-only_funcs = funcs[:2]
-func_ids = ids[:2]
+# We also skip wrappers with ttl because it raises KeyError.
+only_funcs_no_ttl = all_funcs[:2]
+func_ids_no_ttl = all_ids[:2]
 
 
-@pytest.mark.parametrize("func", only_funcs, ids=func_ids)
+@pytest.mark.parametrize("func", only_funcs_no_ttl, ids=func_ids_no_ttl)
 def test_internal_cache_hit_microbenchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
@@ -260,7 +276,7 @@ def test_internal_cache_hit_microbenchmark(
             cache_hit(i)
 
 
-@pytest.mark.parametrize("func", only_funcs, ids=func_ids)
+@pytest.mark.parametrize("func", only_funcs_no_ttl, ids=func_ids_no_ttl)
 def test_internal_cache_miss_microbenchmark(
     benchmark: BenchmarkFixture, func: _LRUCacheWrapper[Any]
 ) -> None:
@@ -273,7 +289,7 @@ def test_internal_cache_miss_microbenchmark(
             cache_miss(i)
 
 
-@pytest.mark.parametrize("func", only_funcs, ids=func_ids)
+@pytest.mark.parametrize("func", only_funcs_no_ttl, ids=func_ids_no_ttl)
 @pytest.mark.parametrize("task_state", ["finished", "cancelled", "exception"])
 def test_internal_task_done_callback_microbenchmark(
     benchmark: BenchmarkFixture,
