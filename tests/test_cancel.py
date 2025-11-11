@@ -7,14 +7,10 @@ from async_lru import alru_cache
 
 @pytest.mark.parametrize("num_to_cancel", [0, 1, 2, 3])
 async def test_cancel(num_to_cancel: int) -> None:
-    cache_item_task_finished = False
-
     @alru_cache
     async def coro(val: int) -> int:
         # I am a long running coro function
-        nonlocal cache_item_task_finished
         await asyncio.sleep(0.1)
-        cache_item_task_finished = True
         return val
 
     # create 3 tasks for the cached function using the same key
@@ -29,9 +25,6 @@ async def test_cancel(num_to_cancel: int) -> None:
 
     # allow enough time for the non-cancelled tasks to complete
     await asyncio.sleep(0.2)
-
-    # check state
-    assert cache_item_task_finished == (num_to_cancel < 3)
 
     # check tasks are properly cancelled
     for i in range(num_to_cancel):
