@@ -13,7 +13,7 @@ async def test_cancel(num_to_cancel: int) -> None:
     async def coro(val: int) -> int:
         # I am a long running coro function
         nonlocal cache_item_task_finished
-        await asyncio.sleep(2)
+        await asyncio.sleep(0.1)
         cache_item_task_finished = True
         return val
 
@@ -28,7 +28,7 @@ async def test_cancel(num_to_cancel: int) -> None:
         tasks[i].cancel()
 
     # allow enough time for the non-cancelled tasks to complete
-    await asyncio.sleep(3)
+    await asyncio.sleep(0.2)
 
     # check state
     assert cache_item_task_finished == (num_to_cancel < 3)
