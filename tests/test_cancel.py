@@ -18,7 +18,7 @@ async def test_cancel(num_to_cancel: int) -> None:
         return val
 
     # create 3 tasks for the cached function using the same key
-    tasks = [asyncio.create_task(coro(1)) for _ in range(3)]
+    tasks = [asyncio.create_task(coro(i)) for i in range(3)]
 
     # force the event loop to run once so the tasks can begin
     await asyncio.sleep(0)
@@ -32,6 +32,14 @@ async def test_cancel(num_to_cancel: int) -> None:
 
     # check state
     assert cache_item_task_finished == (num_to_cancel < 3)
+
+    # check tasks are properly cancelled
+    for i in range(num_to_cancel):
+        assert tasks[i].cancelled()
+
+    # check non-cancelled tasks return expected outputs
+    for i in range(num_to_cancel, 3):
+        assert await tasks[i] == i
 
 
 @pytest.mark.asyncio
