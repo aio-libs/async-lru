@@ -190,7 +190,7 @@ class _LRUCacheWrapper(Generic[_R]):
             )
 
     async def _shield_and_handle_cancelled_error(
-        cache_item: _CacheItem[_T], key: Hashable
+        self, cache_item: _CacheItem[_T], key: Hashable
     ) -> _T:
         task = cache_item.task
         try:
