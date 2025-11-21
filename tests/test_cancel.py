@@ -5,7 +5,7 @@ import pytest
 from async_lru import alru_cache
 
 
-@pytest.mark.parametrize("num_to_cancel", [0, 1, 2, 3])
+@pytest.mark.parametrize("num_to_cancel", (0, 1, 2, 3))
 async def test_cancel(num_to_cancel: int) -> None:
     @alru_cache
     async def coro(val: int) -> int:
@@ -41,11 +41,10 @@ async def test_cancel_single_waiter_triggers_handle_cancelled_error() -> None:
     cache_item_task_finished = False
 
     @alru_cache
-    async def coro(val: int) -> int:
+    async def coro(val: int) -> None:
         nonlocal cache_item_task_finished
         await asyncio.sleep(2)
-        cache_item_task_finished = True
-        return val
+        cache_item_task_finished = True  # pragma: no cover
 
     task = asyncio.create_task(coro(42))
     await asyncio.sleep(0)
