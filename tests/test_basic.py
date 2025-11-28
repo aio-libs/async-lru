@@ -1,6 +1,5 @@
 import asyncio
 import inspect
-import platform
 import sys
 from functools import _CacheInfo, partial
 from typing import Callable
