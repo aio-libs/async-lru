@@ -200,10 +200,6 @@ async def test_alru_cache_method() -> None:
     )
 
 
-@pytest.mark.xfail(
-    sys.version_info[:2] == (3, 9) and platform.python_implementation() != "PyPy",
-    reason="#511",
-)
 async def test_alru_cache_classmethod() -> None:
     class A:
         offset = 3
