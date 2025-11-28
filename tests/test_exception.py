@@ -29,6 +29,10 @@ async def test_alru_exception(check_lru: Callable[..., None]) -> None:
     check_lru(coro, hits=2, misses=2, cache=0, tasks=0)
 
 
+@pytest.mark.xfail(
+    reason="Memory leak is not fixed for PyPy",
+    condition=sys.implementation.name == "pypy",
+)
 async def test_alru_exception_reference_cleanup(check_lru: Callable[..., None]) -> None:
     class CustomClass:
         ...
