@@ -1,0 +1,4 @@
+-e .
+-r requirements-test.txt
+
+pytest-codspeed==4.2.0
