@@ -4,7 +4,6 @@ on:
   release:
     branches:
       - master
-      - compile
     types: [published]
 
 jobs:
@@ -187,7 +186,7 @@ jobs:
       - name: Publish sdist and wheels to PyPI
         env:
           TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD_THREADSAFE }}
         run: |
           twine upload \
             dist/* \
