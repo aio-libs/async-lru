@@ -46,6 +46,7 @@ _Coro = Coroutine[Any, Any, _R]
 _CB = Callable[..., _Coro[_R]]
 _CBP = Union[_CB[_R], functools.partial[_Coro[_R]], functools.partialmethod[_Coro[_R]]]
 
+_PYTHON_GTE_312: Final = sys.version_info >= (3, 12)
 
 _CacheInfo: Final = functools._CacheInfo
 partial: Final = functools.partial
@@ -362,7 +363,7 @@ def _make_wrapper(
             fn = fn._make_unbound_method()
 
         wrapper = _LRUCacheWrapper(cast(_CB[_R], fn), maxsize, typed, ttl)  # type: ignore [redundant-cast]
-        if sys.version_info >= (3, 12):
+        if _PYTHON_GTE_312:
             wrapper = markcoroutinefunction(wrapper)  # type: ignore [misc]
         return wrapper  # type: ignore [no-any-return]
 
