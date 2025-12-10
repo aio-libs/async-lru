@@ -2,6 +2,7 @@ import asyncio
 import dataclasses
 import functools
 import inspect
+import logging
 import os
 import sys
 from asyncio.coroutines import _is_coroutine  # type: ignore[attr-defined]
@@ -56,6 +57,8 @@ get_running_loop: Final = asyncio.get_running_loop
 shield: Final = asyncio.shield
 
 markcoroutinefunction: Final = getattr(inspect, "markcoroutinefunction", None)
+
+logger: Final = logging.getLogger("async_lru_threadsafe")
 
 
 @final
@@ -194,7 +197,10 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__misses += 1
 
     def _task_done_callback(self, key: Hashable, task: "asyncio.Task[_R]") -> None:
-        if task.cancelled() or task.exception() is not None:
+        # We must use the private attribute instead of `exception()`
+        # so asyncio does not set `task.__log_traceback = False` on
+        # the false assumption that the caller read the task Exception
+        if task.cancelled() or task._exception is not None:
             self.__cache.pop(key, None)
             return
 

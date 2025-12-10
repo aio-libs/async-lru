@@ -6,7 +6,7 @@
 
 int CPyGlobalsInit(void);
 
-extern PyObject *CPyStatics[133];
+extern PyObject *CPyStatics[138];
 extern const char * const CPyLit_Str[];
 extern const char * const CPyLit_Bytes[];
 extern const char * const CPyLit_Int[];
@@ -22,6 +22,7 @@ extern CPyModule *CPyModule_asyncio;
 extern CPyModule *CPyModule_dataclasses;
 extern CPyModule *CPyModule_functools;
 extern CPyModule *CPyModule_inspect;
+extern CPyModule *CPyModule_logging;
 extern CPyModule *CPyModule_os;
 extern CPyModule *CPyModule_sys;
 extern CPyModule *CPyModule_asyncio___coroutines;
@@ -34,6 +35,7 @@ extern PyObject *CPyStatic_gather;
 extern PyObject *CPyStatic_get_running_loop;
 extern PyObject *CPyStatic_shield;
 extern PyObject *CPyStatic_markcoroutinefunction;
+extern PyObject *CPyStatic_logger;
 extern PyTypeObject *CPyType__CacheParameters;
 extern PyTypeObject *CPyType__CacheItem;
 extern PyObject *CPyDef__CacheItem(PyObject *cpy_r_args, PyObject *cpy_r_kwargs);

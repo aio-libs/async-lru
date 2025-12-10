@@ -2776,6 +2776,8 @@ int CPyExec_async_lru(PyObject *module)
     CPyStatic_shield = NULL;
     CPy_XDECREF(CPyStatic_markcoroutinefunction);
     CPyStatic_markcoroutinefunction = NULL;
+    CPy_XDECREF(CPyStatic_logger);
+    CPyStatic_logger = NULL;
     Py_CLEAR(CPyType__CacheParameters);
     Py_CLEAR(CPyType__CacheItem);
     Py_CLEAR(CPyType__LRUCacheWrapper);
@@ -2829,7 +2831,7 @@ char CPyDef__CacheItem___cancel(PyObject *cpy_r_self) {
     char cpy_r_r12;
     cpy_r_r0 = ((async_lru____CacheItemObject *)cpy_r_self)->_later_call;
     if (unlikely(cpy_r_r0 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cancel", "_CacheItem", "later_call", 77, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cancel", "_CacheItem", "later_call", 80, CPyStatic_globals);
         goto CPyL8;
     }
 CPyL1: ;
@@ -2838,7 +2840,7 @@ CPyL1: ;
     if (!cpy_r_r2) goto CPyL7;
     cpy_r_r3 = ((async_lru____CacheItemObject *)cpy_r_self)->_later_call;
     if (unlikely(cpy_r_r3 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cancel", "_CacheItem", "later_call", 78, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cancel", "_CacheItem", "later_call", 81, CPyStatic_globals);
         goto CPyL8;
     }
     CPy_INCREF(cpy_r_r3);
@@ -3003,7 +3005,7 @@ char CPyDef__LRUCacheWrapper_____init__(PyObject *cpy_r_self, PyObject *cpy_r_fn
     if (likely(PyUnicode_Check(cpy_r_r1)))
         cpy_r_r2 = cpy_r_r1;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 93, CPyStatic_globals, "str", cpy_r_r1);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 96, CPyStatic_globals, "str", cpy_r_r1);
         goto CPyL4;
     }
     if (((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___module__ != NULL) {
@@ -3057,7 +3059,7 @@ CPyL11: ;
     if (likely(PyUnicode_Check(cpy_r_r10)))
         cpy_r_r11 = cpy_r_r10;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 97, CPyStatic_globals, "str", cpy_r_r10);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 100, CPyStatic_globals, "str", cpy_r_r10);
         goto CPyL14;
     }
     if (((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___name__ != NULL) {
@@ -3112,7 +3114,7 @@ CPyL21: ;
     if (likely(PyUnicode_Check(cpy_r_r20)))
         cpy_r_r21 = cpy_r_r20;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 101, CPyStatic_globals, "str", cpy_r_r20);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 104, CPyStatic_globals, "str", cpy_r_r20);
         goto CPyL24;
     }
     if (((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___qualname__ != NULL) {
@@ -3176,7 +3178,7 @@ CPyL31: ;
         cpy_r_r31 = NULL;
     }
     if (cpy_r_r31 != NULL) goto __LL6;
-    CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 105, CPyStatic_globals, "str or None", cpy_r_r30);
+    CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 108, CPyStatic_globals, "str or None", cpy_r_r30);
     goto CPyL34;
 __LL6: ;
     if (((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___doc__ != NULL) {
@@ -3231,7 +3233,7 @@ CPyL41: ;
     if (likely(PyDict_Check(cpy_r_r40)))
         cpy_r_r41 = cpy_r_r40;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 109, CPyStatic_globals, "dict", cpy_r_r40);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 112, CPyStatic_globals, "dict", cpy_r_r40);
         goto CPyL44;
     }
     if (((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___annotations__ != NULL) {
@@ -3286,7 +3288,7 @@ CPyL51: ;
     if (likely(PyDict_Check(cpy_r_r50)))
         cpy_r_r51 = cpy_r_r50;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 113, CPyStatic_globals, "dict", cpy_r_r50);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 116, CPyStatic_globals, "dict", cpy_r_r50);
         goto CPyL55;
     }
     cpy_r_r52 = PyDict_Copy(cpy_r_r51);
@@ -3347,7 +3349,7 @@ CPyL62: ;
     if (likely(PyTuple_Check(cpy_r_r64)))
         cpy_r_r65 = cpy_r_r64;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 118, CPyStatic_globals, "tuple", cpy_r_r64);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 121, CPyStatic_globals, "tuple", cpy_r_r64);
         goto CPyL81;
     }
     cpy_r_r66.f0 = 6;
@@ -3436,7 +3438,7 @@ CPyL69: ;
     if (likely(PyDict_Check(cpy_r_r78)))
         cpy_r_r79 = cpy_r_r78;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 124, CPyStatic_globals, "dict", cpy_r_r78);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 127, CPyStatic_globals, "dict", cpy_r_r78);
         goto CPyL81;
     }
     if (((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___cache != NULL) {
@@ -3606,7 +3608,7 @@ PyObject *CPyDef__LRUCacheWrapper_____tasks(PyObject *cpy_r_self) {
     }
     cpy_r_r1 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___cache;
     if (unlikely(cpy_r_r1 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__tasks", "_LRUCacheWrapper", "__cache", 135, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__tasks", "_LRUCacheWrapper", "__cache", 138, CPyStatic_globals);
         goto CPyL16;
     }
     CPy_INCREF(cpy_r_r1);
@@ -3630,12 +3632,12 @@ CPyL3: ;
     if (likely(Py_TYPE(cpy_r_r8) == CPyType__CacheItem))
         cpy_r_r9 = cpy_r_r8;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "__tasks", 133, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r8);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "__tasks", 136, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r8);
         goto CPyL19;
     }
     cpy_r_r10 = ((async_lru____CacheItemObject *)cpy_r_r9)->_task;
     if (unlikely(cpy_r_r10 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__tasks", "_CacheItem", "task", 136, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__tasks", "_CacheItem", "task", 139, CPyStatic_globals);
         goto CPyL20;
     }
     CPy_INCREF(cpy_r_r10);
@@ -3778,7 +3780,7 @@ char CPyDef__LRUCacheWrapper___cache_invalidate(PyObject *cpy_r_self, PyObject *
     char cpy_r_r18;
     cpy_r_r0 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___typed;
     if (unlikely(cpy_r_r0 == 2)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_invalidate", "_LRUCacheWrapper", "__typed", 141, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_invalidate", "_LRUCacheWrapper", "__typed", 144, CPyStatic_globals);
         goto CPyL13;
     }
 CPyL1: ;
@@ -3802,7 +3804,7 @@ CPyL4: ;
     }
     cpy_r_r7 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___cache;
     if (unlikely(cpy_r_r7 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_invalidate", "_LRUCacheWrapper", "__cache", 143, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_invalidate", "_LRUCacheWrapper", "__cache", 146, CPyStatic_globals);
         goto CPyL14;
     }
     CPy_INCREF(cpy_r_r7);
@@ -3830,7 +3832,7 @@ CPyL6: ;
         cpy_r_r13 = NULL;
     }
     if (cpy_r_r13 != NULL) goto __LL11;
-    CPy_TypeErrorTraceback("async_lru/__init__.py", "cache_invalidate", 143, CPyStatic_globals, "async_lru._CacheItem or None", cpy_r_r12);
+    CPy_TypeErrorTraceback("async_lru/__init__.py", "cache_invalidate", 146, CPyStatic_globals, "async_lru._CacheItem or None", cpy_r_r12);
     goto CPyL13;
 __LL11: ;
     cpy_r_r14 = (PyObject *)&_Py_NoneStruct;
@@ -3845,7 +3847,7 @@ CPyL10: ;
     if (likely(cpy_r_r13 != Py_None))
         cpy_r_r16 = cpy_r_r13;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "cache_invalidate", 147, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r13);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "cache_invalidate", 150, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r13);
         goto CPyL13;
     }
     cpy_r_r17 = CPyDef__CacheItem___cancel(cpy_r_r16);
@@ -3954,7 +3956,7 @@ char CPyDef__LRUCacheWrapper___cache_clear(PyObject *cpy_r_self) {
     }
     cpy_r_r2 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___cache;
     if (unlikely(cpy_r_r2 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_clear", "_LRUCacheWrapper", "__cache", 154, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_clear", "_LRUCacheWrapper", "__cache", 157, CPyStatic_globals);
         goto CPyL20;
     }
     CPy_INCREF(cpy_r_r2);
@@ -3978,12 +3980,12 @@ CPyL4: ;
     if (likely(Py_TYPE(cpy_r_r9) == CPyType__CacheItem))
         cpy_r_r10 = cpy_r_r9;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "cache_clear", 154, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r9);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "cache_clear", 157, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r9);
         goto CPyL23;
     }
     cpy_r_r11 = ((async_lru____CacheItemObject *)cpy_r_r10)->_later_call;
     if (unlikely(cpy_r_r11 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_clear", "_CacheItem", "later_call", 155, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_clear", "_CacheItem", "later_call", 158, CPyStatic_globals);
         goto CPyL24;
     }
     CPy_INCREF(cpy_r_r11);
@@ -4047,7 +4049,7 @@ CPyL16: ;
     }
     cpy_r_r27 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___cache;
     if (unlikely(cpy_r_r27 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_clear", "_LRUCacheWrapper", "__cache", 157, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_clear", "_LRUCacheWrapper", "__cache", 160, CPyStatic_globals);
         goto CPyL20;
     }
     CPy_INCREF(cpy_r_r27);
@@ -4223,7 +4225,7 @@ CPyL1: ;
 CPyL4: ;
     cpy_r_r5 = ((async_lru___cache_close__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r5 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "self", 160, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "self", 163, CPyStatic_globals);
         goto CPyL82;
     }
     CPy_INCREF_NO_IMM(cpy_r_r5);
@@ -4237,7 +4239,7 @@ CPyL5: ;
     }
     cpy_r_r7 = ((async_lru___cache_close__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r7 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "self", 162, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "self", 165, CPyStatic_globals);
         goto CPyL82;
     }
     CPy_INCREF_NO_IMM(cpy_r_r7);
@@ -4260,7 +4262,7 @@ CPyL8: ;
     }
     cpy_r_r10 = ((async_lru___cache_close__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__tasks;
     if (unlikely(cpy_r_r10 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "tasks", 163, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "tasks", 166, CPyStatic_globals);
         goto CPyL82;
     }
     CPy_INCREF_NO_IMM(cpy_r_r10);
@@ -4283,7 +4285,7 @@ CPyL15: ;
 CPyL16: ;
     cpy_r_r17 = ((async_lru___cache_close__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__wait;
     if (unlikely(cpy_r_r17 == 2)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "wait", 166, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "wait", 169, CPyStatic_globals);
         goto CPyL82;
     }
 CPyL17: ;
@@ -4291,7 +4293,7 @@ CPyL17: ;
 CPyL18: ;
     cpy_r_r18 = ((async_lru___cache_close__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__tasks;
     if (unlikely(cpy_r_r18 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "tasks", 167, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "tasks", 170, CPyStatic_globals);
         goto CPyL82;
     }
     CPy_INCREF_NO_IMM(cpy_r_r18);
@@ -4314,7 +4316,7 @@ CPyL19: ;
 CPyL21: ;
     cpy_r_r21 = ((async_lru___cache_close__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__0;
     if (unlikely(cpy_r_r21 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "__mypyc_temp__0", 167, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "__mypyc_temp__0", 170, CPyStatic_globals);
         goto CPyL82;
     }
     CPy_INCREF_NO_IMM(cpy_r_r21);
@@ -4324,7 +4326,7 @@ CPyL22: ;
     CPy_DECREF_NO_IMM(cpy_r_r21);
     cpy_r_r24 = ((async_lru___cache_close__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__1;
     if (unlikely(cpy_r_r24 == -113)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "__mypyc_temp__1", 167, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "__mypyc_temp__1", 170, CPyStatic_globals);
         goto CPyL82;
     }
 CPyL23: ;
@@ -4332,14 +4334,14 @@ CPyL23: ;
     if (!cpy_r_r25) goto CPyL36;
     cpy_r_r26 = ((async_lru___cache_close__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__0;
     if (unlikely(cpy_r_r26 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "__mypyc_temp__0", 167, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "__mypyc_temp__0", 170, CPyStatic_globals);
         goto CPyL82;
     }
     CPy_INCREF_NO_IMM(cpy_r_r26);
 CPyL25: ;
     cpy_r_r27 = ((async_lru___cache_close__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__1;
     if (unlikely(cpy_r_r27 == -113)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "__mypyc_temp__1", 167, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "__mypyc_temp__1", 170, CPyStatic_globals);
         goto CPyL83;
     }
 CPyL26: ;
@@ -4361,7 +4363,7 @@ CPyL26: ;
     }
     cpy_r_r34 = ((async_lru___cache_close__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__task;
     if (unlikely(cpy_r_r34 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "task", 168, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "task", 171, CPyStatic_globals);
         goto CPyL82;
     }
     CPy_INCREF(cpy_r_r34);
@@ -4387,7 +4389,7 @@ CPyL28: ;
     if (cpy_r_r39) goto CPyL34;
     cpy_r_r40 = ((async_lru___cache_close__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__task;
     if (unlikely(cpy_r_r40 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "task", 169, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "task", 172, CPyStatic_globals);
         goto CPyL82;
     }
     CPy_INCREF(cpy_r_r40);
@@ -4406,7 +4408,7 @@ CPyL33: ;
 CPyL34: ;
     cpy_r_r45 = ((async_lru___cache_close__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__1;
     if (unlikely(cpy_r_r45 == -113)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "__mypyc_temp__1", 167, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "__mypyc_temp__1", 170, CPyStatic_globals);
         goto CPyL82;
     }
 CPyL35: ;
@@ -4421,7 +4423,7 @@ CPyL35: ;
 CPyL36: ;
     cpy_r_r48 = ((async_lru___cache_close__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__tasks;
     if (unlikely(cpy_r_r48 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "tasks", 171, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapper_gen", "tasks", 174, CPyStatic_globals);
         goto CPyL82;
     }
     CPy_INCREF_NO_IMM(cpy_r_r48);
@@ -5089,28 +5091,28 @@ PyObject *CPyDef__LRUCacheWrapper___cache_info(PyObject *cpy_r_self) {
     PyObject *cpy_r_r15;
     cpy_r_r0 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___hits;
     if (unlikely(cpy_r_r0 == CPY_INT_TAG)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_info", "_LRUCacheWrapper", "__hits", 175, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_info", "_LRUCacheWrapper", "__hits", 178, CPyStatic_globals);
         goto CPyL10;
     }
     CPyTagged_INCREF(cpy_r_r0);
 CPyL1: ;
     cpy_r_r1 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___misses;
     if (unlikely(cpy_r_r1 == CPY_INT_TAG)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_info", "_LRUCacheWrapper", "__misses", 176, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_info", "_LRUCacheWrapper", "__misses", 179, CPyStatic_globals);
         goto CPyL11;
     }
     CPyTagged_INCREF(cpy_r_r1);
 CPyL2: ;
     cpy_r_r2 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___maxsize;
     if (unlikely(cpy_r_r2 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_info", "_LRUCacheWrapper", "__maxsize", 177, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_info", "_LRUCacheWrapper", "__maxsize", 180, CPyStatic_globals);
         goto CPyL12;
     }
     CPy_INCREF(cpy_r_r2);
 CPyL3: ;
     cpy_r_r3 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___cache;
     if (unlikely(cpy_r_r3 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_info", "_LRUCacheWrapper", "__cache", 178, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_info", "_LRUCacheWrapper", "__cache", 181, CPyStatic_globals);
         goto CPyL13;
     }
     CPy_INCREF(cpy_r_r3);
@@ -5149,7 +5151,7 @@ CPyL7: ;
     if (likely(PyTuple_Check(cpy_r_r13)))
         cpy_r_r14 = cpy_r_r13;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "cache_info", 174, CPyStatic_globals, "tuple", cpy_r_r13);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "cache_info", 177, CPyStatic_globals, "tuple", cpy_r_r13);
         goto CPyL10;
     }
     return cpy_r_r14;
@@ -5223,14 +5225,14 @@ PyObject *CPyDef__LRUCacheWrapper___cache_parameters(PyObject *cpy_r_self) {
     PyObject *cpy_r_r18;
     cpy_r_r0 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___maxsize;
     if (unlikely(cpy_r_r0 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_parameters", "_LRUCacheWrapper", "__maxsize", 183, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_parameters", "_LRUCacheWrapper", "__maxsize", 186, CPyStatic_globals);
         goto CPyL8;
     }
     CPy_INCREF(cpy_r_r0);
 CPyL1: ;
     cpy_r_r1 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___typed;
     if (unlikely(cpy_r_r1 == 2)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_parameters", "_LRUCacheWrapper", "__typed", 184, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_parameters", "_LRUCacheWrapper", "__typed", 187, CPyStatic_globals);
         goto CPyL9;
     }
 CPyL2: ;
@@ -5246,7 +5248,7 @@ CPyL3: ;
     cpy_r_r5 = cpy_r_r4 << 1;
     cpy_r_r6 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___closed;
     if (unlikely(cpy_r_r6 == 2)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_parameters", "_LRUCacheWrapper", "__closed", 186, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_parameters", "_LRUCacheWrapper", "__closed", 189, CPyStatic_globals);
         goto CPyL9;
     }
 CPyL4: ;
@@ -5274,7 +5276,7 @@ CPyL4: ;
     if (likely(PyDict_Check(cpy_r_r16)))
         cpy_r_r17 = cpy_r_r16;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "cache_parameters", 182, CPyStatic_globals, "dict", cpy_r_r16);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "cache_parameters", 185, CPyStatic_globals, "dict", cpy_r_r16);
         goto CPyL8;
     }
     return cpy_r_r17;
@@ -5322,7 +5324,7 @@ char CPyDef__LRUCacheWrapper____cache_hit(PyObject *cpy_r_self, PyObject *cpy_r_
     char cpy_r_r8;
     cpy_r_r0 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___hits;
     if (unlikely(cpy_r_r0 == CPY_INT_TAG)) {
-        CPy_AttributeError("async_lru/__init__.py", "_cache_hit", "_LRUCacheWrapper", "__hits", 190, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "_cache_hit", "_LRUCacheWrapper", "__hits", 193, CPyStatic_globals);
         goto CPyL5;
     }
 CPyL1: ;
@@ -5338,7 +5340,7 @@ CPyL1: ;
     }
     cpy_r_r3 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___cache;
     if (unlikely(cpy_r_r3 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "_cache_hit", "_LRUCacheWrapper", "__cache", 191, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "_cache_hit", "_LRUCacheWrapper", "__cache", 194, CPyStatic_globals);
         goto CPyL5;
     }
     CPy_INCREF(cpy_r_r3);
@@ -5401,7 +5403,7 @@ char CPyDef__LRUCacheWrapper____cache_miss(PyObject *cpy_r_self, PyObject *cpy_r
     char cpy_r_r3;
     cpy_r_r0 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___misses;
     if (unlikely(cpy_r_r0 == CPY_INT_TAG)) {
-        CPy_AttributeError("async_lru/__init__.py", "_cache_miss", "_LRUCacheWrapper", "__misses", 194, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "_cache_miss", "_LRUCacheWrapper", "__misses", 197, CPyStatic_globals);
         goto CPyL3;
     }
 CPyL1: ;
@@ -5455,40 +5457,39 @@ char CPyDef__LRUCacheWrapper____task_done_callback(PyObject *cpy_r_self, PyObjec
     PyObject *cpy_r_r3;
     char cpy_r_r4;
     PyObject *cpy_r_r5;
-    PyObject **cpy_r_r7;
-    PyObject *cpy_r_r8;
+    PyObject *cpy_r_r6;
+    PyObject *cpy_r_r7;
+    char cpy_r_r8;
     PyObject *cpy_r_r9;
-    char cpy_r_r10;
+    PyObject *cpy_r_r10;
     PyObject *cpy_r_r11;
-    PyObject *cpy_r_r12;
-    PyObject *cpy_r_r13;
-    PyObject **cpy_r_r15;
+    PyObject **cpy_r_r13;
+    PyObject *cpy_r_r14;
+    PyObject *cpy_r_r15;
     PyObject *cpy_r_r16;
     PyObject *cpy_r_r17;
     PyObject *cpy_r_r18;
     PyObject *cpy_r_r19;
-    PyObject *cpy_r_r20;
+    char cpy_r_r20;
     PyObject *cpy_r_r21;
     char cpy_r_r22;
     PyObject *cpy_r_r23;
-    char cpy_r_r24;
+    PyObject *cpy_r_r24;
     PyObject *cpy_r_r25;
     PyObject *cpy_r_r26;
-    PyObject *cpy_r_r27;
-    PyObject *cpy_r_r28;
-    double cpy_r_r29;
-    char cpy_r_r30;
+    double cpy_r_r27;
+    char cpy_r_r28;
+    PyObject *cpy_r_r29;
+    PyObject *cpy_r_r30;
     PyObject *cpy_r_r31;
     PyObject *cpy_r_r32;
     PyObject *cpy_r_r33;
     PyObject *cpy_r_r34;
-    PyObject *cpy_r_r35;
-    PyObject *cpy_r_r36;
-    PyObject **cpy_r_r38;
-    PyObject *cpy_r_r39;
-    PyObject *cpy_r_r40;
-    char cpy_r_r41;
-    char cpy_r_r42;
+    PyObject **cpy_r_r36;
+    PyObject *cpy_r_r37;
+    PyObject *cpy_r_r38;
+    char cpy_r_r39;
+    char cpy_r_r40;
     cpy_r_r0 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'cancelled' */
     PyObject *cpy_r_r1[1] = {cpy_r_task};
     cpy_r_r2 = (PyObject **)&cpy_r_r1;
@@ -5507,195 +5508,193 @@ char CPyDef__LRUCacheWrapper____task_done_callback(PyObject *cpy_r_self, PyObjec
         goto CPyL24;
     }
     if (cpy_r_r4) goto CPyL5;
-    cpy_r_r5 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'exception' */
-    PyObject *cpy_r_r6[1] = {cpy_r_task};
-    cpy_r_r7 = (PyObject **)&cpy_r_r6;
-    cpy_r_r8 = PyObject_VectorcallMethod(cpy_r_r5, cpy_r_r7, 9223372036854775809ULL, 0);
-    if (unlikely(cpy_r_r8 == NULL)) {
+    cpy_r_r5 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_exception' */
+    cpy_r_r6 = CPyObject_GetAttr(cpy_r_task, cpy_r_r5);
+    if (unlikely(cpy_r_r6 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "_task_done_callback", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL24;
     }
-    cpy_r_r9 = (PyObject *)&_Py_NoneStruct;
-    cpy_r_r10 = cpy_r_r8 != cpy_r_r9;
-    CPy_DECREF(cpy_r_r8);
-    if (!cpy_r_r10) goto CPyL8;
+    cpy_r_r7 = (PyObject *)&_Py_NoneStruct;
+    cpy_r_r8 = cpy_r_r6 != cpy_r_r7;
+    CPy_DECREF(cpy_r_r6);
+    if (!cpy_r_r8) goto CPyL8;
 CPyL5: ;
-    cpy_r_r11 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___cache;
-    if (unlikely(cpy_r_r11 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "_task_done_callback", "_LRUCacheWrapper", "__cache", 198, CPyStatic_globals);
+    cpy_r_r9 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___cache;
+    if (unlikely(cpy_r_r9 == NULL)) {
+        CPy_AttributeError("async_lru/__init__.py", "_task_done_callback", "_LRUCacheWrapper", "__cache", 204, CPyStatic_globals);
         goto CPyL24;
     }
-    CPy_INCREF(cpy_r_r11);
+    CPy_INCREF(cpy_r_r9);
 CPyL6: ;
-    cpy_r_r12 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'pop' */
-    cpy_r_r13 = Py_None;
-    PyObject *cpy_r_r14[3] = {cpy_r_r11, cpy_r_key, cpy_r_r13};
-    cpy_r_r15 = (PyObject **)&cpy_r_r14;
-    cpy_r_r16 = PyObject_VectorcallMethod(cpy_r_r12, cpy_r_r15, 9223372036854775811ULL, 0);
-    if (unlikely(cpy_r_r16 == NULL)) {
+    cpy_r_r10 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'pop' */
+    cpy_r_r11 = Py_None;
+    PyObject *cpy_r_r12[3] = {cpy_r_r9, cpy_r_key, cpy_r_r11};
+    cpy_r_r13 = (PyObject **)&cpy_r_r12;
+    cpy_r_r14 = PyObject_VectorcallMethod(cpy_r_r10, cpy_r_r13, 9223372036854775811ULL, 0);
+    if (unlikely(cpy_r_r14 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "_task_done_callback", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL25;
     } else
         goto CPyL26;
 CPyL7: ;
-    CPy_DECREF(cpy_r_r11);
+    CPy_DECREF(cpy_r_r9);
     return 1;
 CPyL8: ;
-    cpy_r_r17 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___cache;
-    if (unlikely(cpy_r_r17 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "_task_done_callback", "_LRUCacheWrapper", "__cache", 201, CPyStatic_globals);
+    cpy_r_r15 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___cache;
+    if (unlikely(cpy_r_r15 == NULL)) {
+        CPy_AttributeError("async_lru/__init__.py", "_task_done_callback", "_LRUCacheWrapper", "__cache", 207, CPyStatic_globals);
         goto CPyL24;
     }
-    CPy_INCREF(cpy_r_r17);
+    CPy_INCREF(cpy_r_r15);
 CPyL9: ;
-    cpy_r_r18 = CPyDict_GetWithNone(cpy_r_r17, cpy_r_key);
-    if (unlikely(cpy_r_r18 == NULL)) {
+    cpy_r_r16 = CPyDict_GetWithNone(cpy_r_r15, cpy_r_key);
+    if (unlikely(cpy_r_r16 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "_task_done_callback", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL27;
     }
-    if (Py_TYPE(cpy_r_r18) == CPyType__CacheItem)
-        cpy_r_r19 = cpy_r_r18;
+    if (Py_TYPE(cpy_r_r16) == CPyType__CacheItem)
+        cpy_r_r17 = cpy_r_r16;
     else {
-        cpy_r_r19 = NULL;
+        cpy_r_r17 = NULL;
     }
-    if (cpy_r_r19 != NULL) goto __LL14;
-    if (cpy_r_r18 == Py_None)
-        cpy_r_r19 = cpy_r_r18;
+    if (cpy_r_r17 != NULL) goto __LL14;
+    if (cpy_r_r16 == Py_None)
+        cpy_r_r17 = cpy_r_r16;
     else {
-        cpy_r_r19 = NULL;
+        cpy_r_r17 = NULL;
     }
-    if (cpy_r_r19 != NULL) goto __LL14;
-    CPy_TypeErrorTraceback("async_lru/__init__.py", "_task_done_callback", 202, CPyStatic_globals, "async_lru._CacheItem or None", cpy_r_r18);
+    if (cpy_r_r17 != NULL) goto __LL14;
+    CPy_TypeErrorTraceback("async_lru/__init__.py", "_task_done_callback", 208, CPyStatic_globals, "async_lru._CacheItem or None", cpy_r_r16);
     goto CPyL27;
 __LL14: ;
-    cpy_r_r20 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___ttl;
-    if (unlikely(cpy_r_r20 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "_task_done_callback", "_LRUCacheWrapper", "__ttl", 203, CPyStatic_globals);
+    cpy_r_r18 = ((async_lru____LRUCacheWrapperObject *)cpy_r_self)->___ttl;
+    if (unlikely(cpy_r_r18 == NULL)) {
+        CPy_AttributeError("async_lru/__init__.py", "_task_done_callback", "_LRUCacheWrapper", "__ttl", 209, CPyStatic_globals);
         goto CPyL28;
     }
-    CPy_INCREF(cpy_r_r20);
+    CPy_INCREF(cpy_r_r18);
 CPyL12: ;
+    cpy_r_r19 = (PyObject *)&_Py_NoneStruct;
+    cpy_r_r20 = cpy_r_r18 != cpy_r_r19;
+    if (!cpy_r_r20) goto CPyL29;
     cpy_r_r21 = (PyObject *)&_Py_NoneStruct;
-    cpy_r_r22 = cpy_r_r20 != cpy_r_r21;
+    cpy_r_r22 = cpy_r_r17 != cpy_r_r21;
     if (!cpy_r_r22) goto CPyL29;
-    cpy_r_r23 = (PyObject *)&_Py_NoneStruct;
-    cpy_r_r24 = cpy_r_r19 != cpy_r_r23;
-    if (!cpy_r_r24) goto CPyL29;
-    cpy_r_r25 = CPyModule_asyncio;
-    cpy_r_r26 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'get_running_loop' */
-    cpy_r_r27 = CPyObject_GetAttr(cpy_r_r25, cpy_r_r26);
-    if (unlikely(cpy_r_r27 == NULL)) {
+    cpy_r_r23 = CPyModule_asyncio;
+    cpy_r_r24 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'get_running_loop' */
+    cpy_r_r25 = CPyObject_GetAttr(cpy_r_r23, cpy_r_r24);
+    if (unlikely(cpy_r_r25 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "_task_done_callback", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL30;
     }
-    cpy_r_r28 = PyObject_Vectorcall(cpy_r_r27, 0, 0, 0);
-    CPy_DECREF(cpy_r_r27);
-    if (unlikely(cpy_r_r28 == NULL)) {
+    cpy_r_r26 = PyObject_Vectorcall(cpy_r_r25, 0, 0, 0);
+    CPy_DECREF(cpy_r_r25);
+    if (unlikely(cpy_r_r26 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "_task_done_callback", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL30;
     }
-    cpy_r_r29 = PyFloat_AsDouble(cpy_r_r20);
-    if (cpy_r_r29 == -1.0 && PyErr_Occurred()) {
-        CPy_TypeError("float", cpy_r_r20); cpy_r_r29 = -113.0;
+    cpy_r_r27 = PyFloat_AsDouble(cpy_r_r18);
+    if (cpy_r_r27 == -1.0 && PyErr_Occurred()) {
+        CPy_TypeError("float", cpy_r_r18); cpy_r_r27 = -113.0;
     }
-    CPy_DECREF(cpy_r_r20);
-    cpy_r_r30 = cpy_r_r29 == -113.0;
-    if (unlikely(cpy_r_r30)) goto CPyL18;
+    CPy_DECREF(cpy_r_r18);
+    cpy_r_r28 = cpy_r_r27 == -113.0;
+    if (unlikely(cpy_r_r28)) goto CPyL18;
 CPyL17: ;
-    cpy_r_r31 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'pop' */
-    cpy_r_r32 = CPyObject_GetAttr(cpy_r_r17, cpy_r_r31);
-    CPy_DECREF(cpy_r_r17);
-    if (unlikely(cpy_r_r32 == NULL)) {
+    cpy_r_r29 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'pop' */
+    cpy_r_r30 = CPyObject_GetAttr(cpy_r_r15, cpy_r_r29);
+    CPy_DECREF(cpy_r_r15);
+    if (unlikely(cpy_r_r30 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "_task_done_callback", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL31;
     } else
         goto CPyL19;
 CPyL18: ;
-    cpy_r_r33 = PyErr_Occurred();
-    if (unlikely(cpy_r_r33 != NULL)) {
+    cpy_r_r31 = PyErr_Occurred();
+    if (unlikely(cpy_r_r31 != NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "_task_done_callback", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL32;
     } else
         goto CPyL17;
 CPyL19: ;
-    cpy_r_r34 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'call_later' */
-    cpy_r_r35 = PyFloat_FromDouble(cpy_r_r29);
-    cpy_r_r36 = Py_None;
-    PyObject *cpy_r_r37[5] = {cpy_r_r28, cpy_r_r35, cpy_r_r32, cpy_r_key, cpy_r_r36};
-    cpy_r_r38 = (PyObject **)&cpy_r_r37;
-    cpy_r_r39 = PyObject_VectorcallMethod(cpy_r_r34, cpy_r_r38, 9223372036854775813ULL, 0);
-    if (unlikely(cpy_r_r39 == NULL)) {
+    cpy_r_r32 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'call_later' */
+    cpy_r_r33 = PyFloat_FromDouble(cpy_r_r27);
+    cpy_r_r34 = Py_None;
+    PyObject *cpy_r_r35[5] = {cpy_r_r26, cpy_r_r33, cpy_r_r30, cpy_r_key, cpy_r_r34};
+    cpy_r_r36 = (PyObject **)&cpy_r_r35;
+    cpy_r_r37 = PyObject_VectorcallMethod(cpy_r_r32, cpy_r_r36, 9223372036854775813ULL, 0);
+    if (unlikely(cpy_r_r37 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "_task_done_callback", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL33;
     }
-    CPy_DECREF(cpy_r_r28);
-    CPy_DECREF(cpy_r_r35);
-    CPy_DECREF(cpy_r_r32);
-    if (likely(cpy_r_r19 != Py_None))
-        cpy_r_r40 = cpy_r_r19;
+    CPy_DECREF(cpy_r_r26);
+    CPy_DECREF(cpy_r_r33);
+    CPy_DECREF(cpy_r_r30);
+    if (likely(cpy_r_r17 != Py_None))
+        cpy_r_r38 = cpy_r_r17;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "_task_done_callback", 206, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r19);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "_task_done_callback", 212, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r17);
         goto CPyL34;
     }
-    if (((async_lru____CacheItemObject *)cpy_r_r40)->_later_call != NULL) {
-        CPy_DECREF(((async_lru____CacheItemObject *)cpy_r_r40)->_later_call);
+    if (((async_lru____CacheItemObject *)cpy_r_r38)->_later_call != NULL) {
+        CPy_DECREF(((async_lru____CacheItemObject *)cpy_r_r38)->_later_call);
     }
-    ((async_lru____CacheItemObject *)cpy_r_r40)->_later_call = cpy_r_r39;
-    cpy_r_r41 = 1;
-    if (unlikely(!cpy_r_r41)) {
+    ((async_lru____CacheItemObject *)cpy_r_r38)->_later_call = cpy_r_r37;
+    cpy_r_r39 = 1;
+    if (unlikely(!cpy_r_r39)) {
         CPy_AddTraceback("async_lru/__init__.py", "_task_done_callback", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL35;
     }
-    CPy_DECREF(cpy_r_r19);
+    CPy_DECREF(cpy_r_r17);
 CPyL23: ;
     return 1;
 CPyL24: ;
-    cpy_r_r42 = 2;
-    return cpy_r_r42;
+    cpy_r_r40 = 2;
+    return cpy_r_r40;
 CPyL25: ;
-    CPy_DecRef(cpy_r_r11);
+    CPy_DecRef(cpy_r_r9);
     goto CPyL24;
 CPyL26: ;
-    CPy_DECREF(cpy_r_r16);
+    CPy_DECREF(cpy_r_r14);
     goto CPyL7;
 CPyL27: ;
-    CPy_DecRef(cpy_r_r17);
+    CPy_DecRef(cpy_r_r15);
     goto CPyL24;
 CPyL28: ;
+    CPy_DecRef(cpy_r_r15);
     CPy_DecRef(cpy_r_r17);
-    CPy_DecRef(cpy_r_r19);
     goto CPyL24;
 CPyL29: ;
+    CPy_DECREF(cpy_r_r15);
     CPy_DECREF(cpy_r_r17);
-    CPy_DECREF(cpy_r_r19);
-    CPy_DECREF(cpy_r_r20);
+    CPy_DECREF(cpy_r_r18);
     goto CPyL23;
 CPyL30: ;
+    CPy_DecRef(cpy_r_r15);
     CPy_DecRef(cpy_r_r17);
-    CPy_DecRef(cpy_r_r19);
-    CPy_DecRef(cpy_r_r20);
+    CPy_DecRef(cpy_r_r18);
     goto CPyL24;
 CPyL31: ;
-    CPy_DecRef(cpy_r_r19);
-    CPy_DecRef(cpy_r_r28);
+    CPy_DecRef(cpy_r_r17);
+    CPy_DecRef(cpy_r_r26);
     goto CPyL24;
 CPyL32: ;
+    CPy_DecRef(cpy_r_r15);
     CPy_DecRef(cpy_r_r17);
-    CPy_DecRef(cpy_r_r19);
-    CPy_DecRef(cpy_r_r28);
+    CPy_DecRef(cpy_r_r26);
     goto CPyL24;
 CPyL33: ;
-    CPy_DecRef(cpy_r_r19);
-    CPy_DecRef(cpy_r_r28);
-    CPy_DecRef(cpy_r_r32);
-    CPy_DecRef(cpy_r_r35);
+    CPy_DecRef(cpy_r_r17);
+    CPy_DecRef(cpy_r_r26);
+    CPy_DecRef(cpy_r_r30);
+    CPy_DecRef(cpy_r_r33);
     goto CPyL24;
 CPyL34: ;
-    CPy_DecRef(cpy_r_r19);
-    CPy_DecRef(cpy_r_r39);
+    CPy_DecRef(cpy_r_r17);
+    CPy_DecRef(cpy_r_r37);
     goto CPyL24;
 CPyL35: ;
-    CPy_DecRef(cpy_r_r19);
+    CPy_DecRef(cpy_r_r17);
     goto CPyL24;
 }
 
@@ -5833,7 +5832,7 @@ CPyL1: ;
 CPyL4: ;
     cpy_r_r5 = ((async_lru____shield_and_handle_cancelled_error__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__cache_item;
     if (unlikely(cpy_r_r5 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_shield_and_handle_cancelled_error__LRUCacheWrapper_gen", "cache_item", 213, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_shield_and_handle_cancelled_error__LRUCacheWrapper_gen", "cache_item", 219, CPyStatic_globals);
         goto CPyL93;
     }
     CPy_INCREF_NO_IMM(cpy_r_r5);
@@ -5861,7 +5860,7 @@ CPyL6: ;
     }
     cpy_r_r8 = ((async_lru____shield_and_handle_cancelled_error__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__task;
     if (unlikely(cpy_r_r8 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_shield_and_handle_cancelled_error__LRUCacheWrapper_gen", "task", 216, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_shield_and_handle_cancelled_error__LRUCacheWrapper_gen", "task", 222, CPyStatic_globals);
         goto CPyL39;
     }
     CPy_INCREF(cpy_r_r8);
@@ -6076,14 +6075,14 @@ CPyL39: ;
     if (!cpy_r_r45) goto CPyL60;
     cpy_r_r46 = ((async_lru____shield_and_handle_cancelled_error__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__cache_item;
     if (unlikely(cpy_r_r46 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_shield_and_handle_cancelled_error__LRUCacheWrapper_gen", "cache_item", 220, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_shield_and_handle_cancelled_error__LRUCacheWrapper_gen", "cache_item", 226, CPyStatic_globals);
         goto CPyL62;
     }
     CPy_INCREF_NO_IMM(cpy_r_r46);
 CPyL43: ;
     cpy_r_r47 = ((async_lru____CacheItemObject *)cpy_r_r46)->_waiters;
     if (unlikely(cpy_r_r47 == CPY_INT_TAG)) {
-        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_CacheItem", "waiters", 220, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_CacheItem", "waiters", 226, CPyStatic_globals);
         goto CPyL102;
     }
 CPyL44: ;
@@ -6092,7 +6091,7 @@ CPyL44: ;
     if (!cpy_r_r48) goto CPyL58;
     cpy_r_r49 = ((async_lru____shield_and_handle_cancelled_error__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__task;
     if (unlikely(cpy_r_r49 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_shield_and_handle_cancelled_error__LRUCacheWrapper_gen", "task", 220, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_shield_and_handle_cancelled_error__LRUCacheWrapper_gen", "task", 226, CPyStatic_globals);
         goto CPyL62;
     }
     CPy_INCREF(cpy_r_r49);
@@ -6118,7 +6117,7 @@ CPyL46: ;
     if (cpy_r_r54) goto CPyL58;
     cpy_r_r55 = ((async_lru____shield_and_handle_cancelled_error__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__cache_item;
     if (unlikely(cpy_r_r55 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_shield_and_handle_cancelled_error__LRUCacheWrapper_gen", "cache_item", 221, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_shield_and_handle_cancelled_error__LRUCacheWrapper_gen", "cache_item", 227, CPyStatic_globals);
         goto CPyL62;
     }
     CPy_INCREF_NO_IMM(cpy_r_r55);
@@ -6131,7 +6130,7 @@ CPyL50: ;
     }
     cpy_r_r57 = ((async_lru____shield_and_handle_cancelled_error__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__task;
     if (unlikely(cpy_r_r57 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_shield_and_handle_cancelled_error__LRUCacheWrapper_gen", "task", 222, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_shield_and_handle_cancelled_error__LRUCacheWrapper_gen", "task", 228, CPyStatic_globals);
         goto CPyL62;
     }
     CPy_INCREF(cpy_r_r57);
@@ -6149,7 +6148,7 @@ CPyL53: ;
     CPy_DecRef(cpy_r_r57);
     cpy_r_r62 = ((async_lru____shield_and_handle_cancelled_error__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r62 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_shield_and_handle_cancelled_error__LRUCacheWrapper_gen", "self", 223, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_shield_and_handle_cancelled_error__LRUCacheWrapper_gen", "self", 229, CPyStatic_globals);
         goto CPyL62;
     }
     CPy_INCREF_NO_IMM(cpy_r_r62);
@@ -6168,7 +6167,7 @@ CPyL54: ;
 CPyL55: ;
     cpy_r_r64 = ((async_lru____shield_and_handle_cancelled_error__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__key;
     if (unlikely(cpy_r_r64 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_shield_and_handle_cancelled_error__LRUCacheWrapper_gen", "key", 223, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_shield_and_handle_cancelled_error__LRUCacheWrapper_gen", "key", 229, CPyStatic_globals);
         goto CPyL106;
     }
     CPy_INCREF(cpy_r_r64);
@@ -6232,14 +6231,14 @@ CPyL66: ;
 CPyL68: ;
     cpy_r_r77 = ((async_lru____shield_and_handle_cancelled_error__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__cache_item;
     if (unlikely(cpy_r_r77 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_shield_and_handle_cancelled_error__LRUCacheWrapper_gen", "cache_item", 227, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_shield_and_handle_cancelled_error__LRUCacheWrapper_gen", "cache_item", 233, CPyStatic_globals);
         goto CPyL80;
     }
     CPy_INCREF_NO_IMM(cpy_r_r77);
 CPyL69: ;
     cpy_r_r78 = ((async_lru____CacheItemObject *)cpy_r_r77)->_waiters;
     if (unlikely(cpy_r_r78 == CPY_INT_TAG)) {
-        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_CacheItem", "waiters", 227, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "_shield_and_handle_cancelled_error", "_CacheItem", "waiters", 233, CPyStatic_globals);
         goto CPyL109;
     }
 CPyL70: ;
@@ -6991,7 +6990,7 @@ CPyL1: ;
 CPyL4: ;
     cpy_r_r11 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r11 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 232, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 238, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF_NO_IMM(cpy_r_r11);
@@ -7011,7 +7010,7 @@ CPyL7: ;
     cpy_r_r13 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'alru_cache is closed for ' */
     cpy_r_r14 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r14 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 233, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 239, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF_NO_IMM(cpy_r_r14);
@@ -7078,21 +7077,21 @@ CPyL17: ;
     }
     cpy_r_r27 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__fn_args;
     if (unlikely(cpy_r_r27 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "fn_args", 237, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "fn_args", 243, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF(cpy_r_r27);
 CPyL20: ;
     cpy_r_r28 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__fn_kwargs;
     if (unlikely(cpy_r_r28 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "fn_kwargs", 237, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "fn_kwargs", 243, CPyStatic_globals);
         goto CPyL196;
     }
     CPy_INCREF(cpy_r_r28);
 CPyL21: ;
     cpy_r_r29 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r29 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 237, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 243, CPyStatic_globals);
         goto CPyL197;
     }
     CPy_INCREF_NO_IMM(cpy_r_r29);
@@ -7142,7 +7141,7 @@ CPyL26: ;
     }
     cpy_r_r38 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r38 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 239, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 245, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF_NO_IMM(cpy_r_r38);
@@ -7170,14 +7169,14 @@ CPyL30: ;
     }
     cpy_r_r41 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__cache;
     if (unlikely(cpy_r_r41 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache", 241, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache", 247, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF(cpy_r_r41);
 CPyL32: ;
     cpy_r_r42 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__key;
     if (unlikely(cpy_r_r42 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "key", 241, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "key", 247, CPyStatic_globals);
         goto CPyL199;
     }
     CPy_INCREF(cpy_r_r42);
@@ -7201,7 +7200,7 @@ CPyL33: ;
         cpy_r_r44 = NULL;
     }
     if (cpy_r_r44 != NULL) goto __LL18;
-    CPy_TypeErrorTraceback("async_lru/__init__.py", "__call__", 241, CPyStatic_globals, "async_lru._CacheItem or None", cpy_r_r43);
+    CPy_TypeErrorTraceback("async_lru/__init__.py", "__call__", 247, CPyStatic_globals, "async_lru._CacheItem or None", cpy_r_r43);
     goto CPyL194;
 __LL18: ;
     if (((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__cache_item != NULL) {
@@ -7215,7 +7214,7 @@ __LL18: ;
     }
     cpy_r_r46 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__cache_item;
     if (unlikely(cpy_r_r46 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache_item", 243, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache_item", 249, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF(cpy_r_r46);
@@ -7226,14 +7225,14 @@ CPyL37: ;
     if (!cpy_r_r48) goto CPyL99;
     cpy_r_r49 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r49 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 244, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 250, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF_NO_IMM(cpy_r_r49);
 CPyL39: ;
     cpy_r_r50 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__key;
     if (unlikely(cpy_r_r50 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "key", 244, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "key", 250, CPyStatic_globals);
         goto CPyL200;
     }
     CPy_INCREF(cpy_r_r50);
@@ -7247,7 +7246,7 @@ CPyL40: ;
     }
     cpy_r_r52 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__cache_item;
     if (unlikely(cpy_r_r52 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache_item", 245, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache_item", 251, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF(cpy_r_r52);
@@ -7255,12 +7254,12 @@ CPyL42: ;
     if (likely(cpy_r_r52 != Py_None))
         cpy_r_r53 = cpy_r_r52;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "__call__", 245, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r52);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "__call__", 251, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r52);
         goto CPyL201;
     }
     cpy_r_r54 = ((async_lru____CacheItemObject *)cpy_r_r53)->_task;
     if (unlikely(cpy_r_r54 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "_CacheItem", "task", 245, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "_CacheItem", "task", 251, CPyStatic_globals);
         goto CPyL201;
     }
     CPy_INCREF(cpy_r_r54);
@@ -7277,7 +7276,7 @@ CPyL44: ;
     }
     cpy_r_r56 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__cache_item;
     if (unlikely(cpy_r_r56 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache_item", 246, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache_item", 252, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF(cpy_r_r56);
@@ -7285,12 +7284,12 @@ CPyL46: ;
     if (likely(cpy_r_r56 != Py_None))
         cpy_r_r57 = cpy_r_r56;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "__call__", 246, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r56);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "__call__", 252, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r56);
         goto CPyL202;
     }
     cpy_r_r58 = ((async_lru____CacheItemObject *)cpy_r_r57)->_task;
     if (unlikely(cpy_r_r58 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "_CacheItem", "task", 246, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "_CacheItem", "task", 252, CPyStatic_globals);
         goto CPyL202;
     }
     CPy_INCREF(cpy_r_r58);
@@ -7317,7 +7316,7 @@ CPyL48: ;
     if (cpy_r_r63) goto CPyL92;
     cpy_r_r64 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__cache_item;
     if (unlikely(cpy_r_r64 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache_item", 248, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache_item", 254, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF(cpy_r_r64);
@@ -7325,12 +7324,12 @@ CPyL52: ;
     if (likely(cpy_r_r64 != Py_None))
         cpy_r_r65 = cpy_r_r64;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "__call__", 248, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r64);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "__call__", 254, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r64);
         goto CPyL204;
     }
     cpy_r_r66 = ((async_lru____CacheItemObject *)cpy_r_r65)->_waiters;
     if (unlikely(cpy_r_r66 == CPY_INT_TAG)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "_CacheItem", "waiters", 248, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "_CacheItem", "waiters", 254, CPyStatic_globals);
         goto CPyL204;
     }
 CPyL54: ;
@@ -7347,14 +7346,14 @@ CPyL54: ;
     CPy_DECREF(cpy_r_r64);
     cpy_r_r69 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r69 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 249, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 255, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF_NO_IMM(cpy_r_r69);
 CPyL56: ;
     cpy_r_r70 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__cache_item;
     if (unlikely(cpy_r_r70 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache_item", 249, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache_item", 255, CPyStatic_globals);
         goto CPyL205;
     }
     CPy_INCREF(cpy_r_r70);
@@ -7362,12 +7361,12 @@ CPyL57: ;
     if (likely(cpy_r_r70 != Py_None))
         cpy_r_r71 = cpy_r_r70;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "__call__", 249, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r70);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "__call__", 255, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r70);
         goto CPyL205;
     }
     cpy_r_r72 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__key;
     if (unlikely(cpy_r_r72 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "key", 249, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "key", 255, CPyStatic_globals);
         goto CPyL206;
     }
     CPy_INCREF(cpy_r_r72);
@@ -7550,7 +7549,7 @@ CPyL91: ;
 CPyL92: ;
     cpy_r_r101 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__task;
     if (unlikely(cpy_r_r101 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "task", 252, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "task", 258, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF(cpy_r_r101);
@@ -7576,21 +7575,21 @@ CPyL98: ;
 CPyL99: ;
     cpy_r_r107 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r107 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 254, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 260, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF_NO_IMM(cpy_r_r107);
 CPyL100: ;
     cpy_r_r108 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__fn_args;
     if (unlikely(cpy_r_r108 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "fn_args", 254, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "fn_args", 260, CPyStatic_globals);
         goto CPyL217;
     }
     CPy_INCREF(cpy_r_r108);
 CPyL101: ;
     cpy_r_r109 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__fn_kwargs;
     if (unlikely(cpy_r_r109 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "fn_kwargs", 254, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "fn_kwargs", 260, CPyStatic_globals);
         goto CPyL218;
     }
     CPy_INCREF(cpy_r_r109);
@@ -7627,14 +7626,14 @@ CPyL102: ;
     }
     cpy_r_r115 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__loop;
     if (unlikely(cpy_r_r115 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "loop", 255, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "loop", 261, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF(cpy_r_r115);
 CPyL107: ;
     cpy_r_r116 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__coro;
     if (unlikely(cpy_r_r116 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "coro", 255, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "coro", 261, CPyStatic_globals);
         goto CPyL221;
     }
     CPy_INCREF(cpy_r_r116);
@@ -7660,14 +7659,14 @@ CPyL108: ;
     }
     cpy_r_r122 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__task;
     if (unlikely(cpy_r_r122 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "task", 256, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "task", 262, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF(cpy_r_r122);
 CPyL111: ;
     cpy_r_r123 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r123 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 256, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 262, CPyStatic_globals);
         goto CPyL223;
     }
     CPy_INCREF_NO_IMM(cpy_r_r123);
@@ -7681,7 +7680,7 @@ CPyL112: ;
     }
     cpy_r_r126 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__key;
     if (unlikely(cpy_r_r126 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "key", 256, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "key", 262, CPyStatic_globals);
         goto CPyL224;
     }
     CPy_INCREF(cpy_r_r126);
@@ -7723,7 +7722,7 @@ CPyL119: ;
     CPy_DECREF(cpy_r_r131);
     cpy_r_r136 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__task;
     if (unlikely(cpy_r_r136 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "task", 258, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "task", 264, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF(cpy_r_r136);
@@ -7759,7 +7758,7 @@ CPyL120: ;
     }
     cpy_r_r143 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__cache_item;
     if (unlikely(cpy_r_r143 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache_item", 259, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache_item", 265, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF(cpy_r_r143);
@@ -7767,19 +7766,19 @@ CPyL125: ;
     if (likely(cpy_r_r143 != Py_None))
         cpy_r_r144 = cpy_r_r143;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "__call__", 259, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r143);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "__call__", 265, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r143);
         goto CPyL194;
     }
     cpy_r_r145 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__cache;
     if (unlikely(cpy_r_r145 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache", 259, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache", 265, CPyStatic_globals);
         goto CPyL230;
     }
     CPy_INCREF(cpy_r_r145);
 CPyL127: ;
     cpy_r_r146 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__key;
     if (unlikely(cpy_r_r146 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "key", 259, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "key", 265, CPyStatic_globals);
         goto CPyL231;
     }
     CPy_INCREF(cpy_r_r146);
@@ -7795,7 +7794,7 @@ CPyL128: ;
     }
     cpy_r_r149 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r149 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 261, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 267, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF_NO_IMM(cpy_r_r149);
@@ -7823,7 +7822,7 @@ CPyL131: ;
     }
     cpy_r_r152 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__maxsize;
     if (unlikely(cpy_r_r152 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "maxsize", 262, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "maxsize", 268, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF(cpy_r_r152);
@@ -7834,7 +7833,7 @@ CPyL133: ;
     if (!cpy_r_r154) goto CPyL149;
     cpy_r_r155 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__cache;
     if (unlikely(cpy_r_r155 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache", 262, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache", 268, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF(cpy_r_r155);
@@ -7844,7 +7843,7 @@ CPyL135: ;
     cpy_r_r157 = cpy_r_r156 << 1;
     cpy_r_r158 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__maxsize;
     if (unlikely(cpy_r_r158 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "maxsize", 262, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "maxsize", 268, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF(cpy_r_r158);
@@ -7877,7 +7876,7 @@ CPyL141: ;
     if (!cpy_r_r165) goto CPyL149;
     cpy_r_r167 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__cache;
     if (unlikely(cpy_r_r167 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache", 263, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache", 269, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF(cpy_r_r167);
@@ -7956,7 +7955,7 @@ __LL20: ;
     }
     cpy_r_r181 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__dropped_cache_item;
     if (unlikely(cpy_r_r181 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "dropped_cache_item", 264, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "dropped_cache_item", 270, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF_NO_IMM(cpy_r_r181);
@@ -7970,14 +7969,14 @@ CPyL148: ;
 CPyL149: ;
     cpy_r_r183 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r183 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 266, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 272, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF_NO_IMM(cpy_r_r183);
 CPyL150: ;
     cpy_r_r184 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__key;
     if (unlikely(cpy_r_r184 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "key", 266, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "key", 272, CPyStatic_globals);
         goto CPyL233;
     }
     CPy_INCREF(cpy_r_r184);
@@ -7991,14 +7990,14 @@ CPyL151: ;
     }
     cpy_r_r186 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r186 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 268, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "self", 274, CPyStatic_globals);
         goto CPyL194;
     }
     CPy_INCREF_NO_IMM(cpy_r_r186);
 CPyL153: ;
     cpy_r_r187 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__cache_item;
     if (unlikely(cpy_r_r187 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache_item", 268, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "cache_item", 274, CPyStatic_globals);
         goto CPyL234;
     }
     CPy_INCREF(cpy_r_r187);
@@ -8006,12 +8005,12 @@ CPyL154: ;
     if (likely(cpy_r_r187 != Py_None))
         cpy_r_r188 = cpy_r_r187;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "__call__", 268, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r187);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "__call__", 274, CPyStatic_globals, "async_lru._CacheItem", cpy_r_r187);
         goto CPyL234;
     }
     cpy_r_r189 = ((async_lru_____call___3__LRUCacheWrapper_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__key;
     if (unlikely(cpy_r_r189 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "key", 268, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapper_gen", "key", 274, CPyStatic_globals);
         goto CPyL235;
     }
     CPy_INCREF(cpy_r_r189);
@@ -8893,7 +8892,7 @@ char CPyDef__LRUCacheWrapperInstanceMethod_____init__(PyObject *cpy_r_self, PyOb
     char cpy_r_r66;
     cpy_r_r0 = ((async_lru____LRUCacheWrapperObject *)cpy_r_wrapper)->___module__;
     if (unlikely(cpy_r_r0 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__init__", "_LRUCacheWrapper", "__module__", 288, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__init__", "_LRUCacheWrapper", "__module__", 294, CPyStatic_globals);
         goto CPyL3;
     }
     CPy_INCREF(cpy_r_r0);
@@ -8943,7 +8942,7 @@ CPyL8: ;
 CPyL10: ;
     cpy_r_r8 = ((async_lru____LRUCacheWrapperObject *)cpy_r_wrapper)->___name__;
     if (unlikely(cpy_r_r8 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__init__", "_LRUCacheWrapper", "__name__", 292, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__init__", "_LRUCacheWrapper", "__name__", 298, CPyStatic_globals);
         goto CPyL12;
     }
     CPy_INCREF(cpy_r_r8);
@@ -8993,7 +8992,7 @@ CPyL17: ;
 CPyL19: ;
     cpy_r_r16 = ((async_lru____LRUCacheWrapperObject *)cpy_r_wrapper)->___qualname__;
     if (unlikely(cpy_r_r16 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__init__", "_LRUCacheWrapper", "__qualname__", 296, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__init__", "_LRUCacheWrapper", "__qualname__", 302, CPyStatic_globals);
         goto CPyL21;
     }
     CPy_INCREF(cpy_r_r16);
@@ -9043,7 +9042,7 @@ CPyL26: ;
 CPyL28: ;
     cpy_r_r24 = ((async_lru____LRUCacheWrapperObject *)cpy_r_wrapper)->___doc__;
     if (unlikely(cpy_r_r24 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__init__", "_LRUCacheWrapper", "__doc__", 300, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__init__", "_LRUCacheWrapper", "__doc__", 306, CPyStatic_globals);
         goto CPyL30;
     }
     CPy_INCREF(cpy_r_r24);
@@ -9093,7 +9092,7 @@ CPyL35: ;
 CPyL37: ;
     cpy_r_r32 = ((async_lru____LRUCacheWrapperObject *)cpy_r_wrapper)->___annotations__;
     if (unlikely(cpy_r_r32 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__init__", "_LRUCacheWrapper", "__annotations__", 304, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__init__", "_LRUCacheWrapper", "__annotations__", 310, CPyStatic_globals);
         goto CPyL39;
     }
     CPy_INCREF(cpy_r_r32);
@@ -9150,7 +9149,7 @@ CPyL46: ;
     if (likely(PyDict_Check(cpy_r_r41)))
         cpy_r_r42 = cpy_r_r41;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 308, CPyStatic_globals, "dict", cpy_r_r41);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 314, CPyStatic_globals, "dict", cpy_r_r41);
         goto CPyL50;
     }
     cpy_r_r43 = PyDict_Copy(cpy_r_r42);
@@ -9211,7 +9210,7 @@ CPyL57: ;
     if (likely(PyTuple_Check(cpy_r_r55)))
         cpy_r_r56 = cpy_r_r55;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 313, CPyStatic_globals, "tuple", cpy_r_r55);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "__init__", 319, CPyStatic_globals, "tuple", cpy_r_r55);
         goto CPyL69;
     }
     cpy_r_r57.f0 = 6;
@@ -9250,7 +9249,7 @@ CPyL57: ;
 CPyL64: ;
     cpy_r_r62 = ((async_lru____LRUCacheWrapperObject *)cpy_r_wrapper)->___wrapped__;
     if (unlikely(cpy_r_r62 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__init__", "_LRUCacheWrapper", "__wrapped__", 315, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__init__", "_LRUCacheWrapper", "__wrapped__", 321, CPyStatic_globals);
         goto CPyL69;
     }
     CPy_INCREF(cpy_r_r62);
@@ -9373,14 +9372,14 @@ char CPyDef__LRUCacheWrapperInstanceMethod___cache_invalidate(PyObject *cpy_r_se
     char cpy_r_r14;
     cpy_r_r0 = ((async_lru____LRUCacheWrapperInstanceMethodObject *)cpy_r_self)->___wrapper;
     if (unlikely(cpy_r_r0 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_invalidate", "_LRUCacheWrapperInstanceMethod", "__wrapper", 320, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_invalidate", "_LRUCacheWrapperInstanceMethod", "__wrapper", 326, CPyStatic_globals);
         goto CPyL11;
     }
     CPy_INCREF_NO_IMM(cpy_r_r0);
 CPyL1: ;
     cpy_r_r1 = ((async_lru____LRUCacheWrapperInstanceMethodObject *)cpy_r_self)->___instance;
     if (unlikely(cpy_r_r1 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_invalidate", "_LRUCacheWrapperInstanceMethod", "__instance", 320, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_invalidate", "_LRUCacheWrapperInstanceMethod", "__instance", 326, CPyStatic_globals);
         goto CPyL12;
     }
     CPy_INCREF(cpy_r_r1);
@@ -9513,7 +9512,7 @@ char CPyDef__LRUCacheWrapperInstanceMethod___cache_clear(PyObject *cpy_r_self) {
     char cpy_r_r2;
     cpy_r_r0 = ((async_lru____LRUCacheWrapperInstanceMethodObject *)cpy_r_self)->___wrapper;
     if (unlikely(cpy_r_r0 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_clear", "_LRUCacheWrapperInstanceMethod", "__wrapper", 323, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_clear", "_LRUCacheWrapperInstanceMethod", "__wrapper", 329, CPyStatic_globals);
         goto CPyL3;
     }
     CPy_INCREF_NO_IMM(cpy_r_r0);
@@ -9620,7 +9619,7 @@ CPyL1: ;
 CPyL4: ;
     cpy_r_r7 = ((async_lru___cache_close__LRUCacheWrapperInstanceMethod_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r7 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapperInstanceMethod_gen", "self", 328, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_close", "cache_close__LRUCacheWrapperInstanceMethod_gen", "self", 334, CPyStatic_globals);
         goto CPyL43;
     }
     CPy_INCREF_NO_IMM(cpy_r_r7);
@@ -10243,7 +10242,7 @@ PyObject *CPyDef__LRUCacheWrapperInstanceMethod___cache_info(PyObject *cpy_r_sel
     PyObject *cpy_r_r2;
     cpy_r_r0 = ((async_lru____LRUCacheWrapperInstanceMethodObject *)cpy_r_self)->___wrapper;
     if (unlikely(cpy_r_r0 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_info", "_LRUCacheWrapperInstanceMethod", "__wrapper", 331, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_info", "_LRUCacheWrapperInstanceMethod", "__wrapper", 337, CPyStatic_globals);
         goto CPyL3;
     }
     CPy_INCREF_NO_IMM(cpy_r_r0);
@@ -10287,7 +10286,7 @@ PyObject *CPyDef__LRUCacheWrapperInstanceMethod___cache_parameters(PyObject *cpy
     PyObject *cpy_r_r2;
     cpy_r_r0 = ((async_lru____LRUCacheWrapperInstanceMethodObject *)cpy_r_self)->___wrapper;
     if (unlikely(cpy_r_r0 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "cache_parameters", "_LRUCacheWrapperInstanceMethod", "__wrapper", 334, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "cache_parameters", "_LRUCacheWrapperInstanceMethod", "__wrapper", 340, CPyStatic_globals);
         goto CPyL3;
     }
     CPy_INCREF_NO_IMM(cpy_r_r0);
@@ -10393,14 +10392,14 @@ CPyL1: ;
 CPyL4: ;
     cpy_r_r5 = ((async_lru_____call___3__LRUCacheWrapperInstanceMethod_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r5 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapperInstanceMethod_gen", "self", 337, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapperInstanceMethod_gen", "self", 343, CPyStatic_globals);
         goto CPyL53;
     }
     CPy_INCREF_NO_IMM(cpy_r_r5);
 CPyL5: ;
     cpy_r_r6 = ((async_lru_____call___3__LRUCacheWrapperInstanceMethod_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r6 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapperInstanceMethod_gen", "self", 337, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapperInstanceMethod_gen", "self", 343, CPyStatic_globals);
         goto CPyL54;
     }
     CPy_INCREF_NO_IMM(cpy_r_r6);
@@ -10419,14 +10418,14 @@ CPyL6: ;
 CPyL7: ;
     cpy_r_r8 = ((async_lru_____call___3__LRUCacheWrapperInstanceMethod_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__fn_args;
     if (unlikely(cpy_r_r8 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapperInstanceMethod_gen", "fn_args", 337, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapperInstanceMethod_gen", "fn_args", 343, CPyStatic_globals);
         goto CPyL55;
     }
     CPy_INCREF(cpy_r_r8);
 CPyL8: ;
     cpy_r_r9 = ((async_lru_____call___3__LRUCacheWrapperInstanceMethod_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__fn_kwargs;
     if (unlikely(cpy_r_r9 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapperInstanceMethod_gen", "fn_kwargs", 337, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "__call__", "__call____LRUCacheWrapperInstanceMethod_gen", "fn_kwargs", 343, CPyStatic_globals);
         goto CPyL56;
     }
     CPy_INCREF(cpy_r_r9);
@@ -11220,7 +11219,7 @@ PyObject *CPyDef_wrapper__make_wrapper_obj_____call__(PyObject *cpy_r___mypyc_se
     PyObject *cpy_r_r76;
     cpy_r_r0 = ((async_lru___wrapper__make_wrapper_objObject *)cpy_r___mypyc_self__)->___mypyc_env__;
     if (unlikely(cpy_r_r0 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "wrapper", "wrapper__make_wrapper_obj", "__mypyc_env__", 345, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "wrapper", "wrapper__make_wrapper_obj", "__mypyc_env__", 351, CPyStatic_globals);
         goto CPyL49;
     }
     CPy_INCREF_NO_IMM(cpy_r_r0);
@@ -11341,7 +11340,7 @@ CPyL12: ;
         cpy_r_r27 = NULL;
     }
     if (cpy_r_r27 != NULL) goto __LL36;
-    CPy_TypeErrorTraceback("async_lru/__init__.py", "wrapper", 351, CPyStatic_globals, "str or None", cpy_r_r26);
+    CPy_TypeErrorTraceback("async_lru/__init__.py", "wrapper", 357, CPyStatic_globals, "str or None", cpy_r_r26);
     goto CPyL53;
 __LL36: ;
     cpy_r_r28 = (PyObject *)&_Py_NoneStruct;
@@ -11350,7 +11349,7 @@ __LL36: ;
     if (likely(cpy_r_r27 != Py_None))
         cpy_r_r30 = cpy_r_r27;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "wrapper", 351, CPyStatic_globals, "str", cpy_r_r27);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "wrapper", 357, CPyStatic_globals, "str", cpy_r_r27);
         goto CPyL53;
     }
     cpy_r_r31 = CPyStr_IsTrue(cpy_r_r30);
@@ -11375,7 +11374,7 @@ CPyL22: ;
     if (likely(PyUnicode_Check(cpy_r_r39)))
         cpy_r_r40 = cpy_r_r39;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "wrapper", 352, CPyStatic_globals, "str", cpy_r_r39);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "wrapper", 358, CPyStatic_globals, "str", cpy_r_r39);
         goto CPyL49;
     }
     cpy_r_r41 = PyList_New(2);
@@ -11434,14 +11433,14 @@ CPyL30: ;
 CPyL33: ;
     cpy_r_r58 = ((async_lru____make_wrapper_envObject *)cpy_r_r0)->_maxsize;
     if (unlikely(cpy_r_r58 == NULL)) {
-        CPy_AttributeError("async_lru/__init__.py", "wrapper", "_make_wrapper_env", "maxsize", 358, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "wrapper", "_make_wrapper_env", "maxsize", 364, CPyStatic_globals);
         goto CPyL60;
     }
     CPy_INCREF(cpy_r_r58);
 CPyL34: ;
     cpy_r_r59 = ((async_lru____make_wrapper_envObject *)cpy_r_r0)->_typed;
     if (unlikely(cpy_r_r59 == 2)) {
-        CPy_AttributeError("async_lru/__init__.py", "wrapper", "_make_wrapper_env", "typed", 358, CPyStatic_globals);
+        CPy_AttributeError("async_lru/__init__.py", "wrapper", "_make_wrapper_env", "typed", 364, CPyStatic_globals);
         goto CPyL61;
     }
 CPyL35: ;
@@ -11476,7 +11475,7 @@ CPyL36: ;
     if (likely(PyTuple_Check(cpy_r_r64)))
         cpy_r_r65 = cpy_r_r64;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "wrapper", 359, CPyStatic_globals, "tuple", cpy_r_r64);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "wrapper", 365, CPyStatic_globals, "tuple", cpy_r_r64);
         goto CPyL63;
     }
     cpy_r_r66.f0 = 6;
@@ -11530,7 +11529,7 @@ CPyL45: ;
     if (likely(Py_TYPE(cpy_r_r74) == CPyType__LRUCacheWrapper))
         cpy_r_r75 = cpy_r_r74;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "wrapper", 360, CPyStatic_globals, "async_lru._LRUCacheWrapper", cpy_r_r74);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "wrapper", 366, CPyStatic_globals, "async_lru._LRUCacheWrapper", cpy_r_r74);
         goto CPyL49;
     }
     cpy_r_wrapper = cpy_r_r75;
@@ -11820,7 +11819,7 @@ CPyL8: ;
         cpy_r_r5 = NULL;
     }
     if (cpy_r_r5 != NULL) goto __LL41;
-    CPy_TypeErrorTraceback("async_lru/__init__.py", "alru_cache", 391, CPyStatic_globals, "int or None", cpy_r_maxsize);
+    CPy_TypeErrorTraceback("async_lru/__init__.py", "alru_cache", 397, CPyStatic_globals, "int or None", cpy_r_maxsize);
     goto CPyL31;
 __LL41: ;
     cpy_r_r6 = CPyDef__make_wrapper(cpy_r_r5, cpy_r_typed, cpy_r_ttl);
@@ -11881,7 +11880,7 @@ CPyL16: ;
     if (likely(Py_TYPE(cpy_r_r21) == CPyType__LRUCacheWrapper))
         cpy_r_r22 = cpy_r_r21;
     else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "alru_cache", 396, CPyStatic_globals, "async_lru._LRUCacheWrapper", cpy_r_r21);
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "alru_cache", 402, CPyStatic_globals, "async_lru._LRUCacheWrapper", cpy_r_r21);
         goto CPyL27;
     }
     return cpy_r_r22;
@@ -12042,14 +12041,14 @@ char CPyDef___top_level__(void) {
     PyObject **cpy_r_r8;
     PyObject **cpy_r_r9;
     PyObject **cpy_r_r10;
-    void *cpy_r_r12;
-    void *cpy_r_r14;
-    PyObject *cpy_r_r15;
+    PyObject **cpy_r_r11;
+    void *cpy_r_r13;
+    void *cpy_r_r15;
     PyObject *cpy_r_r16;
     PyObject *cpy_r_r17;
     PyObject *cpy_r_r18;
-    char cpy_r_r19;
-    PyObject *cpy_r_r20;
+    PyObject *cpy_r_r19;
+    char cpy_r_r20;
     PyObject *cpy_r_r21;
     PyObject *cpy_r_r22;
     PyObject *cpy_r_r23;
@@ -12061,57 +12060,57 @@ char CPyDef___top_level__(void) {
     PyObject *cpy_r_r29;
     PyObject *cpy_r_r30;
     PyObject *cpy_r_r31;
-    tuple_T2II cpy_r_r32;
-    PyObject *cpy_r_r33;
+    PyObject *cpy_r_r32;
+    tuple_T2II cpy_r_r33;
     PyObject *cpy_r_r34;
-    char cpy_r_r35;
-    PyObject *cpy_r_r36;
+    PyObject *cpy_r_r35;
+    char cpy_r_r36;
     PyObject *cpy_r_r37;
     PyObject *cpy_r_r38;
     PyObject *cpy_r_r39;
-    char cpy_r_r40;
-    PyObject *cpy_r_r41;
+    PyObject *cpy_r_r40;
+    char cpy_r_r41;
     PyObject *cpy_r_r42;
     PyObject *cpy_r_r43;
     PyObject *cpy_r_r44;
-    tuple_T2II cpy_r_r45;
-    PyObject *cpy_r_r46;
+    PyObject *cpy_r_r45;
+    tuple_T2II cpy_r_r46;
     PyObject *cpy_r_r47;
-    char cpy_r_r48;
+    PyObject *cpy_r_r48;
     char cpy_r_r49;
-    PyObject *cpy_r_r50;
+    char cpy_r_r50;
     PyObject *cpy_r_r51;
     PyObject *cpy_r_r52;
-    int32_t cpy_r_r53;
-    char cpy_r_r54;
-    PyObject *cpy_r_r55;
-    tuple_T1O cpy_r_r56;
-    PyObject *cpy_r_r57;
+    PyObject *cpy_r_r53;
+    int32_t cpy_r_r54;
+    char cpy_r_r55;
+    PyObject *cpy_r_r56;
+    tuple_T1O cpy_r_r57;
     PyObject *cpy_r_r58;
     PyObject *cpy_r_r59;
-    int32_t cpy_r_r60;
-    char cpy_r_r61;
-    PyObject *cpy_r_r62;
+    PyObject *cpy_r_r60;
+    int32_t cpy_r_r61;
+    char cpy_r_r62;
     PyObject *cpy_r_r63;
     PyObject *cpy_r_r64;
     PyObject *cpy_r_r65;
-    PyObject **cpy_r_r67;
-    PyObject *cpy_r_r68;
+    PyObject *cpy_r_r66;
+    PyObject **cpy_r_r68;
     PyObject *cpy_r_r69;
     PyObject *cpy_r_r70;
-    int32_t cpy_r_r71;
-    char cpy_r_r72;
-    PyObject *cpy_r_r73;
+    PyObject *cpy_r_r71;
+    int32_t cpy_r_r72;
+    char cpy_r_r73;
     PyObject *cpy_r_r74;
     PyObject *cpy_r_r75;
     PyObject *cpy_r_r76;
-    PyObject **cpy_r_r78;
-    PyObject *cpy_r_r79;
+    PyObject *cpy_r_r77;
+    PyObject **cpy_r_r79;
     PyObject *cpy_r_r80;
     PyObject *cpy_r_r81;
-    int32_t cpy_r_r82;
-    char cpy_r_r83;
-    PyObject *cpy_r_r84;
+    PyObject *cpy_r_r82;
+    int32_t cpy_r_r83;
+    char cpy_r_r84;
     PyObject *cpy_r_r85;
     PyObject *cpy_r_r86;
     PyObject *cpy_r_r87;
@@ -12123,14 +12122,14 @@ char CPyDef___top_level__(void) {
     PyObject *cpy_r_r93;
     PyObject *cpy_r_r94;
     PyObject *cpy_r_r95;
-    tuple_T3OOO cpy_r_r96;
-    PyObject *cpy_r_r97;
+    PyObject *cpy_r_r96;
+    tuple_T3OOO cpy_r_r97;
     PyObject *cpy_r_r98;
     PyObject *cpy_r_r99;
     PyObject *cpy_r_r100;
-    int32_t cpy_r_r101;
-    char cpy_r_r102;
-    PyObject *cpy_r_r103;
+    PyObject *cpy_r_r101;
+    int32_t cpy_r_r102;
+    char cpy_r_r103;
     PyObject *cpy_r_r104;
     PyObject *cpy_r_r105;
     PyObject *cpy_r_r106;
@@ -12141,14 +12140,14 @@ char CPyDef___top_level__(void) {
     PyObject *cpy_r_r111;
     PyObject *cpy_r_r112;
     PyObject *cpy_r_r113;
-    tuple_T2OO cpy_r_r114;
-    PyObject *cpy_r_r115;
+    PyObject *cpy_r_r114;
+    tuple_T2OO cpy_r_r115;
     PyObject *cpy_r_r116;
     PyObject *cpy_r_r117;
     PyObject *cpy_r_r118;
-    int32_t cpy_r_r119;
-    char cpy_r_r120;
-    PyObject *cpy_r_r121;
+    PyObject *cpy_r_r119;
+    int32_t cpy_r_r120;
+    char cpy_r_r121;
     PyObject *cpy_r_r122;
     PyObject *cpy_r_r123;
     PyObject *cpy_r_r124;
@@ -12180,85 +12179,84 @@ char CPyDef___top_level__(void) {
     PyObject *cpy_r_r150;
     PyObject *cpy_r_r151;
     PyObject *cpy_r_r152;
-    tuple_T3OOO cpy_r_r153;
-    PyObject *cpy_r_r154;
+    PyObject *cpy_r_r153;
+    tuple_T3OOO cpy_r_r154;
     PyObject *cpy_r_r155;
     PyObject *cpy_r_r156;
     PyObject *cpy_r_r157;
-    int32_t cpy_r_r158;
-    char cpy_r_r159;
-    PyObject *cpy_r_r160;
+    PyObject *cpy_r_r158;
+    int32_t cpy_r_r159;
+    char cpy_r_r160;
     PyObject *cpy_r_r161;
     PyObject *cpy_r_r162;
     PyObject *cpy_r_r163;
     PyObject *cpy_r_r164;
-    int32_t cpy_r_r165;
-    char cpy_r_r166;
-    PyObject *cpy_r_r167;
+    PyObject *cpy_r_r165;
+    int32_t cpy_r_r166;
+    char cpy_r_r167;
     PyObject *cpy_r_r168;
     PyObject *cpy_r_r169;
     PyObject *cpy_r_r170;
     PyObject *cpy_r_r171;
-    int32_t cpy_r_r172;
-    char cpy_r_r173;
-    PyObject *cpy_r_r174;
+    PyObject *cpy_r_r172;
+    int32_t cpy_r_r173;
+    char cpy_r_r174;
     PyObject *cpy_r_r175;
     PyObject *cpy_r_r176;
     PyObject *cpy_r_r177;
     PyObject *cpy_r_r178;
-    int32_t cpy_r_r179;
-    char cpy_r_r180;
-    PyObject *cpy_r_r181;
+    PyObject *cpy_r_r179;
+    int32_t cpy_r_r180;
+    char cpy_r_r181;
     PyObject *cpy_r_r182;
     PyObject *cpy_r_r183;
     PyObject *cpy_r_r184;
     PyObject *cpy_r_r185;
-    int32_t cpy_r_r186;
-    char cpy_r_r187;
-    PyObject *cpy_r_r188;
+    PyObject *cpy_r_r186;
+    int32_t cpy_r_r187;
+    char cpy_r_r188;
     PyObject *cpy_r_r189;
     PyObject *cpy_r_r190;
     PyObject *cpy_r_r191;
     PyObject *cpy_r_r192;
-    int32_t cpy_r_r193;
-    char cpy_r_r194;
-    PyObject *cpy_r_r195;
+    PyObject *cpy_r_r193;
+    int32_t cpy_r_r194;
+    char cpy_r_r195;
     PyObject *cpy_r_r196;
     PyObject *cpy_r_r197;
     PyObject *cpy_r_r198;
     PyObject *cpy_r_r199;
-    int32_t cpy_r_r200;
-    char cpy_r_r201;
-    PyObject *cpy_r_r202;
+    PyObject *cpy_r_r200;
+    int32_t cpy_r_r201;
+    char cpy_r_r202;
     PyObject *cpy_r_r203;
     PyObject *cpy_r_r204;
     PyObject *cpy_r_r205;
     PyObject *cpy_r_r206;
-    int32_t cpy_r_r207;
-    char cpy_r_r208;
-    PyObject *cpy_r_r209;
+    PyObject *cpy_r_r207;
+    int32_t cpy_r_r208;
+    char cpy_r_r209;
     PyObject *cpy_r_r210;
     PyObject *cpy_r_r211;
     PyObject *cpy_r_r212;
     PyObject *cpy_r_r213;
     PyObject *cpy_r_r214;
-    int32_t cpy_r_r215;
-    char cpy_r_r216;
-    PyObject *cpy_r_r217;
+    PyObject *cpy_r_r215;
+    int32_t cpy_r_r216;
+    char cpy_r_r217;
     PyObject *cpy_r_r218;
-    char cpy_r_r219;
+    PyObject *cpy_r_r219;
     PyObject *cpy_r_r220;
     PyObject *cpy_r_r221;
-    PyObject *cpy_r_r222;
-    PyObject *cpy_r_r223;
+    PyObject **cpy_r_r223;
     PyObject *cpy_r_r224;
     PyObject *cpy_r_r225;
     PyObject *cpy_r_r226;
-    PyObject *cpy_r_r227;
-    PyObject *cpy_r_r228;
+    int32_t cpy_r_r227;
+    char cpy_r_r228;
     PyObject *cpy_r_r229;
-    char cpy_r_r230;
-    PyObject *cpy_r_r231;
+    PyObject *cpy_r_r230;
+    char cpy_r_r231;
     PyObject *cpy_r_r232;
     PyObject *cpy_r_r233;
     PyObject *cpy_r_r234;
@@ -12266,28 +12264,28 @@ char CPyDef___top_level__(void) {
     PyObject *cpy_r_r236;
     PyObject *cpy_r_r237;
     PyObject *cpy_r_r238;
-    char cpy_r_r239;
+    PyObject *cpy_r_r239;
     PyObject *cpy_r_r240;
     PyObject *cpy_r_r241;
-    PyObject *cpy_r_r242;
-    PyObject **cpy_r_r244;
+    char cpy_r_r242;
+    PyObject *cpy_r_r243;
+    PyObject *cpy_r_r244;
     PyObject *cpy_r_r245;
     PyObject *cpy_r_r246;
     PyObject *cpy_r_r247;
     PyObject *cpy_r_r248;
     PyObject *cpy_r_r249;
     PyObject *cpy_r_r250;
-    PyObject *cpy_r_r251;
-    int32_t cpy_r_r252;
-    char cpy_r_r253;
+    char cpy_r_r251;
+    PyObject *cpy_r_r252;
+    PyObject *cpy_r_r253;
     PyObject *cpy_r_r254;
-    PyObject *cpy_r_r255;
-    int32_t cpy_r_r256;
-    char cpy_r_r257;
+    PyObject **cpy_r_r256;
+    PyObject *cpy_r_r257;
     PyObject *cpy_r_r258;
     PyObject *cpy_r_r259;
-    int32_t cpy_r_r260;
-    char cpy_r_r261;
+    PyObject *cpy_r_r260;
+    PyObject *cpy_r_r261;
     PyObject *cpy_r_r262;
     PyObject *cpy_r_r263;
     int32_t cpy_r_r264;
@@ -12304,83 +12302,83 @@ char CPyDef___top_level__(void) {
     PyObject *cpy_r_r275;
     int32_t cpy_r_r276;
     char cpy_r_r277;
-    PyObject **cpy_r_r279;
-    PyObject *cpy_r_r280;
-    PyObject *cpy_r_r281;
+    PyObject *cpy_r_r278;
+    PyObject *cpy_r_r279;
+    int32_t cpy_r_r280;
+    char cpy_r_r281;
     PyObject *cpy_r_r282;
     PyObject *cpy_r_r283;
-    PyObject **cpy_r_r285;
+    int32_t cpy_r_r284;
+    char cpy_r_r285;
     PyObject *cpy_r_r286;
     PyObject *cpy_r_r287;
-    PyObject *cpy_r_r288;
-    int32_t cpy_r_r289;
-    char cpy_r_r290;
-    PyObject *cpy_r_r291;
+    int32_t cpy_r_r288;
+    char cpy_r_r289;
+    PyObject **cpy_r_r291;
     PyObject *cpy_r_r292;
     PyObject *cpy_r_r293;
     PyObject *cpy_r_r294;
     PyObject *cpy_r_r295;
-    PyObject *cpy_r_r296;
-    PyObject *cpy_r_r297;
+    PyObject **cpy_r_r297;
     PyObject *cpy_r_r298;
     PyObject *cpy_r_r299;
     PyObject *cpy_r_r300;
-    PyObject *cpy_r_r301;
-    PyObject *cpy_r_r302;
-    char cpy_r_r303;
+    int32_t cpy_r_r301;
+    char cpy_r_r302;
+    PyObject *cpy_r_r303;
     PyObject *cpy_r_r304;
     PyObject *cpy_r_r305;
     PyObject *cpy_r_r306;
     PyObject *cpy_r_r307;
     PyObject *cpy_r_r308;
     PyObject *cpy_r_r309;
-    int32_t cpy_r_r310;
-    char cpy_r_r311;
+    PyObject *cpy_r_r310;
+    PyObject *cpy_r_r311;
     PyObject *cpy_r_r312;
     PyObject *cpy_r_r313;
-    int32_t cpy_r_r314;
+    PyObject *cpy_r_r314;
     char cpy_r_r315;
     PyObject *cpy_r_r316;
-    tuple_T0 cpy_r_r317;
+    PyObject *cpy_r_r317;
     PyObject *cpy_r_r318;
     PyObject *cpy_r_r319;
     PyObject *cpy_r_r320;
     PyObject *cpy_r_r321;
-    PyObject *cpy_r_r322;
-    PyObject *cpy_r_r323;
-    int32_t cpy_r_r324;
-    char cpy_r_r325;
-    PyObject *cpy_r_r326;
-    PyObject *cpy_r_r327;
-    int32_t cpy_r_r328;
-    char cpy_r_r329;
+    int32_t cpy_r_r322;
+    char cpy_r_r323;
+    PyObject *cpy_r_r324;
+    PyObject *cpy_r_r325;
+    int32_t cpy_r_r326;
+    char cpy_r_r327;
+    PyObject *cpy_r_r328;
+    tuple_T0 cpy_r_r329;
     PyObject *cpy_r_r330;
     PyObject *cpy_r_r331;
-    int32_t cpy_r_r332;
-    char cpy_r_r333;
+    PyObject *cpy_r_r332;
+    PyObject *cpy_r_r333;
     PyObject *cpy_r_r334;
-    int32_t cpy_r_r335;
-    char cpy_r_r336;
-    PyObject *cpy_r_r337;
+    PyObject *cpy_r_r335;
+    int32_t cpy_r_r336;
+    char cpy_r_r337;
     PyObject *cpy_r_r338;
-    int32_t cpy_r_r339;
-    char cpy_r_r340;
-    PyObject *cpy_r_r341;
+    PyObject *cpy_r_r339;
+    int32_t cpy_r_r340;
+    char cpy_r_r341;
     PyObject *cpy_r_r342;
-    int32_t cpy_r_r343;
-    char cpy_r_r344;
-    PyObject *cpy_r_r345;
+    PyObject *cpy_r_r343;
+    int32_t cpy_r_r344;
+    char cpy_r_r345;
     PyObject *cpy_r_r346;
-    PyObject *cpy_r_r347;
-    PyObject *cpy_r_r348;
-    char cpy_r_r349;
+    int32_t cpy_r_r347;
+    char cpy_r_r348;
+    PyObject *cpy_r_r349;
     PyObject *cpy_r_r350;
-    PyObject *cpy_r_r351;
-    PyObject *cpy_r_r352;
+    int32_t cpy_r_r351;
+    char cpy_r_r352;
     PyObject *cpy_r_r353;
     PyObject *cpy_r_r354;
-    PyObject *cpy_r_r355;
-    PyObject *cpy_r_r356;
+    int32_t cpy_r_r355;
+    char cpy_r_r356;
     PyObject *cpy_r_r357;
     PyObject *cpy_r_r358;
     PyObject *cpy_r_r359;
@@ -12397,52 +12395,64 @@ char CPyDef___top_level__(void) {
     PyObject *cpy_r_r370;
     PyObject *cpy_r_r371;
     PyObject *cpy_r_r372;
-    PyObject *cpy_r_r373;
+    char cpy_r_r373;
     PyObject *cpy_r_r374;
     PyObject *cpy_r_r375;
     PyObject *cpy_r_r376;
     PyObject *cpy_r_r377;
-    int32_t cpy_r_r378;
-    char cpy_r_r379;
+    PyObject *cpy_r_r378;
+    PyObject *cpy_r_r379;
     PyObject *cpy_r_r380;
     PyObject *cpy_r_r381;
-    int32_t cpy_r_r382;
-    char cpy_r_r383;
+    PyObject *cpy_r_r382;
+    PyObject *cpy_r_r383;
     PyObject *cpy_r_r384;
     PyObject *cpy_r_r385;
     PyObject *cpy_r_r386;
     PyObject *cpy_r_r387;
     PyObject *cpy_r_r388;
     PyObject *cpy_r_r389;
-    PyObject *cpy_r_r390;
-    PyObject *cpy_r_r391;
+    int32_t cpy_r_r390;
+    char cpy_r_r391;
     PyObject *cpy_r_r392;
-    tuple_T2OO cpy_r_r393;
-    PyObject *cpy_r_r394;
-    PyObject *cpy_r_r395;
+    PyObject *cpy_r_r393;
+    int32_t cpy_r_r394;
+    char cpy_r_r395;
     PyObject *cpy_r_r396;
     PyObject *cpy_r_r397;
     PyObject *cpy_r_r398;
     PyObject *cpy_r_r399;
-    char cpy_r_r400;
+    PyObject *cpy_r_r400;
     PyObject *cpy_r_r401;
     PyObject *cpy_r_r402;
     PyObject *cpy_r_r403;
     PyObject *cpy_r_r404;
-    PyObject *cpy_r_r405;
+    tuple_T2OO cpy_r_r405;
     PyObject *cpy_r_r406;
     PyObject *cpy_r_r407;
     PyObject *cpy_r_r408;
     PyObject *cpy_r_r409;
     PyObject *cpy_r_r410;
     PyObject *cpy_r_r411;
-    int32_t cpy_r_r412;
-    char cpy_r_r413;
+    char cpy_r_r412;
+    PyObject *cpy_r_r413;
     PyObject *cpy_r_r414;
     PyObject *cpy_r_r415;
-    int32_t cpy_r_r416;
-    char cpy_r_r417;
-    char cpy_r_r418;
+    PyObject *cpy_r_r416;
+    PyObject *cpy_r_r417;
+    PyObject *cpy_r_r418;
+    PyObject *cpy_r_r419;
+    PyObject *cpy_r_r420;
+    PyObject *cpy_r_r421;
+    PyObject *cpy_r_r422;
+    PyObject *cpy_r_r423;
+    int32_t cpy_r_r424;
+    char cpy_r_r425;
+    PyObject *cpy_r_r426;
+    PyObject *cpy_r_r427;
+    int32_t cpy_r_r428;
+    char cpy_r_r429;
+    char cpy_r_r430;
     cpy_r_r0 = CPyModule_builtins;
     cpy_r_r1 = (PyObject *)&_Py_NoneStruct;
     cpy_r_r2 = cpy_r_r0 != cpy_r_r1;
@@ -12451,7 +12461,7 @@ char CPyDef___top_level__(void) {
     cpy_r_r4 = PyImport_Import(cpy_r_r3);
     if (unlikely(cpy_r_r4 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", -1, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
     CPyModule_builtins = cpy_r_r4;
     CPy_INCREF(CPyModule_builtins);
@@ -12461,1244 +12471,1276 @@ CPyL3: ;
     cpy_r_r6 = (PyObject **)&CPyModule_dataclasses;
     cpy_r_r7 = (PyObject **)&CPyModule_functools;
     cpy_r_r8 = (PyObject **)&CPyModule_inspect;
-    cpy_r_r9 = (PyObject **)&CPyModule_os;
-    cpy_r_r10 = (PyObject **)&CPyModule_sys;
-    PyObject **cpy_r_r11[6] = {cpy_r_r5, cpy_r_r6, cpy_r_r7, cpy_r_r8, cpy_r_r9, cpy_r_r10};
-    cpy_r_r12 = (void *)&cpy_r_r11;
-    int64_t cpy_r_r13[6] = {1, 2, 3, 4, 5, 6};
-    cpy_r_r14 = (void *)&cpy_r_r13;
-    cpy_r_r15 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* (('asyncio', 'asyncio', 'asyncio'),
+    cpy_r_r9 = (PyObject **)&CPyModule_logging;
+    cpy_r_r10 = (PyObject **)&CPyModule_os;
+    cpy_r_r11 = (PyObject **)&CPyModule_sys;
+    PyObject **cpy_r_r12[7] = {
+        cpy_r_r5, cpy_r_r6, cpy_r_r7, cpy_r_r8, cpy_r_r9, cpy_r_r10,
+        cpy_r_r11
+    };
+    cpy_r_r13 = (void *)&cpy_r_r12;
+    int64_t cpy_r_r14[7] = {1, 2, 3, 4, 5, 6, 7};
+    cpy_r_r15 = (void *)&cpy_r_r14;
+    cpy_r_r16 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* (('asyncio', 'asyncio', 'asyncio'),
                                     ('dataclasses', 'dataclasses', 'dataclasses'),
                                     ('functools', 'functools', 'functools'),
-                                    ('inspect', 'inspect', 'inspect'), ('os', 'os', 'os'),
+                                    ('inspect', 'inspect', 'inspect'),
+                                    ('logging', 'logging', 'logging'), ('os', 'os', 'os'),
                                     ('sys', 'sys', 'sys')) */
-    cpy_r_r16 = CPyStatic_globals;
-    cpy_r_r17 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'async_lru/__init__.py' */
-    cpy_r_r18 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '<module>' */
-    cpy_r_r19 = CPyImport_ImportMany(cpy_r_r15, cpy_r_r12, cpy_r_r16, cpy_r_r17, cpy_r_r18, cpy_r_r14);
-    if (!cpy_r_r19) goto CPyL144;
-    cpy_r_r20 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('_is_coroutine',) */
-    cpy_r_r21 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'asyncio.coroutines' */
-    cpy_r_r22 = CPyStatic_globals;
-    cpy_r_r23 = CPyImport_ImportFromMany(cpy_r_r21, cpy_r_r20, cpy_r_r20, cpy_r_r22);
-    if (unlikely(cpy_r_r23 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    CPyModule_asyncio___coroutines = cpy_r_r23;
-    CPy_INCREF(CPyModule_asyncio___coroutines);
-    CPy_DECREF(cpy_r_r23);
-    cpy_r_r24 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('Any', 'Callable', 'Coroutine', 'Final', 'Generic',
-                                    'Hashable', 'List', 'Optional', 'OrderedDict', 'Type',
-                                    'TypedDict', 'TypeVar', 'Union', 'cast', 'final',
-                                    'overload') */
-    cpy_r_r25 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typing' */
-    cpy_r_r26 = CPyStatic_globals;
-    cpy_r_r27 = CPyImport_ImportFromMany(cpy_r_r25, cpy_r_r24, cpy_r_r24, cpy_r_r26);
-    if (unlikely(cpy_r_r27 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    CPyModule_typing = cpy_r_r27;
-    CPy_INCREF(CPyModule_typing);
-    CPy_DECREF(cpy_r_r27);
-    cpy_r_r28 = CPyModule_sys;
-    cpy_r_r29 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'version_info' */
-    cpy_r_r30 = CPyObject_GetAttr(cpy_r_r28, cpy_r_r29);
-    if (unlikely(cpy_r_r30 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    if (likely(PyTuple_Check(cpy_r_r30)))
-        cpy_r_r31 = cpy_r_r30;
-    else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "<module>", 28, CPyStatic_globals, "tuple", cpy_r_r30);
-        goto CPyL144;
-    }
-    cpy_r_r32.f0 = 6;
-    cpy_r_r32.f1 = 22;
-    cpy_r_r33 = PyTuple_New(2);
-    if (unlikely(cpy_r_r33 == NULL))
-        CPyError_OutOfMemory();
-    PyObject *__tmp44 = CPyTagged_StealAsObject(cpy_r_r32.f0);
-    PyTuple_SET_ITEM(cpy_r_r33, 0, __tmp44);
-    PyObject *__tmp45 = CPyTagged_StealAsObject(cpy_r_r32.f1);
-    PyTuple_SET_ITEM(cpy_r_r33, 1, __tmp45);
-    cpy_r_r34 = PyObject_RichCompare(cpy_r_r31, cpy_r_r33, 5);
-    CPy_DECREF(cpy_r_r31);
-    CPy_DECREF(cpy_r_r33);
-    if (unlikely(cpy_r_r34 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    if (unlikely(!PyBool_Check(cpy_r_r34))) {
-        CPy_TypeError("bool", cpy_r_r34); cpy_r_r35 = 2;
-    } else
-        cpy_r_r35 = cpy_r_r34 == Py_True;
-    CPy_DECREF(cpy_r_r34);
-    if (unlikely(cpy_r_r35 == 2)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    if (!cpy_r_r35) goto CPyL13;
-    cpy_r_r36 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('Self',) */
-    cpy_r_r37 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typing' */
-    cpy_r_r38 = CPyStatic_globals;
-    cpy_r_r39 = CPyImport_ImportFromMany(cpy_r_r37, cpy_r_r36, cpy_r_r36, cpy_r_r38);
-    if (unlikely(cpy_r_r39 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    CPyModule_typing = cpy_r_r39;
-    CPy_INCREF(CPyModule_typing);
-    CPy_DECREF(cpy_r_r39);
-    goto CPyL15;
-CPyL13: ;
-    PyErr_SetString(PyExc_RuntimeError, "Reached allegedly unreachable code!");
-    cpy_r_r40 = 0;
-    if (unlikely(!cpy_r_r40)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    CPy_Unreachable();
-CPyL15: ;
-    cpy_r_r41 = CPyModule_sys;
-    cpy_r_r42 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'version_info' */
-    cpy_r_r43 = CPyObject_GetAttr(cpy_r_r41, cpy_r_r42);
-    if (unlikely(cpy_r_r43 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    if (likely(PyTuple_Check(cpy_r_r43)))
-        cpy_r_r44 = cpy_r_r43;
-    else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "<module>", 33, CPyStatic_globals, "tuple", cpy_r_r43);
-        goto CPyL144;
-    }
-    cpy_r_r45.f0 = 6;
-    cpy_r_r45.f1 = 28;
-    cpy_r_r46 = PyTuple_New(2);
-    if (unlikely(cpy_r_r46 == NULL))
-        CPyError_OutOfMemory();
-    PyObject *__tmp46 = CPyTagged_StealAsObject(cpy_r_r45.f0);
-    PyTuple_SET_ITEM(cpy_r_r46, 0, __tmp46);
-    PyObject *__tmp47 = CPyTagged_StealAsObject(cpy_r_r45.f1);
-    PyTuple_SET_ITEM(cpy_r_r46, 1, __tmp47);
-    cpy_r_r47 = PyObject_RichCompare(cpy_r_r44, cpy_r_r46, 0);
-    CPy_DECREF(cpy_r_r44);
-    CPy_DECREF(cpy_r_r46);
-    if (unlikely(cpy_r_r47 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    if (unlikely(!PyBool_Check(cpy_r_r47))) {
-        CPy_TypeError("bool", cpy_r_r47); cpy_r_r48 = 2;
-    } else
-        cpy_r_r48 = cpy_r_r47 == Py_True;
-    CPy_DECREF(cpy_r_r47);
-    if (unlikely(cpy_r_r48 == 2)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    if (!cpy_r_r48) goto CPyL22;
-    PyErr_SetString(PyExc_RuntimeError, "Reached allegedly unreachable code!");
-    cpy_r_r49 = 0;
-    if (unlikely(!cpy_r_r49)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    CPy_Unreachable();
-CPyL22: ;
-    cpy_r_r50 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '2.0.5' */
-    cpy_r_r51 = CPyStatic_globals;
-    cpy_r_r52 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__version__' */
-    cpy_r_r53 = CPyDict_SetItem(cpy_r_r51, cpy_r_r52, cpy_r_r50);
-    cpy_r_r54 = cpy_r_r53 >= 0;
-    if (unlikely(!cpy_r_r54)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    cpy_r_r55 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'alru_cache' */
-    CPy_INCREF(cpy_r_r55);
-    cpy_r_r56.f0 = cpy_r_r55;
-    cpy_r_r57 = CPyStatic_globals;
-    cpy_r_r58 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__all__' */
-    cpy_r_r59 = PyTuple_New(1);
-    if (unlikely(cpy_r_r59 == NULL))
-        CPyError_OutOfMemory();
-    PyObject *__tmp48 = cpy_r_r56.f0;
-    PyTuple_SET_ITEM(cpy_r_r59, 0, __tmp48);
-    cpy_r_r60 = CPyDict_SetItem(cpy_r_r57, cpy_r_r58, cpy_r_r59);
-    CPy_DECREF(cpy_r_r59);
-    cpy_r_r61 = cpy_r_r60 >= 0;
-    if (unlikely(!cpy_r_r61)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    cpy_r_r62 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_T' */
-    cpy_r_r63 = CPyStatic_globals;
-    cpy_r_r64 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'TypeVar' */
-    cpy_r_r65 = CPyDict_GetItem(cpy_r_r63, cpy_r_r64);
-    if (unlikely(cpy_r_r65 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    PyObject *cpy_r_r66[1] = {cpy_r_r62};
-    cpy_r_r67 = (PyObject **)&cpy_r_r66;
-    cpy_r_r68 = PyObject_Vectorcall(cpy_r_r65, cpy_r_r67, 1, 0);
-    CPy_DECREF(cpy_r_r65);
-    if (unlikely(cpy_r_r68 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    cpy_r_r69 = CPyStatic_globals;
-    cpy_r_r70 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_T' */
-    cpy_r_r71 = CPyDict_SetItem(cpy_r_r69, cpy_r_r70, cpy_r_r68);
-    CPy_DECREF(cpy_r_r68);
-    cpy_r_r72 = cpy_r_r71 >= 0;
-    if (unlikely(!cpy_r_r72)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    cpy_r_r73 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
-    cpy_r_r74 = CPyStatic_globals;
-    cpy_r_r75 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'TypeVar' */
-    cpy_r_r76 = CPyDict_GetItem(cpy_r_r74, cpy_r_r75);
-    if (unlikely(cpy_r_r76 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    PyObject *cpy_r_r77[1] = {cpy_r_r73};
-    cpy_r_r78 = (PyObject **)&cpy_r_r77;
-    cpy_r_r79 = PyObject_Vectorcall(cpy_r_r76, cpy_r_r78, 1, 0);
-    CPy_DECREF(cpy_r_r76);
-    if (unlikely(cpy_r_r79 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    cpy_r_r80 = CPyStatic_globals;
-    cpy_r_r81 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
-    cpy_r_r82 = CPyDict_SetItem(cpy_r_r80, cpy_r_r81, cpy_r_r79);
-    CPy_DECREF(cpy_r_r79);
-    cpy_r_r83 = cpy_r_r82 >= 0;
-    if (unlikely(!cpy_r_r83)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    cpy_r_r84 = CPyStatic_globals;
-    cpy_r_r85 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'Coroutine' */
-    cpy_r_r86 = CPyDict_GetItem(cpy_r_r84, cpy_r_r85);
-    if (unlikely(cpy_r_r86 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    cpy_r_r87 = CPyStatic_globals;
-    cpy_r_r88 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'Any' */
-    cpy_r_r89 = CPyDict_GetItem(cpy_r_r87, cpy_r_r88);
-    if (unlikely(cpy_r_r89 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL145;
-    }
-    cpy_r_r90 = CPyStatic_globals;
-    cpy_r_r91 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'Any' */
-    cpy_r_r92 = CPyDict_GetItem(cpy_r_r90, cpy_r_r91);
-    if (unlikely(cpy_r_r92 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL146;
-    }
-    cpy_r_r93 = CPyStatic_globals;
-    cpy_r_r94 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
-    cpy_r_r95 = CPyDict_GetItem(cpy_r_r93, cpy_r_r94);
-    if (unlikely(cpy_r_r95 == NULL)) {
+    cpy_r_r17 = CPyStatic_globals;
+    cpy_r_r18 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'async_lru/__init__.py' */
+    cpy_r_r19 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '<module>' */
+    cpy_r_r20 = CPyImport_ImportMany(cpy_r_r16, cpy_r_r13, cpy_r_r17, cpy_r_r18, cpy_r_r19, cpy_r_r15);
+    if (!cpy_r_r20) goto CPyL147;
+    cpy_r_r21 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('_is_coroutine',) */
+    cpy_r_r22 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'asyncio.coroutines' */
+    cpy_r_r23 = CPyStatic_globals;
+    cpy_r_r24 = CPyImport_ImportFromMany(cpy_r_r22, cpy_r_r21, cpy_r_r21, cpy_r_r23);
+    if (unlikely(cpy_r_r24 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL147;
     }
-    cpy_r_r96.f0 = cpy_r_r89;
-    cpy_r_r96.f1 = cpy_r_r92;
-    cpy_r_r96.f2 = cpy_r_r95;
-    cpy_r_r97 = PyTuple_New(3);
-    if (unlikely(cpy_r_r97 == NULL))
+    CPyModule_asyncio___coroutines = cpy_r_r24;
+    CPy_INCREF(CPyModule_asyncio___coroutines);
+    CPy_DECREF(cpy_r_r24);
+    cpy_r_r25 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('Any', 'Callable', 'Coroutine', 'Final', 'Generic',
+                                    'Hashable', 'List', 'Optional', 'OrderedDict', 'Type',
+                                    'TypedDict', 'TypeVar', 'Union', 'cast', 'final',
+                                    'overload') */
+    cpy_r_r26 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typing' */
+    cpy_r_r27 = CPyStatic_globals;
+    cpy_r_r28 = CPyImport_ImportFromMany(cpy_r_r26, cpy_r_r25, cpy_r_r25, cpy_r_r27);
+    if (unlikely(cpy_r_r28 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    CPyModule_typing = cpy_r_r28;
+    CPy_INCREF(CPyModule_typing);
+    CPy_DECREF(cpy_r_r28);
+    cpy_r_r29 = CPyModule_sys;
+    cpy_r_r30 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'version_info' */
+    cpy_r_r31 = CPyObject_GetAttr(cpy_r_r29, cpy_r_r30);
+    if (unlikely(cpy_r_r31 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    if (likely(PyTuple_Check(cpy_r_r31)))
+        cpy_r_r32 = cpy_r_r31;
+    else {
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "<module>", 29, CPyStatic_globals, "tuple", cpy_r_r31);
+        goto CPyL147;
+    }
+    cpy_r_r33.f0 = 6;
+    cpy_r_r33.f1 = 22;
+    cpy_r_r34 = PyTuple_New(2);
+    if (unlikely(cpy_r_r34 == NULL))
         CPyError_OutOfMemory();
-    PyObject *__tmp49 = cpy_r_r96.f0;
-    PyTuple_SET_ITEM(cpy_r_r97, 0, __tmp49);
-    PyObject *__tmp50 = cpy_r_r96.f1;
-    PyTuple_SET_ITEM(cpy_r_r97, 1, __tmp50);
-    PyObject *__tmp51 = cpy_r_r96.f2;
-    PyTuple_SET_ITEM(cpy_r_r97, 2, __tmp51);
-    cpy_r_r98 = PyObject_GetItem(cpy_r_r86, cpy_r_r97);
-    CPy_DECREF(cpy_r_r86);
-    CPy_DECREF(cpy_r_r97);
-    if (unlikely(cpy_r_r98 == NULL)) {
+    PyObject *__tmp44 = CPyTagged_StealAsObject(cpy_r_r33.f0);
+    PyTuple_SET_ITEM(cpy_r_r34, 0, __tmp44);
+    PyObject *__tmp45 = CPyTagged_StealAsObject(cpy_r_r33.f1);
+    PyTuple_SET_ITEM(cpy_r_r34, 1, __tmp45);
+    cpy_r_r35 = PyObject_RichCompare(cpy_r_r32, cpy_r_r34, 5);
+    CPy_DECREF(cpy_r_r32);
+    CPy_DECREF(cpy_r_r34);
+    if (unlikely(cpy_r_r35 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    cpy_r_r99 = CPyStatic_globals;
-    cpy_r_r100 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_Coro' */
-    cpy_r_r101 = CPyDict_SetItem(cpy_r_r99, cpy_r_r100, cpy_r_r98);
-    CPy_DECREF(cpy_r_r98);
-    cpy_r_r102 = cpy_r_r101 >= 0;
-    if (unlikely(!cpy_r_r102)) {
+    if (unlikely(!PyBool_Check(cpy_r_r35))) {
+        CPy_TypeError("bool", cpy_r_r35); cpy_r_r36 = 2;
+    } else
+        cpy_r_r36 = cpy_r_r35 == Py_True;
+    CPy_DECREF(cpy_r_r35);
+    if (unlikely(cpy_r_r36 == 2)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    cpy_r_r103 = CPyStatic_globals;
-    cpy_r_r104 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'Callable' */
-    cpy_r_r105 = CPyDict_GetItem(cpy_r_r103, cpy_r_r104);
-    if (unlikely(cpy_r_r105 == NULL)) {
+    if (!cpy_r_r36) goto CPyL13;
+    cpy_r_r37 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('Self',) */
+    cpy_r_r38 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typing' */
+    cpy_r_r39 = CPyStatic_globals;
+    cpy_r_r40 = CPyImport_ImportFromMany(cpy_r_r38, cpy_r_r37, cpy_r_r37, cpy_r_r39);
+    if (unlikely(cpy_r_r40 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    cpy_r_r106 = (PyObject *)&_Py_EllipsisObject;
-    cpy_r_r107 = CPyStatic_globals;
-    cpy_r_r108 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_Coro' */
-    cpy_r_r109 = CPyDict_GetItem(cpy_r_r107, cpy_r_r108);
-    if (unlikely(cpy_r_r109 == NULL)) {
+    CPyModule_typing = cpy_r_r40;
+    CPy_INCREF(CPyModule_typing);
+    CPy_DECREF(cpy_r_r40);
+    goto CPyL15;
+CPyL13: ;
+    PyErr_SetString(PyExc_RuntimeError, "Reached allegedly unreachable code!");
+    cpy_r_r41 = 0;
+    if (unlikely(!cpy_r_r41)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    CPy_Unreachable();
+CPyL15: ;
+    cpy_r_r42 = CPyModule_sys;
+    cpy_r_r43 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'version_info' */
+    cpy_r_r44 = CPyObject_GetAttr(cpy_r_r42, cpy_r_r43);
+    if (unlikely(cpy_r_r44 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    if (likely(PyTuple_Check(cpy_r_r44)))
+        cpy_r_r45 = cpy_r_r44;
+    else {
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "<module>", 34, CPyStatic_globals, "tuple", cpy_r_r44);
+        goto CPyL147;
+    }
+    cpy_r_r46.f0 = 6;
+    cpy_r_r46.f1 = 28;
+    cpy_r_r47 = PyTuple_New(2);
+    if (unlikely(cpy_r_r47 == NULL))
+        CPyError_OutOfMemory();
+    PyObject *__tmp46 = CPyTagged_StealAsObject(cpy_r_r46.f0);
+    PyTuple_SET_ITEM(cpy_r_r47, 0, __tmp46);
+    PyObject *__tmp47 = CPyTagged_StealAsObject(cpy_r_r46.f1);
+    PyTuple_SET_ITEM(cpy_r_r47, 1, __tmp47);
+    cpy_r_r48 = PyObject_RichCompare(cpy_r_r45, cpy_r_r47, 0);
+    CPy_DECREF(cpy_r_r45);
+    CPy_DECREF(cpy_r_r47);
+    if (unlikely(cpy_r_r48 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    if (unlikely(!PyBool_Check(cpy_r_r48))) {
+        CPy_TypeError("bool", cpy_r_r48); cpy_r_r49 = 2;
+    } else
+        cpy_r_r49 = cpy_r_r48 == Py_True;
+    CPy_DECREF(cpy_r_r48);
+    if (unlikely(cpy_r_r49 == 2)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    if (!cpy_r_r49) goto CPyL22;
+    PyErr_SetString(PyExc_RuntimeError, "Reached allegedly unreachable code!");
+    cpy_r_r50 = 0;
+    if (unlikely(!cpy_r_r50)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    CPy_Unreachable();
+CPyL22: ;
+    cpy_r_r51 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '2.0.5' */
+    cpy_r_r52 = CPyStatic_globals;
+    cpy_r_r53 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__version__' */
+    cpy_r_r54 = CPyDict_SetItem(cpy_r_r52, cpy_r_r53, cpy_r_r51);
+    cpy_r_r55 = cpy_r_r54 >= 0;
+    if (unlikely(!cpy_r_r55)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r56 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'alru_cache' */
+    CPy_INCREF(cpy_r_r56);
+    cpy_r_r57.f0 = cpy_r_r56;
+    cpy_r_r58 = CPyStatic_globals;
+    cpy_r_r59 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__all__' */
+    cpy_r_r60 = PyTuple_New(1);
+    if (unlikely(cpy_r_r60 == NULL))
+        CPyError_OutOfMemory();
+    PyObject *__tmp48 = cpy_r_r57.f0;
+    PyTuple_SET_ITEM(cpy_r_r60, 0, __tmp48);
+    cpy_r_r61 = CPyDict_SetItem(cpy_r_r58, cpy_r_r59, cpy_r_r60);
+    CPy_DECREF(cpy_r_r60);
+    cpy_r_r62 = cpy_r_r61 >= 0;
+    if (unlikely(!cpy_r_r62)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r63 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_T' */
+    cpy_r_r64 = CPyStatic_globals;
+    cpy_r_r65 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'TypeVar' */
+    cpy_r_r66 = CPyDict_GetItem(cpy_r_r64, cpy_r_r65);
+    if (unlikely(cpy_r_r66 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    PyObject *cpy_r_r67[1] = {cpy_r_r63};
+    cpy_r_r68 = (PyObject **)&cpy_r_r67;
+    cpy_r_r69 = PyObject_Vectorcall(cpy_r_r66, cpy_r_r68, 1, 0);
+    CPy_DECREF(cpy_r_r66);
+    if (unlikely(cpy_r_r69 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r70 = CPyStatic_globals;
+    cpy_r_r71 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_T' */
+    cpy_r_r72 = CPyDict_SetItem(cpy_r_r70, cpy_r_r71, cpy_r_r69);
+    CPy_DECREF(cpy_r_r69);
+    cpy_r_r73 = cpy_r_r72 >= 0;
+    if (unlikely(!cpy_r_r73)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r74 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
+    cpy_r_r75 = CPyStatic_globals;
+    cpy_r_r76 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'TypeVar' */
+    cpy_r_r77 = CPyDict_GetItem(cpy_r_r75, cpy_r_r76);
+    if (unlikely(cpy_r_r77 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    PyObject *cpy_r_r78[1] = {cpy_r_r74};
+    cpy_r_r79 = (PyObject **)&cpy_r_r78;
+    cpy_r_r80 = PyObject_Vectorcall(cpy_r_r77, cpy_r_r79, 1, 0);
+    CPy_DECREF(cpy_r_r77);
+    if (unlikely(cpy_r_r80 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r81 = CPyStatic_globals;
+    cpy_r_r82 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
+    cpy_r_r83 = CPyDict_SetItem(cpy_r_r81, cpy_r_r82, cpy_r_r80);
+    CPy_DECREF(cpy_r_r80);
+    cpy_r_r84 = cpy_r_r83 >= 0;
+    if (unlikely(!cpy_r_r84)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r85 = CPyStatic_globals;
+    cpy_r_r86 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'Coroutine' */
+    cpy_r_r87 = CPyDict_GetItem(cpy_r_r85, cpy_r_r86);
+    if (unlikely(cpy_r_r87 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r88 = CPyStatic_globals;
+    cpy_r_r89 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'Any' */
+    cpy_r_r90 = CPyDict_GetItem(cpy_r_r88, cpy_r_r89);
+    if (unlikely(cpy_r_r90 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL148;
     }
-    cpy_r_r110 = CPyStatic_globals;
-    cpy_r_r111 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
-    cpy_r_r112 = CPyDict_GetItem(cpy_r_r110, cpy_r_r111);
-    if (unlikely(cpy_r_r112 == NULL)) {
+    cpy_r_r91 = CPyStatic_globals;
+    cpy_r_r92 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'Any' */
+    cpy_r_r93 = CPyDict_GetItem(cpy_r_r91, cpy_r_r92);
+    if (unlikely(cpy_r_r93 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL149;
     }
-    cpy_r_r113 = PyObject_GetItem(cpy_r_r109, cpy_r_r112);
-    CPy_DECREF(cpy_r_r109);
-    CPy_DECREF(cpy_r_r112);
-    if (unlikely(cpy_r_r113 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL148;
-    }
-    CPy_INCREF(cpy_r_r106);
-    cpy_r_r114.f0 = cpy_r_r106;
-    cpy_r_r114.f1 = cpy_r_r113;
-    cpy_r_r115 = PyTuple_New(2);
-    if (unlikely(cpy_r_r115 == NULL))
-        CPyError_OutOfMemory();
-    PyObject *__tmp52 = cpy_r_r114.f0;
-    PyTuple_SET_ITEM(cpy_r_r115, 0, __tmp52);
-    PyObject *__tmp53 = cpy_r_r114.f1;
-    PyTuple_SET_ITEM(cpy_r_r115, 1, __tmp53);
-    cpy_r_r116 = PyObject_GetItem(cpy_r_r105, cpy_r_r115);
-    CPy_DECREF(cpy_r_r105);
-    CPy_DECREF(cpy_r_r115);
-    if (unlikely(cpy_r_r116 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    cpy_r_r117 = CPyStatic_globals;
-    cpy_r_r118 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_CB' */
-    cpy_r_r119 = CPyDict_SetItem(cpy_r_r117, cpy_r_r118, cpy_r_r116);
-    CPy_DECREF(cpy_r_r116);
-    cpy_r_r120 = cpy_r_r119 >= 0;
-    if (unlikely(!cpy_r_r120)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    cpy_r_r121 = CPyStatic_globals;
-    cpy_r_r122 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'Union' */
-    cpy_r_r123 = CPyDict_GetItem(cpy_r_r121, cpy_r_r122);
-    if (unlikely(cpy_r_r123 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    cpy_r_r124 = CPyStatic_globals;
-    cpy_r_r125 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_CB' */
-    cpy_r_r126 = CPyDict_GetItem(cpy_r_r124, cpy_r_r125);
-    if (unlikely(cpy_r_r126 == NULL)) {
+    cpy_r_r94 = CPyStatic_globals;
+    cpy_r_r95 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
+    cpy_r_r96 = CPyDict_GetItem(cpy_r_r94, cpy_r_r95);
+    if (unlikely(cpy_r_r96 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL150;
     }
-    cpy_r_r127 = CPyStatic_globals;
-    cpy_r_r128 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
-    cpy_r_r129 = CPyDict_GetItem(cpy_r_r127, cpy_r_r128);
-    if (unlikely(cpy_r_r129 == NULL)) {
+    cpy_r_r97.f0 = cpy_r_r90;
+    cpy_r_r97.f1 = cpy_r_r93;
+    cpy_r_r97.f2 = cpy_r_r96;
+    cpy_r_r98 = PyTuple_New(3);
+    if (unlikely(cpy_r_r98 == NULL))
+        CPyError_OutOfMemory();
+    PyObject *__tmp49 = cpy_r_r97.f0;
+    PyTuple_SET_ITEM(cpy_r_r98, 0, __tmp49);
+    PyObject *__tmp50 = cpy_r_r97.f1;
+    PyTuple_SET_ITEM(cpy_r_r98, 1, __tmp50);
+    PyObject *__tmp51 = cpy_r_r97.f2;
+    PyTuple_SET_ITEM(cpy_r_r98, 2, __tmp51);
+    cpy_r_r99 = PyObject_GetItem(cpy_r_r87, cpy_r_r98);
+    CPy_DECREF(cpy_r_r87);
+    CPy_DECREF(cpy_r_r98);
+    if (unlikely(cpy_r_r99 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r100 = CPyStatic_globals;
+    cpy_r_r101 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_Coro' */
+    cpy_r_r102 = CPyDict_SetItem(cpy_r_r100, cpy_r_r101, cpy_r_r99);
+    CPy_DECREF(cpy_r_r99);
+    cpy_r_r103 = cpy_r_r102 >= 0;
+    if (unlikely(!cpy_r_r103)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r104 = CPyStatic_globals;
+    cpy_r_r105 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'Callable' */
+    cpy_r_r106 = CPyDict_GetItem(cpy_r_r104, cpy_r_r105);
+    if (unlikely(cpy_r_r106 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r107 = (PyObject *)&_Py_EllipsisObject;
+    cpy_r_r108 = CPyStatic_globals;
+    cpy_r_r109 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_Coro' */
+    cpy_r_r110 = CPyDict_GetItem(cpy_r_r108, cpy_r_r109);
+    if (unlikely(cpy_r_r110 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL151;
     }
-    cpy_r_r130 = PyObject_GetItem(cpy_r_r126, cpy_r_r129);
-    CPy_DECREF(cpy_r_r126);
-    CPy_DECREF(cpy_r_r129);
-    if (unlikely(cpy_r_r130 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL150;
-    }
-    cpy_r_r131 = CPyModule_functools;
-    cpy_r_r132 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'partial' */
-    cpy_r_r133 = CPyObject_GetAttr(cpy_r_r131, cpy_r_r132);
-    if (unlikely(cpy_r_r133 == NULL)) {
+    cpy_r_r111 = CPyStatic_globals;
+    cpy_r_r112 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
+    cpy_r_r113 = CPyDict_GetItem(cpy_r_r111, cpy_r_r112);
+    if (unlikely(cpy_r_r113 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL152;
     }
-    cpy_r_r134 = CPyStatic_globals;
-    cpy_r_r135 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_Coro' */
-    cpy_r_r136 = CPyDict_GetItem(cpy_r_r134, cpy_r_r135);
-    if (unlikely(cpy_r_r136 == NULL)) {
+    cpy_r_r114 = PyObject_GetItem(cpy_r_r110, cpy_r_r113);
+    CPy_DECREF(cpy_r_r110);
+    CPy_DECREF(cpy_r_r113);
+    if (unlikely(cpy_r_r114 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL151;
+    }
+    CPy_INCREF(cpy_r_r107);
+    cpy_r_r115.f0 = cpy_r_r107;
+    cpy_r_r115.f1 = cpy_r_r114;
+    cpy_r_r116 = PyTuple_New(2);
+    if (unlikely(cpy_r_r116 == NULL))
+        CPyError_OutOfMemory();
+    PyObject *__tmp52 = cpy_r_r115.f0;
+    PyTuple_SET_ITEM(cpy_r_r116, 0, __tmp52);
+    PyObject *__tmp53 = cpy_r_r115.f1;
+    PyTuple_SET_ITEM(cpy_r_r116, 1, __tmp53);
+    cpy_r_r117 = PyObject_GetItem(cpy_r_r106, cpy_r_r116);
+    CPy_DECREF(cpy_r_r106);
+    CPy_DECREF(cpy_r_r116);
+    if (unlikely(cpy_r_r117 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r118 = CPyStatic_globals;
+    cpy_r_r119 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_CB' */
+    cpy_r_r120 = CPyDict_SetItem(cpy_r_r118, cpy_r_r119, cpy_r_r117);
+    CPy_DECREF(cpy_r_r117);
+    cpy_r_r121 = cpy_r_r120 >= 0;
+    if (unlikely(!cpy_r_r121)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r122 = CPyStatic_globals;
+    cpy_r_r123 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'Union' */
+    cpy_r_r124 = CPyDict_GetItem(cpy_r_r122, cpy_r_r123);
+    if (unlikely(cpy_r_r124 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r125 = CPyStatic_globals;
+    cpy_r_r126 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_CB' */
+    cpy_r_r127 = CPyDict_GetItem(cpy_r_r125, cpy_r_r126);
+    if (unlikely(cpy_r_r127 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL153;
     }
-    cpy_r_r137 = CPyStatic_globals;
-    cpy_r_r138 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
-    cpy_r_r139 = CPyDict_GetItem(cpy_r_r137, cpy_r_r138);
-    if (unlikely(cpy_r_r139 == NULL)) {
+    cpy_r_r128 = CPyStatic_globals;
+    cpy_r_r129 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
+    cpy_r_r130 = CPyDict_GetItem(cpy_r_r128, cpy_r_r129);
+    if (unlikely(cpy_r_r130 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL154;
     }
-    cpy_r_r140 = PyObject_GetItem(cpy_r_r136, cpy_r_r139);
-    CPy_DECREF(cpy_r_r136);
-    CPy_DECREF(cpy_r_r139);
-    if (unlikely(cpy_r_r140 == NULL)) {
+    cpy_r_r131 = PyObject_GetItem(cpy_r_r127, cpy_r_r130);
+    CPy_DECREF(cpy_r_r127);
+    CPy_DECREF(cpy_r_r130);
+    if (unlikely(cpy_r_r131 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL153;
     }
-    cpy_r_r141 = PyObject_GetItem(cpy_r_r133, cpy_r_r140);
-    CPy_DECREF(cpy_r_r133);
-    CPy_DECREF(cpy_r_r140);
-    if (unlikely(cpy_r_r141 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL152;
-    }
-    cpy_r_r142 = CPyModule_functools;
-    cpy_r_r143 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'partialmethod' */
-    cpy_r_r144 = CPyObject_GetAttr(cpy_r_r142, cpy_r_r143);
-    if (unlikely(cpy_r_r144 == NULL)) {
+    cpy_r_r132 = CPyModule_functools;
+    cpy_r_r133 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'partial' */
+    cpy_r_r134 = CPyObject_GetAttr(cpy_r_r132, cpy_r_r133);
+    if (unlikely(cpy_r_r134 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL155;
     }
-    cpy_r_r145 = CPyStatic_globals;
-    cpy_r_r146 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_Coro' */
-    cpy_r_r147 = CPyDict_GetItem(cpy_r_r145, cpy_r_r146);
-    if (unlikely(cpy_r_r147 == NULL)) {
+    cpy_r_r135 = CPyStatic_globals;
+    cpy_r_r136 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_Coro' */
+    cpy_r_r137 = CPyDict_GetItem(cpy_r_r135, cpy_r_r136);
+    if (unlikely(cpy_r_r137 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL156;
     }
-    cpy_r_r148 = CPyStatic_globals;
-    cpy_r_r149 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
-    cpy_r_r150 = CPyDict_GetItem(cpy_r_r148, cpy_r_r149);
-    if (unlikely(cpy_r_r150 == NULL)) {
+    cpy_r_r138 = CPyStatic_globals;
+    cpy_r_r139 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
+    cpy_r_r140 = CPyDict_GetItem(cpy_r_r138, cpy_r_r139);
+    if (unlikely(cpy_r_r140 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL157;
     }
-    cpy_r_r151 = PyObject_GetItem(cpy_r_r147, cpy_r_r150);
-    CPy_DECREF(cpy_r_r147);
-    CPy_DECREF(cpy_r_r150);
-    if (unlikely(cpy_r_r151 == NULL)) {
+    cpy_r_r141 = PyObject_GetItem(cpy_r_r137, cpy_r_r140);
+    CPy_DECREF(cpy_r_r137);
+    CPy_DECREF(cpy_r_r140);
+    if (unlikely(cpy_r_r141 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL156;
     }
-    cpy_r_r152 = PyObject_GetItem(cpy_r_r144, cpy_r_r151);
-    CPy_DECREF(cpy_r_r144);
-    CPy_DECREF(cpy_r_r151);
-    if (unlikely(cpy_r_r152 == NULL)) {
+    cpy_r_r142 = PyObject_GetItem(cpy_r_r134, cpy_r_r141);
+    CPy_DECREF(cpy_r_r134);
+    CPy_DECREF(cpy_r_r141);
+    if (unlikely(cpy_r_r142 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL155;
     }
-    cpy_r_r153.f0 = cpy_r_r130;
-    cpy_r_r153.f1 = cpy_r_r141;
-    cpy_r_r153.f2 = cpy_r_r152;
-    cpy_r_r154 = PyTuple_New(3);
-    if (unlikely(cpy_r_r154 == NULL))
+    cpy_r_r143 = CPyModule_functools;
+    cpy_r_r144 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'partialmethod' */
+    cpy_r_r145 = CPyObject_GetAttr(cpy_r_r143, cpy_r_r144);
+    if (unlikely(cpy_r_r145 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL158;
+    }
+    cpy_r_r146 = CPyStatic_globals;
+    cpy_r_r147 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_Coro' */
+    cpy_r_r148 = CPyDict_GetItem(cpy_r_r146, cpy_r_r147);
+    if (unlikely(cpy_r_r148 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL159;
+    }
+    cpy_r_r149 = CPyStatic_globals;
+    cpy_r_r150 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
+    cpy_r_r151 = CPyDict_GetItem(cpy_r_r149, cpy_r_r150);
+    if (unlikely(cpy_r_r151 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL160;
+    }
+    cpy_r_r152 = PyObject_GetItem(cpy_r_r148, cpy_r_r151);
+    CPy_DECREF(cpy_r_r148);
+    CPy_DECREF(cpy_r_r151);
+    if (unlikely(cpy_r_r152 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL159;
+    }
+    cpy_r_r153 = PyObject_GetItem(cpy_r_r145, cpy_r_r152);
+    CPy_DECREF(cpy_r_r145);
+    CPy_DECREF(cpy_r_r152);
+    if (unlikely(cpy_r_r153 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL158;
+    }
+    cpy_r_r154.f0 = cpy_r_r131;
+    cpy_r_r154.f1 = cpy_r_r142;
+    cpy_r_r154.f2 = cpy_r_r153;
+    cpy_r_r155 = PyTuple_New(3);
+    if (unlikely(cpy_r_r155 == NULL))
         CPyError_OutOfMemory();
-    PyObject *__tmp54 = cpy_r_r153.f0;
-    PyTuple_SET_ITEM(cpy_r_r154, 0, __tmp54);
-    PyObject *__tmp55 = cpy_r_r153.f1;
-    PyTuple_SET_ITEM(cpy_r_r154, 1, __tmp55);
-    PyObject *__tmp56 = cpy_r_r153.f2;
-    PyTuple_SET_ITEM(cpy_r_r154, 2, __tmp56);
-    cpy_r_r155 = PyObject_GetItem(cpy_r_r123, cpy_r_r154);
-    CPy_DECREF(cpy_r_r123);
-    CPy_DECREF(cpy_r_r154);
-    if (unlikely(cpy_r_r155 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    cpy_r_r156 = CPyStatic_globals;
-    cpy_r_r157 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_CBP' */
-    cpy_r_r158 = CPyDict_SetItem(cpy_r_r156, cpy_r_r157, cpy_r_r155);
+    PyObject *__tmp54 = cpy_r_r154.f0;
+    PyTuple_SET_ITEM(cpy_r_r155, 0, __tmp54);
+    PyObject *__tmp55 = cpy_r_r154.f1;
+    PyTuple_SET_ITEM(cpy_r_r155, 1, __tmp55);
+    PyObject *__tmp56 = cpy_r_r154.f2;
+    PyTuple_SET_ITEM(cpy_r_r155, 2, __tmp56);
+    cpy_r_r156 = PyObject_GetItem(cpy_r_r124, cpy_r_r155);
+    CPy_DECREF(cpy_r_r124);
     CPy_DECREF(cpy_r_r155);
-    cpy_r_r159 = cpy_r_r158 >= 0;
-    if (unlikely(!cpy_r_r159)) {
+    if (unlikely(cpy_r_r156 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    cpy_r_r160 = CPyModule_functools;
-    cpy_r_r161 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_CacheInfo' */
-    cpy_r_r162 = CPyObject_GetAttr(cpy_r_r160, cpy_r_r161);
-    if (unlikely(cpy_r_r162 == NULL)) {
+    cpy_r_r157 = CPyStatic_globals;
+    cpy_r_r158 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_CBP' */
+    cpy_r_r159 = CPyDict_SetItem(cpy_r_r157, cpy_r_r158, cpy_r_r156);
+    CPy_DECREF(cpy_r_r156);
+    cpy_r_r160 = cpy_r_r159 >= 0;
+    if (unlikely(!cpy_r_r160)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    CPyStatic__CacheInfo = cpy_r_r162;
+    cpy_r_r161 = CPyModule_functools;
+    cpy_r_r162 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_CacheInfo' */
+    cpy_r_r163 = CPyObject_GetAttr(cpy_r_r161, cpy_r_r162);
+    if (unlikely(cpy_r_r163 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    CPyStatic__CacheInfo = cpy_r_r163;
     CPy_INCREF(CPyStatic__CacheInfo);
-    cpy_r_r163 = CPyStatic_globals;
-    cpy_r_r164 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_CacheInfo' */
-    cpy_r_r165 = CPyDict_SetItem(cpy_r_r163, cpy_r_r164, cpy_r_r162);
-    CPy_DECREF(cpy_r_r162);
-    cpy_r_r166 = cpy_r_r165 >= 0;
-    if (unlikely(!cpy_r_r166)) {
+    cpy_r_r164 = CPyStatic_globals;
+    cpy_r_r165 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_CacheInfo' */
+    cpy_r_r166 = CPyDict_SetItem(cpy_r_r164, cpy_r_r165, cpy_r_r163);
+    CPy_DECREF(cpy_r_r163);
+    cpy_r_r167 = cpy_r_r166 >= 0;
+    if (unlikely(!cpy_r_r167)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    cpy_r_r167 = CPyModule_functools;
-    cpy_r_r168 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'partial' */
-    cpy_r_r169 = CPyObject_GetAttr(cpy_r_r167, cpy_r_r168);
-    if (unlikely(cpy_r_r169 == NULL)) {
+    cpy_r_r168 = CPyModule_functools;
+    cpy_r_r169 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'partial' */
+    cpy_r_r170 = CPyObject_GetAttr(cpy_r_r168, cpy_r_r169);
+    if (unlikely(cpy_r_r170 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    CPyStatic_partial = cpy_r_r169;
+    CPyStatic_partial = cpy_r_r170;
     CPy_INCREF(CPyStatic_partial);
-    cpy_r_r170 = CPyStatic_globals;
-    cpy_r_r171 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'partial' */
-    cpy_r_r172 = CPyDict_SetItem(cpy_r_r170, cpy_r_r171, cpy_r_r169);
-    CPy_DECREF(cpy_r_r169);
-    cpy_r_r173 = cpy_r_r172 >= 0;
-    if (unlikely(!cpy_r_r173)) {
+    cpy_r_r171 = CPyStatic_globals;
+    cpy_r_r172 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'partial' */
+    cpy_r_r173 = CPyDict_SetItem(cpy_r_r171, cpy_r_r172, cpy_r_r170);
+    CPy_DECREF(cpy_r_r170);
+    cpy_r_r174 = cpy_r_r173 >= 0;
+    if (unlikely(!cpy_r_r174)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    cpy_r_r174 = CPyModule_functools;
-    cpy_r_r175 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'partialmethod' */
-    cpy_r_r176 = CPyObject_GetAttr(cpy_r_r174, cpy_r_r175);
-    if (unlikely(cpy_r_r176 == NULL)) {
+    cpy_r_r175 = CPyModule_functools;
+    cpy_r_r176 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'partialmethod' */
+    cpy_r_r177 = CPyObject_GetAttr(cpy_r_r175, cpy_r_r176);
+    if (unlikely(cpy_r_r177 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    CPyStatic_partialmethod = cpy_r_r176;
+    CPyStatic_partialmethod = cpy_r_r177;
     CPy_INCREF(CPyStatic_partialmethod);
-    cpy_r_r177 = CPyStatic_globals;
-    cpy_r_r178 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'partialmethod' */
-    cpy_r_r179 = CPyDict_SetItem(cpy_r_r177, cpy_r_r178, cpy_r_r176);
-    CPy_DECREF(cpy_r_r176);
-    cpy_r_r180 = cpy_r_r179 >= 0;
-    if (unlikely(!cpy_r_r180)) {
+    cpy_r_r178 = CPyStatic_globals;
+    cpy_r_r179 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'partialmethod' */
+    cpy_r_r180 = CPyDict_SetItem(cpy_r_r178, cpy_r_r179, cpy_r_r177);
+    CPy_DECREF(cpy_r_r177);
+    cpy_r_r181 = cpy_r_r180 >= 0;
+    if (unlikely(!cpy_r_r181)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    cpy_r_r181 = CPyModule_functools;
-    cpy_r_r182 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_make_key' */
-    cpy_r_r183 = CPyObject_GetAttr(cpy_r_r181, cpy_r_r182);
-    if (unlikely(cpy_r_r183 == NULL)) {
+    cpy_r_r182 = CPyModule_functools;
+    cpy_r_r183 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_make_key' */
+    cpy_r_r184 = CPyObject_GetAttr(cpy_r_r182, cpy_r_r183);
+    if (unlikely(cpy_r_r184 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    CPyStatic__make_key = cpy_r_r183;
+    CPyStatic__make_key = cpy_r_r184;
     CPy_INCREF(CPyStatic__make_key);
-    cpy_r_r184 = CPyStatic_globals;
-    cpy_r_r185 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_make_key' */
-    cpy_r_r186 = CPyDict_SetItem(cpy_r_r184, cpy_r_r185, cpy_r_r183);
-    CPy_DECREF(cpy_r_r183);
-    cpy_r_r187 = cpy_r_r186 >= 0;
-    if (unlikely(!cpy_r_r187)) {
+    cpy_r_r185 = CPyStatic_globals;
+    cpy_r_r186 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_make_key' */
+    cpy_r_r187 = CPyDict_SetItem(cpy_r_r185, cpy_r_r186, cpy_r_r184);
+    CPy_DECREF(cpy_r_r184);
+    cpy_r_r188 = cpy_r_r187 >= 0;
+    if (unlikely(!cpy_r_r188)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    cpy_r_r188 = CPyModule_asyncio;
-    cpy_r_r189 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'gather' */
-    cpy_r_r190 = CPyObject_GetAttr(cpy_r_r188, cpy_r_r189);
-    if (unlikely(cpy_r_r190 == NULL)) {
+    cpy_r_r189 = CPyModule_asyncio;
+    cpy_r_r190 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'gather' */
+    cpy_r_r191 = CPyObject_GetAttr(cpy_r_r189, cpy_r_r190);
+    if (unlikely(cpy_r_r191 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    CPyStatic_gather = cpy_r_r190;
+    CPyStatic_gather = cpy_r_r191;
     CPy_INCREF(CPyStatic_gather);
-    cpy_r_r191 = CPyStatic_globals;
-    cpy_r_r192 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'gather' */
-    cpy_r_r193 = CPyDict_SetItem(cpy_r_r191, cpy_r_r192, cpy_r_r190);
-    CPy_DECREF(cpy_r_r190);
-    cpy_r_r194 = cpy_r_r193 >= 0;
-    if (unlikely(!cpy_r_r194)) {
+    cpy_r_r192 = CPyStatic_globals;
+    cpy_r_r193 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'gather' */
+    cpy_r_r194 = CPyDict_SetItem(cpy_r_r192, cpy_r_r193, cpy_r_r191);
+    CPy_DECREF(cpy_r_r191);
+    cpy_r_r195 = cpy_r_r194 >= 0;
+    if (unlikely(!cpy_r_r195)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    cpy_r_r195 = CPyModule_asyncio;
-    cpy_r_r196 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'get_running_loop' */
-    cpy_r_r197 = CPyObject_GetAttr(cpy_r_r195, cpy_r_r196);
-    if (unlikely(cpy_r_r197 == NULL)) {
+    cpy_r_r196 = CPyModule_asyncio;
+    cpy_r_r197 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'get_running_loop' */
+    cpy_r_r198 = CPyObject_GetAttr(cpy_r_r196, cpy_r_r197);
+    if (unlikely(cpy_r_r198 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    CPyStatic_get_running_loop = cpy_r_r197;
+    CPyStatic_get_running_loop = cpy_r_r198;
     CPy_INCREF(CPyStatic_get_running_loop);
-    cpy_r_r198 = CPyStatic_globals;
-    cpy_r_r199 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'get_running_loop' */
-    cpy_r_r200 = CPyDict_SetItem(cpy_r_r198, cpy_r_r199, cpy_r_r197);
-    CPy_DECREF(cpy_r_r197);
-    cpy_r_r201 = cpy_r_r200 >= 0;
-    if (unlikely(!cpy_r_r201)) {
+    cpy_r_r199 = CPyStatic_globals;
+    cpy_r_r200 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'get_running_loop' */
+    cpy_r_r201 = CPyDict_SetItem(cpy_r_r199, cpy_r_r200, cpy_r_r198);
+    CPy_DECREF(cpy_r_r198);
+    cpy_r_r202 = cpy_r_r201 >= 0;
+    if (unlikely(!cpy_r_r202)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    cpy_r_r202 = CPyModule_asyncio;
-    cpy_r_r203 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'shield' */
-    cpy_r_r204 = CPyObject_GetAttr(cpy_r_r202, cpy_r_r203);
-    if (unlikely(cpy_r_r204 == NULL)) {
+    cpy_r_r203 = CPyModule_asyncio;
+    cpy_r_r204 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'shield' */
+    cpy_r_r205 = CPyObject_GetAttr(cpy_r_r203, cpy_r_r204);
+    if (unlikely(cpy_r_r205 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    CPyStatic_shield = cpy_r_r204;
+    CPyStatic_shield = cpy_r_r205;
     CPy_INCREF(CPyStatic_shield);
-    cpy_r_r205 = CPyStatic_globals;
-    cpy_r_r206 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'shield' */
-    cpy_r_r207 = CPyDict_SetItem(cpy_r_r205, cpy_r_r206, cpy_r_r204);
-    CPy_DECREF(cpy_r_r204);
-    cpy_r_r208 = cpy_r_r207 >= 0;
-    if (unlikely(!cpy_r_r208)) {
+    cpy_r_r206 = CPyStatic_globals;
+    cpy_r_r207 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'shield' */
+    cpy_r_r208 = CPyDict_SetItem(cpy_r_r206, cpy_r_r207, cpy_r_r205);
+    CPy_DECREF(cpy_r_r205);
+    cpy_r_r209 = cpy_r_r208 >= 0;
+    if (unlikely(!cpy_r_r209)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    cpy_r_r209 = CPyModule_inspect;
-    cpy_r_r210 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'markcoroutinefunction' */
-    cpy_r_r211 = Py_None;
-    cpy_r_r212 = CPyObject_GetAttr3(cpy_r_r209, cpy_r_r210, cpy_r_r211);
-    if (unlikely(cpy_r_r212 == NULL)) {
+    cpy_r_r210 = CPyModule_inspect;
+    cpy_r_r211 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'markcoroutinefunction' */
+    cpy_r_r212 = Py_None;
+    cpy_r_r213 = CPyObject_GetAttr3(cpy_r_r210, cpy_r_r211, cpy_r_r212);
+    if (unlikely(cpy_r_r213 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    CPyStatic_markcoroutinefunction = cpy_r_r212;
+    CPyStatic_markcoroutinefunction = cpy_r_r213;
     CPy_INCREF(CPyStatic_markcoroutinefunction);
-    cpy_r_r213 = CPyStatic_globals;
-    cpy_r_r214 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'markcoroutinefunction' */
-    cpy_r_r215 = CPyDict_SetItem(cpy_r_r213, cpy_r_r214, cpy_r_r212);
-    CPy_DECREF(cpy_r_r212);
-    cpy_r_r216 = cpy_r_r215 >= 0;
-    if (unlikely(!cpy_r_r216)) {
+    cpy_r_r214 = CPyStatic_globals;
+    cpy_r_r215 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'markcoroutinefunction' */
+    cpy_r_r216 = CPyDict_SetItem(cpy_r_r214, cpy_r_r215, cpy_r_r213);
+    CPy_DECREF(cpy_r_r213);
+    cpy_r_r217 = cpy_r_r216 >= 0;
+    if (unlikely(!cpy_r_r217)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    cpy_r_r217 = CPyModule_typing;
-    cpy_r_r218 = (PyObject *)&_Py_NoneStruct;
-    cpy_r_r219 = cpy_r_r217 != cpy_r_r218;
-    if (cpy_r_r219) goto CPyL77;
-    cpy_r_r220 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typing' */
-    cpy_r_r221 = PyImport_Import(cpy_r_r220);
+    cpy_r_r218 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'async_lru_threadsafe' */
+    cpy_r_r219 = CPyModule_logging;
+    cpy_r_r220 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'getLogger' */
+    cpy_r_r221 = CPyObject_GetAttr(cpy_r_r219, cpy_r_r220);
     if (unlikely(cpy_r_r221 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    CPyModule_typing = cpy_r_r221;
-    CPy_INCREF(CPyModule_typing);
+    PyObject *cpy_r_r222[1] = {cpy_r_r218};
+    cpy_r_r223 = (PyObject **)&cpy_r_r222;
+    cpy_r_r224 = PyObject_Vectorcall(cpy_r_r221, cpy_r_r223, 1, 0);
     CPy_DECREF(cpy_r_r221);
-CPyL77: ;
-    cpy_r_r222 = PyImport_GetModuleDict();
-    cpy_r_r223 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typing' */
-    cpy_r_r224 = CPyDict_GetItem(cpy_r_r222, cpy_r_r223);
     if (unlikely(cpy_r_r224 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    cpy_r_r225 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_TypedDict' */
-    cpy_r_r226 = CPyObject_GetAttr(cpy_r_r224, cpy_r_r225);
+    CPyStatic_logger = cpy_r_r224;
+    CPy_INCREF(CPyStatic_logger);
+    cpy_r_r225 = CPyStatic_globals;
+    cpy_r_r226 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'logger' */
+    cpy_r_r227 = CPyDict_SetItem(cpy_r_r225, cpy_r_r226, cpy_r_r224);
     CPy_DECREF(cpy_r_r224);
-    if (unlikely(cpy_r_r226 == NULL)) {
+    cpy_r_r228 = cpy_r_r227 >= 0;
+    if (unlikely(!cpy_r_r228)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    cpy_r_r227 = PyTuple_Pack(1, cpy_r_r226);
-    CPy_DECREF(cpy_r_r226);
-    if (unlikely(cpy_r_r227 == NULL)) {
+    cpy_r_r229 = CPyModule_typing;
+    cpy_r_r230 = (PyObject *)&_Py_NoneStruct;
+    cpy_r_r231 = cpy_r_r229 != cpy_r_r230;
+    if (cpy_r_r231) goto CPyL80;
+    cpy_r_r232 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typing' */
+    cpy_r_r233 = PyImport_Import(cpy_r_r232);
+    if (unlikely(cpy_r_r233 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    cpy_r_r228 = CPyModule_typing;
-    cpy_r_r229 = (PyObject *)&_Py_NoneStruct;
-    cpy_r_r230 = cpy_r_r228 != cpy_r_r229;
-    if (cpy_r_r230) goto CPyL83;
-    cpy_r_r231 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typing' */
-    cpy_r_r232 = PyImport_Import(cpy_r_r231);
-    if (unlikely(cpy_r_r232 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL158;
-    }
-    CPyModule_typing = cpy_r_r232;
+    CPyModule_typing = cpy_r_r233;
     CPy_INCREF(CPyModule_typing);
-    CPy_DECREF(cpy_r_r232);
-CPyL83: ;
-    cpy_r_r233 = PyImport_GetModuleDict();
-    cpy_r_r234 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typing' */
-    cpy_r_r235 = CPyDict_GetItem(cpy_r_r233, cpy_r_r234);
-    if (unlikely(cpy_r_r235 == NULL)) {
+    CPy_DECREF(cpy_r_r233);
+CPyL80: ;
+    cpy_r_r234 = PyImport_GetModuleDict();
+    cpy_r_r235 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typing' */
+    cpy_r_r236 = CPyDict_GetItem(cpy_r_r234, cpy_r_r235);
+    if (unlikely(cpy_r_r236 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL158;
+        goto CPyL147;
     }
-    cpy_r_r236 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_TypedDictMeta' */
-    cpy_r_r237 = CPyObject_GetAttr(cpy_r_r235, cpy_r_r236);
-    CPy_DECREF(cpy_r_r235);
-    if (unlikely(cpy_r_r237 == NULL)) {
+    cpy_r_r237 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_TypedDict' */
+    cpy_r_r238 = CPyObject_GetAttr(cpy_r_r236, cpy_r_r237);
+    CPy_DECREF(cpy_r_r236);
+    if (unlikely(cpy_r_r238 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL158;
+        goto CPyL147;
     }
-    cpy_r_r238 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__prepare__' */
-    cpy_r_r239 = PyObject_HasAttr(cpy_r_r237, cpy_r_r238);
-    if (!cpy_r_r239) goto CPyL90;
-    cpy_r_r240 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_CacheParameters' */
-    cpy_r_r241 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__prepare__' */
-    cpy_r_r242 = CPyObject_GetAttr(cpy_r_r237, cpy_r_r241);
-    if (unlikely(cpy_r_r242 == NULL)) {
+    cpy_r_r239 = PyTuple_Pack(1, cpy_r_r238);
+    CPy_DECREF(cpy_r_r238);
+    if (unlikely(cpy_r_r239 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL159;
+        goto CPyL147;
     }
-    PyObject *cpy_r_r243[2] = {cpy_r_r240, cpy_r_r227};
-    cpy_r_r244 = (PyObject **)&cpy_r_r243;
-    cpy_r_r245 = PyObject_Vectorcall(cpy_r_r242, cpy_r_r244, 2, 0);
-    CPy_DECREF(cpy_r_r242);
-    if (unlikely(cpy_r_r245 == NULL)) {
+    cpy_r_r240 = CPyModule_typing;
+    cpy_r_r241 = (PyObject *)&_Py_NoneStruct;
+    cpy_r_r242 = cpy_r_r240 != cpy_r_r241;
+    if (cpy_r_r242) goto CPyL86;
+    cpy_r_r243 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typing' */
+    cpy_r_r244 = PyImport_Import(cpy_r_r243);
+    if (unlikely(cpy_r_r244 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL159;
+        goto CPyL161;
     }
-    if (likely(PyDict_Check(cpy_r_r245)))
-        cpy_r_r246 = cpy_r_r245;
-    else {
-        CPy_TypeErrorTraceback("async_lru/__init__.py", "<module>", 62, CPyStatic_globals, "dict", cpy_r_r245);
-        goto CPyL159;
-    }
-    cpy_r_r247 = cpy_r_r246;
-    goto CPyL92;
-CPyL90: ;
-    cpy_r_r248 = PyDict_New();
-    if (unlikely(cpy_r_r248 == NULL)) {
+    CPyModule_typing = cpy_r_r244;
+    CPy_INCREF(CPyModule_typing);
+    CPy_DECREF(cpy_r_r244);
+CPyL86: ;
+    cpy_r_r245 = PyImport_GetModuleDict();
+    cpy_r_r246 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typing' */
+    cpy_r_r247 = CPyDict_GetItem(cpy_r_r245, cpy_r_r246);
+    if (unlikely(cpy_r_r247 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL159;
+        goto CPyL161;
     }
-    cpy_r_r247 = cpy_r_r248;
-CPyL92: ;
-    cpy_r_r249 = PyDict_New();
+    cpy_r_r248 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_TypedDictMeta' */
+    cpy_r_r249 = CPyObject_GetAttr(cpy_r_r247, cpy_r_r248);
+    CPy_DECREF(cpy_r_r247);
     if (unlikely(cpy_r_r249 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL160;
-    }
-    cpy_r_r250 = (PyObject *)&PyBool_Type;
-    cpy_r_r251 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typed' */
-    cpy_r_r252 = PyDict_SetItem(cpy_r_r249, cpy_r_r251, cpy_r_r250);
-    cpy_r_r253 = cpy_r_r252 >= 0;
-    if (unlikely(!cpy_r_r253)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL161;
     }
-    cpy_r_r254 = (PyObject *)&PyType_Type;
-    cpy_r_r255 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'maxsize' */
-    cpy_r_r256 = PyDict_SetItem(cpy_r_r249, cpy_r_r255, cpy_r_r254);
-    cpy_r_r257 = cpy_r_r256 >= 0;
-    if (unlikely(!cpy_r_r257)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL161;
-    }
-    cpy_r_r258 = (PyObject *)&PyLong_Type;
-    cpy_r_r259 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'tasks' */
-    cpy_r_r260 = PyDict_SetItem(cpy_r_r249, cpy_r_r259, cpy_r_r258);
-    cpy_r_r261 = cpy_r_r260 >= 0;
-    if (unlikely(!cpy_r_r261)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL161;
-    }
-    cpy_r_r262 = (PyObject *)&PyBool_Type;
-    cpy_r_r263 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'closed' */
-    cpy_r_r264 = PyDict_SetItem(cpy_r_r249, cpy_r_r263, cpy_r_r262);
-    cpy_r_r265 = cpy_r_r264 >= 0;
-    if (unlikely(!cpy_r_r265)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL161;
-    }
-    cpy_r_r266 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_CacheParameters' */
-    cpy_r_r267 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__annotations__' */
-    cpy_r_r268 = CPyDict_SetItem(cpy_r_r247, cpy_r_r267, cpy_r_r249);
-    CPy_DECREF(cpy_r_r249);
-    cpy_r_r269 = cpy_r_r268 >= 0;
-    if (unlikely(!cpy_r_r269)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL160;
-    }
-    cpy_r_r270 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'mypyc filler docstring' */
-    cpy_r_r271 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__doc__' */
-    cpy_r_r272 = CPyDict_SetItem(cpy_r_r247, cpy_r_r271, cpy_r_r270);
-    cpy_r_r273 = cpy_r_r272 >= 0;
-    if (unlikely(!cpy_r_r273)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL160;
-    }
-    cpy_r_r274 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'async_lru' */
-    cpy_r_r275 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__module__' */
-    cpy_r_r276 = CPyDict_SetItem(cpy_r_r247, cpy_r_r275, cpy_r_r274);
-    cpy_r_r277 = cpy_r_r276 >= 0;
-    if (unlikely(!cpy_r_r277)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL160;
-    }
-    PyObject *cpy_r_r278[3] = {cpy_r_r266, cpy_r_r227, cpy_r_r247};
-    cpy_r_r279 = (PyObject **)&cpy_r_r278;
-    cpy_r_r280 = PyObject_Vectorcall(cpy_r_r237, cpy_r_r279, 3, 0);
-    CPy_DECREF(cpy_r_r237);
-    if (unlikely(cpy_r_r280 == NULL)) {
+    cpy_r_r250 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__prepare__' */
+    cpy_r_r251 = PyObject_HasAttr(cpy_r_r249, cpy_r_r250);
+    if (!cpy_r_r251) goto CPyL93;
+    cpy_r_r252 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_CacheParameters' */
+    cpy_r_r253 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__prepare__' */
+    cpy_r_r254 = CPyObject_GetAttr(cpy_r_r249, cpy_r_r253);
+    if (unlikely(cpy_r_r254 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL162;
     }
-    CPy_DECREF(cpy_r_r227);
-    CPy_DECREF(cpy_r_r247);
-    cpy_r_r281 = CPyStatic_globals;
-    cpy_r_r282 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'final' */
-    cpy_r_r283 = CPyDict_GetItem(cpy_r_r281, cpy_r_r282);
-    if (unlikely(cpy_r_r283 == NULL)) {
+    PyObject *cpy_r_r255[2] = {cpy_r_r252, cpy_r_r239};
+    cpy_r_r256 = (PyObject **)&cpy_r_r255;
+    cpy_r_r257 = PyObject_Vectorcall(cpy_r_r254, cpy_r_r256, 2, 0);
+    CPy_DECREF(cpy_r_r254);
+    if (unlikely(cpy_r_r257 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL162;
+    }
+    if (likely(PyDict_Check(cpy_r_r257)))
+        cpy_r_r258 = cpy_r_r257;
+    else {
+        CPy_TypeErrorTraceback("async_lru/__init__.py", "<module>", 65, CPyStatic_globals, "dict", cpy_r_r257);
+        goto CPyL162;
+    }
+    cpy_r_r259 = cpy_r_r258;
+    goto CPyL95;
+CPyL93: ;
+    cpy_r_r260 = PyDict_New();
+    if (unlikely(cpy_r_r260 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL162;
+    }
+    cpy_r_r259 = cpy_r_r260;
+CPyL95: ;
+    cpy_r_r261 = PyDict_New();
+    if (unlikely(cpy_r_r261 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL163;
     }
-    PyObject *cpy_r_r284[1] = {cpy_r_r280};
-    cpy_r_r285 = (PyObject **)&cpy_r_r284;
-    cpy_r_r286 = PyObject_Vectorcall(cpy_r_r283, cpy_r_r285, 1, 0);
-    CPy_DECREF(cpy_r_r283);
-    if (unlikely(cpy_r_r286 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL163;
-    }
-    CPy_DECREF(cpy_r_r280);
-    CPyType__CacheParameters = (PyTypeObject *)cpy_r_r286;
-    CPy_INCREF(CPyType__CacheParameters);
-    cpy_r_r287 = CPyStatic_globals;
-    cpy_r_r288 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_CacheParameters' */
-    cpy_r_r289 = PyDict_SetItem(cpy_r_r287, cpy_r_r288, cpy_r_r286);
-    CPy_DECREF(cpy_r_r286);
-    cpy_r_r290 = cpy_r_r289 >= 0;
-    if (unlikely(!cpy_r_r290)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    cpy_r_r291 = (PyObject *)CPyType__CacheParameters;
-    cpy_r_r292 = CPyStatic_globals;
-    cpy_r_r293 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'Generic' */
-    cpy_r_r294 = CPyDict_GetItem(cpy_r_r292, cpy_r_r293);
-    if (unlikely(cpy_r_r294 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    cpy_r_r295 = CPyStatic_globals;
-    cpy_r_r296 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
-    cpy_r_r297 = CPyDict_GetItem(cpy_r_r295, cpy_r_r296);
-    if (unlikely(cpy_r_r297 == NULL)) {
+    cpy_r_r262 = (PyObject *)&PyBool_Type;
+    cpy_r_r263 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typed' */
+    cpy_r_r264 = PyDict_SetItem(cpy_r_r261, cpy_r_r263, cpy_r_r262);
+    cpy_r_r265 = cpy_r_r264 >= 0;
+    if (unlikely(!cpy_r_r265)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL164;
     }
-    cpy_r_r298 = PyObject_GetItem(cpy_r_r294, cpy_r_r297);
-    CPy_DECREF(cpy_r_r294);
-    CPy_DECREF(cpy_r_r297);
-    if (unlikely(cpy_r_r298 == NULL)) {
+    cpy_r_r266 = (PyObject *)&PyType_Type;
+    cpy_r_r267 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'maxsize' */
+    cpy_r_r268 = PyDict_SetItem(cpy_r_r261, cpy_r_r267, cpy_r_r266);
+    cpy_r_r269 = cpy_r_r268 >= 0;
+    if (unlikely(!cpy_r_r269)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL164;
     }
-    cpy_r_r299 = PyTuple_Pack(1, cpy_r_r298);
-    CPy_DECREF(cpy_r_r298);
-    if (unlikely(cpy_r_r299 == NULL)) {
+    cpy_r_r270 = (PyObject *)&PyLong_Type;
+    cpy_r_r271 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'tasks' */
+    cpy_r_r272 = PyDict_SetItem(cpy_r_r261, cpy_r_r271, cpy_r_r270);
+    cpy_r_r273 = cpy_r_r272 >= 0;
+    if (unlikely(!cpy_r_r273)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL164;
     }
-    cpy_r_r300 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'async_lru' */
-    cpy_r_r301 = (PyObject *)CPyType__CacheItem_template;
-    cpy_r_r302 = CPyType_FromTemplate(cpy_r_r301, cpy_r_r299, cpy_r_r300);
-    CPy_DECREF(cpy_r_r299);
-    if (unlikely(cpy_r_r302 == NULL)) {
+    cpy_r_r274 = (PyObject *)&PyBool_Type;
+    cpy_r_r275 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'closed' */
+    cpy_r_r276 = PyDict_SetItem(cpy_r_r261, cpy_r_r275, cpy_r_r274);
+    cpy_r_r277 = cpy_r_r276 >= 0;
+    if (unlikely(!cpy_r_r277)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL164;
     }
-    cpy_r_r303 = CPyDef__CacheItem_trait_vtable_setup();
-    if (unlikely(cpy_r_r303 == 2)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", -1, CPyStatic_globals);
+    cpy_r_r278 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_CacheParameters' */
+    cpy_r_r279 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__annotations__' */
+    cpy_r_r280 = CPyDict_SetItem(cpy_r_r259, cpy_r_r279, cpy_r_r261);
+    CPy_DECREF(cpy_r_r261);
+    cpy_r_r281 = cpy_r_r280 >= 0;
+    if (unlikely(!cpy_r_r281)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL163;
+    }
+    cpy_r_r282 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'mypyc filler docstring' */
+    cpy_r_r283 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__doc__' */
+    cpy_r_r284 = CPyDict_SetItem(cpy_r_r259, cpy_r_r283, cpy_r_r282);
+    cpy_r_r285 = cpy_r_r284 >= 0;
+    if (unlikely(!cpy_r_r285)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL163;
+    }
+    cpy_r_r286 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'async_lru' */
+    cpy_r_r287 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__module__' */
+    cpy_r_r288 = CPyDict_SetItem(cpy_r_r259, cpy_r_r287, cpy_r_r286);
+    cpy_r_r289 = cpy_r_r288 >= 0;
+    if (unlikely(!cpy_r_r289)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL163;
+    }
+    PyObject *cpy_r_r290[3] = {cpy_r_r278, cpy_r_r239, cpy_r_r259};
+    cpy_r_r291 = (PyObject **)&cpy_r_r290;
+    cpy_r_r292 = PyObject_Vectorcall(cpy_r_r249, cpy_r_r291, 3, 0);
+    CPy_DECREF(cpy_r_r249);
+    if (unlikely(cpy_r_r292 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL165;
     }
-    cpy_r_r304 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__mypyc_attrs__' */
-    cpy_r_r305 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'task' */
-    cpy_r_r306 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'later_call' */
-    cpy_r_r307 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'waiters' */
-    cpy_r_r308 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__dict__' */
-    cpy_r_r309 = PyTuple_Pack(4, cpy_r_r305, cpy_r_r306, cpy_r_r307, cpy_r_r308);
-    if (unlikely(cpy_r_r309 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL165;
-    }
-    cpy_r_r310 = PyObject_SetAttr(cpy_r_r302, cpy_r_r304, cpy_r_r309);
-    CPy_DECREF(cpy_r_r309);
-    cpy_r_r311 = cpy_r_r310 >= 0;
-    if (unlikely(!cpy_r_r311)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL165;
-    }
-    CPyType__CacheItem = (PyTypeObject *)cpy_r_r302;
-    CPy_INCREF(CPyType__CacheItem);
-    cpy_r_r312 = CPyStatic_globals;
-    cpy_r_r313 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_CacheItem' */
-    cpy_r_r314 = PyDict_SetItem(cpy_r_r312, cpy_r_r313, cpy_r_r302);
-    cpy_r_r315 = cpy_r_r314 >= 0;
-    if (unlikely(!cpy_r_r315)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL165;
-    }
-    cpy_r_r316 = PyDict_New();
-    if (unlikely(cpy_r_r316 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL165;
-    }
-    cpy_r_r317.empty_struct_error_flag = 0;
-    cpy_r_r318 = PyDict_New();
-    if (unlikely(cpy_r_r318 == NULL)) {
+    CPy_DECREF(cpy_r_r239);
+    CPy_DECREF(cpy_r_r259);
+    cpy_r_r293 = CPyStatic_globals;
+    cpy_r_r294 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'final' */
+    cpy_r_r295 = CPyDict_GetItem(cpy_r_r293, cpy_r_r294);
+    if (unlikely(cpy_r_r295 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL166;
     }
-    cpy_r_r319 = (PyObject *)&PyType_Type;
-    cpy_r_r320 = CPyModule_asyncio;
-    cpy_r_r321 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'Task' */
-    cpy_r_r322 = CPyObject_GetAttr(cpy_r_r320, cpy_r_r321);
-    if (unlikely(cpy_r_r322 == NULL)) {
+    PyObject *cpy_r_r296[1] = {cpy_r_r292};
+    cpy_r_r297 = (PyObject **)&cpy_r_r296;
+    cpy_r_r298 = PyObject_Vectorcall(cpy_r_r295, cpy_r_r297, 1, 0);
+    CPy_DECREF(cpy_r_r295);
+    if (unlikely(cpy_r_r298 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL166;
+    }
+    CPy_DECREF(cpy_r_r292);
+    CPyType__CacheParameters = (PyTypeObject *)cpy_r_r298;
+    CPy_INCREF(CPyType__CacheParameters);
+    cpy_r_r299 = CPyStatic_globals;
+    cpy_r_r300 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_CacheParameters' */
+    cpy_r_r301 = PyDict_SetItem(cpy_r_r299, cpy_r_r300, cpy_r_r298);
+    CPy_DECREF(cpy_r_r298);
+    cpy_r_r302 = cpy_r_r301 >= 0;
+    if (unlikely(!cpy_r_r302)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r303 = (PyObject *)CPyType__CacheParameters;
+    cpy_r_r304 = CPyStatic_globals;
+    cpy_r_r305 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'Generic' */
+    cpy_r_r306 = CPyDict_GetItem(cpy_r_r304, cpy_r_r305);
+    if (unlikely(cpy_r_r306 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r307 = CPyStatic_globals;
+    cpy_r_r308 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
+    cpy_r_r309 = CPyDict_GetItem(cpy_r_r307, cpy_r_r308);
+    if (unlikely(cpy_r_r309 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL167;
     }
-    cpy_r_r323 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'task' */
-    cpy_r_r324 = PyDict_SetItem(cpy_r_r318, cpy_r_r323, cpy_r_r322);
-    CPy_DECREF(cpy_r_r322);
-    cpy_r_r325 = cpy_r_r324 >= 0;
-    if (unlikely(!cpy_r_r325)) {
+    cpy_r_r310 = PyObject_GetItem(cpy_r_r306, cpy_r_r309);
+    CPy_DECREF(cpy_r_r306);
+    CPy_DECREF(cpy_r_r309);
+    if (unlikely(cpy_r_r310 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL167;
+        goto CPyL147;
     }
-    cpy_r_r326 = (PyObject *)&PyType_Type;
-    cpy_r_r327 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'later_call' */
-    cpy_r_r328 = PyDict_SetItem(cpy_r_r318, cpy_r_r327, cpy_r_r326);
-    cpy_r_r329 = cpy_r_r328 >= 0;
-    if (unlikely(!cpy_r_r329)) {
+    cpy_r_r311 = PyTuple_Pack(1, cpy_r_r310);
+    CPy_DECREF(cpy_r_r310);
+    if (unlikely(cpy_r_r311 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL167;
+        goto CPyL147;
     }
-    cpy_r_r330 = (PyObject *)&PyLong_Type;
-    cpy_r_r331 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'waiters' */
-    cpy_r_r332 = PyDict_SetItem(cpy_r_r318, cpy_r_r331, cpy_r_r330);
-    cpy_r_r333 = cpy_r_r332 >= 0;
-    if (unlikely(!cpy_r_r333)) {
+    cpy_r_r312 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'async_lru' */
+    cpy_r_r313 = (PyObject *)CPyType__CacheItem_template;
+    cpy_r_r314 = CPyType_FromTemplate(cpy_r_r313, cpy_r_r311, cpy_r_r312);
+    CPy_DECREF(cpy_r_r311);
+    if (unlikely(cpy_r_r314 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL167;
+        goto CPyL147;
     }
-    cpy_r_r334 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__annotations__' */
-    cpy_r_r335 = CPyDict_SetItem(cpy_r_r316, cpy_r_r334, cpy_r_r318);
-    cpy_r_r336 = cpy_r_r335 >= 0;
-    if (unlikely(!cpy_r_r336)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL167;
+    cpy_r_r315 = CPyDef__CacheItem_trait_vtable_setup();
+    if (unlikely(cpy_r_r315 == 2)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", -1, CPyStatic_globals);
+        goto CPyL168;
     }
-    cpy_r_r337 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'mypyc filler docstring' */
-    cpy_r_r338 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__doc__' */
-    cpy_r_r339 = CPyDict_SetItem(cpy_r_r316, cpy_r_r338, cpy_r_r337);
-    cpy_r_r340 = cpy_r_r339 >= 0;
-    if (unlikely(!cpy_r_r340)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL167;
-    }
-    cpy_r_r341 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'async_lru' */
-    cpy_r_r342 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__module__' */
-    cpy_r_r343 = CPyDict_SetItem(cpy_r_r316, cpy_r_r342, cpy_r_r341);
-    cpy_r_r344 = cpy_r_r343 >= 0;
-    if (unlikely(!cpy_r_r344)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL167;
-    }
-    cpy_r_r345 = CPyModule_dataclasses;
-    cpy_r_r346 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'dataclass' */
-    cpy_r_r347 = CPyObject_GetAttr(cpy_r_r345, cpy_r_r346);
-    if (unlikely(cpy_r_r347 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL167;
-    }
-    cpy_r_r348 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'dataclasses' */
-    cpy_r_r349 = CPyDataclass_SleightOfHand(cpy_r_r347, cpy_r_r302, cpy_r_r316, cpy_r_r318, cpy_r_r348);
-    CPy_DECREF(cpy_r_r347);
-    CPy_DECREF(cpy_r_r302);
-    CPy_DECREF(cpy_r_r316);
-    CPy_DECREF(cpy_r_r318);
-    if (unlikely(!cpy_r_r349)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    cpy_r_r350 = CPyStatic_globals;
-    cpy_r_r351 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'Generic' */
-    cpy_r_r352 = CPyDict_GetItem(cpy_r_r350, cpy_r_r351);
-    if (unlikely(cpy_r_r352 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    cpy_r_r353 = CPyStatic_globals;
-    cpy_r_r354 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
-    cpy_r_r355 = CPyDict_GetItem(cpy_r_r353, cpy_r_r354);
-    if (unlikely(cpy_r_r355 == NULL)) {
+    cpy_r_r316 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__mypyc_attrs__' */
+    cpy_r_r317 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'task' */
+    cpy_r_r318 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'later_call' */
+    cpy_r_r319 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'waiters' */
+    cpy_r_r320 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__dict__' */
+    cpy_r_r321 = PyTuple_Pack(4, cpy_r_r317, cpy_r_r318, cpy_r_r319, cpy_r_r320);
+    if (unlikely(cpy_r_r321 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL168;
     }
-    cpy_r_r356 = PyObject_GetItem(cpy_r_r352, cpy_r_r355);
-    CPy_DECREF(cpy_r_r352);
-    CPy_DECREF(cpy_r_r355);
-    if (unlikely(cpy_r_r356 == NULL)) {
+    cpy_r_r322 = PyObject_SetAttr(cpy_r_r314, cpy_r_r316, cpy_r_r321);
+    CPy_DECREF(cpy_r_r321);
+    cpy_r_r323 = cpy_r_r322 >= 0;
+    if (unlikely(!cpy_r_r323)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL168;
     }
-    cpy_r_r357 = PyTuple_Pack(1, cpy_r_r356);
-    CPy_DECREF(cpy_r_r356);
-    if (unlikely(cpy_r_r357 == NULL)) {
+    CPyType__CacheItem = (PyTypeObject *)cpy_r_r314;
+    CPy_INCREF(CPyType__CacheItem);
+    cpy_r_r324 = CPyStatic_globals;
+    cpy_r_r325 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_CacheItem' */
+    cpy_r_r326 = PyDict_SetItem(cpy_r_r324, cpy_r_r325, cpy_r_r314);
+    cpy_r_r327 = cpy_r_r326 >= 0;
+    if (unlikely(!cpy_r_r327)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL168;
     }
-    cpy_r_r358 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'async_lru' */
-    cpy_r_r359 = (PyObject *)CPyType__LRUCacheWrapper_template;
-    cpy_r_r360 = CPyType_FromTemplate(cpy_r_r359, cpy_r_r357, cpy_r_r358);
-    CPy_DECREF(cpy_r_r357);
-    if (unlikely(cpy_r_r360 == NULL)) {
+    cpy_r_r328 = PyDict_New();
+    if (unlikely(cpy_r_r328 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL168;
     }
-    cpy_r_r361 = CPyDef__LRUCacheWrapper_trait_vtable_setup();
-    if (unlikely(cpy_r_r361 == 2)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", -1, CPyStatic_globals);
-        goto CPyL169;
-    }
-    cpy_r_r362 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__mypyc_attrs__' */
-    cpy_r_r363 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__module__' */
-    cpy_r_r364 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__name__' */
-    cpy_r_r365 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__qualname__' */
-    cpy_r_r366 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__doc__' */
-    cpy_r_r367 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__annotations__' */
-    cpy_r_r368 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__wrapped__' */
-    cpy_r_r369 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__maxsize' */
-    cpy_r_r370 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__typed' */
-    cpy_r_r371 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__ttl' */
-    cpy_r_r372 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__cache' */
-    cpy_r_r373 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__closed' */
-    cpy_r_r374 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__hits' */
-    cpy_r_r375 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__misses' */
-    cpy_r_r376 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__dict__' */
-    cpy_r_r377 = PyTuple_Pack(14, cpy_r_r363, cpy_r_r364, cpy_r_r365, cpy_r_r366, cpy_r_r367, cpy_r_r368, cpy_r_r369, cpy_r_r370, cpy_r_r371, cpy_r_r372, cpy_r_r373, cpy_r_r374, cpy_r_r375, cpy_r_r376);
-    if (unlikely(cpy_r_r377 == NULL)) {
+    cpy_r_r329.empty_struct_error_flag = 0;
+    cpy_r_r330 = PyDict_New();
+    if (unlikely(cpy_r_r330 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL169;
     }
-    cpy_r_r378 = PyObject_SetAttr(cpy_r_r360, cpy_r_r362, cpy_r_r377);
-    CPy_DECREF(cpy_r_r377);
-    cpy_r_r379 = cpy_r_r378 >= 0;
-    if (unlikely(!cpy_r_r379)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL169;
-    }
-    CPyType__LRUCacheWrapper = (PyTypeObject *)cpy_r_r360;
-    CPy_INCREF(CPyType__LRUCacheWrapper);
-    cpy_r_r380 = CPyStatic_globals;
-    cpy_r_r381 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_LRUCacheWrapper' */
-    cpy_r_r382 = PyDict_SetItem(cpy_r_r380, cpy_r_r381, cpy_r_r360);
-    CPy_DECREF(cpy_r_r360);
-    cpy_r_r383 = cpy_r_r382 >= 0;
-    if (unlikely(!cpy_r_r383)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    cpy_r_r384 = CPyStatic_globals;
-    cpy_r_r385 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'Generic' */
-    cpy_r_r386 = CPyDict_GetItem(cpy_r_r384, cpy_r_r385);
-    if (unlikely(cpy_r_r386 == NULL)) {
-        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
-    }
-    cpy_r_r387 = CPyStatic_globals;
-    cpy_r_r388 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
-    cpy_r_r389 = CPyDict_GetItem(cpy_r_r387, cpy_r_r388);
-    if (unlikely(cpy_r_r389 == NULL)) {
+    cpy_r_r331 = (PyObject *)&PyType_Type;
+    cpy_r_r332 = CPyModule_asyncio;
+    cpy_r_r333 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'Task' */
+    cpy_r_r334 = CPyObject_GetAttr(cpy_r_r332, cpy_r_r333);
+    if (unlikely(cpy_r_r334 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL170;
     }
-    cpy_r_r390 = CPyStatic_globals;
-    cpy_r_r391 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_T' */
-    cpy_r_r392 = CPyDict_GetItem(cpy_r_r390, cpy_r_r391);
-    if (unlikely(cpy_r_r392 == NULL)) {
+    cpy_r_r335 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'task' */
+    cpy_r_r336 = PyDict_SetItem(cpy_r_r330, cpy_r_r335, cpy_r_r334);
+    CPy_DECREF(cpy_r_r334);
+    cpy_r_r337 = cpy_r_r336 >= 0;
+    if (unlikely(!cpy_r_r337)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL170;
+    }
+    cpy_r_r338 = (PyObject *)&PyType_Type;
+    cpy_r_r339 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'later_call' */
+    cpy_r_r340 = PyDict_SetItem(cpy_r_r330, cpy_r_r339, cpy_r_r338);
+    cpy_r_r341 = cpy_r_r340 >= 0;
+    if (unlikely(!cpy_r_r341)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL170;
+    }
+    cpy_r_r342 = (PyObject *)&PyLong_Type;
+    cpy_r_r343 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'waiters' */
+    cpy_r_r344 = PyDict_SetItem(cpy_r_r330, cpy_r_r343, cpy_r_r342);
+    cpy_r_r345 = cpy_r_r344 >= 0;
+    if (unlikely(!cpy_r_r345)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL170;
+    }
+    cpy_r_r346 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__annotations__' */
+    cpy_r_r347 = CPyDict_SetItem(cpy_r_r328, cpy_r_r346, cpy_r_r330);
+    cpy_r_r348 = cpy_r_r347 >= 0;
+    if (unlikely(!cpy_r_r348)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL170;
+    }
+    cpy_r_r349 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'mypyc filler docstring' */
+    cpy_r_r350 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__doc__' */
+    cpy_r_r351 = CPyDict_SetItem(cpy_r_r328, cpy_r_r350, cpy_r_r349);
+    cpy_r_r352 = cpy_r_r351 >= 0;
+    if (unlikely(!cpy_r_r352)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL170;
+    }
+    cpy_r_r353 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'async_lru' */
+    cpy_r_r354 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__module__' */
+    cpy_r_r355 = CPyDict_SetItem(cpy_r_r328, cpy_r_r354, cpy_r_r353);
+    cpy_r_r356 = cpy_r_r355 >= 0;
+    if (unlikely(!cpy_r_r356)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL170;
+    }
+    cpy_r_r357 = CPyModule_dataclasses;
+    cpy_r_r358 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'dataclass' */
+    cpy_r_r359 = CPyObject_GetAttr(cpy_r_r357, cpy_r_r358);
+    if (unlikely(cpy_r_r359 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL170;
+    }
+    cpy_r_r360 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'dataclasses' */
+    cpy_r_r361 = CPyDataclass_SleightOfHand(cpy_r_r359, cpy_r_r314, cpy_r_r328, cpy_r_r330, cpy_r_r360);
+    CPy_DECREF(cpy_r_r359);
+    CPy_DECREF(cpy_r_r314);
+    CPy_DECREF(cpy_r_r328);
+    CPy_DECREF(cpy_r_r330);
+    if (unlikely(!cpy_r_r361)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r362 = CPyStatic_globals;
+    cpy_r_r363 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'Generic' */
+    cpy_r_r364 = CPyDict_GetItem(cpy_r_r362, cpy_r_r363);
+    if (unlikely(cpy_r_r364 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r365 = CPyStatic_globals;
+    cpy_r_r366 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
+    cpy_r_r367 = CPyDict_GetItem(cpy_r_r365, cpy_r_r366);
+    if (unlikely(cpy_r_r367 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
         goto CPyL171;
     }
-    cpy_r_r393.f0 = cpy_r_r389;
-    cpy_r_r393.f1 = cpy_r_r392;
-    cpy_r_r394 = PyTuple_New(2);
-    if (unlikely(cpy_r_r394 == NULL))
-        CPyError_OutOfMemory();
-    PyObject *__tmp57 = cpy_r_r393.f0;
-    PyTuple_SET_ITEM(cpy_r_r394, 0, __tmp57);
-    PyObject *__tmp58 = cpy_r_r393.f1;
-    PyTuple_SET_ITEM(cpy_r_r394, 1, __tmp58);
-    cpy_r_r395 = PyObject_GetItem(cpy_r_r386, cpy_r_r394);
-    CPy_DECREF(cpy_r_r386);
-    CPy_DECREF(cpy_r_r394);
-    if (unlikely(cpy_r_r395 == NULL)) {
+    cpy_r_r368 = PyObject_GetItem(cpy_r_r364, cpy_r_r367);
+    CPy_DECREF(cpy_r_r364);
+    CPy_DECREF(cpy_r_r367);
+    if (unlikely(cpy_r_r368 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    cpy_r_r396 = PyTuple_Pack(1, cpy_r_r395);
-    CPy_DECREF(cpy_r_r395);
-    if (unlikely(cpy_r_r396 == NULL)) {
+    cpy_r_r369 = PyTuple_Pack(1, cpy_r_r368);
+    CPy_DECREF(cpy_r_r368);
+    if (unlikely(cpy_r_r369 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    cpy_r_r397 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'async_lru' */
-    cpy_r_r398 = (PyObject *)CPyType__LRUCacheWrapperInstanceMethod_template;
-    cpy_r_r399 = CPyType_FromTemplate(cpy_r_r398, cpy_r_r396, cpy_r_r397);
-    CPy_DECREF(cpy_r_r396);
-    if (unlikely(cpy_r_r399 == NULL)) {
+    cpy_r_r370 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'async_lru' */
+    cpy_r_r371 = (PyObject *)CPyType__LRUCacheWrapper_template;
+    cpy_r_r372 = CPyType_FromTemplate(cpy_r_r371, cpy_r_r369, cpy_r_r370);
+    CPy_DECREF(cpy_r_r369);
+    if (unlikely(cpy_r_r372 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
-    cpy_r_r400 = CPyDef__LRUCacheWrapperInstanceMethod_trait_vtable_setup();
-    if (unlikely(cpy_r_r400 == 2)) {
+    cpy_r_r373 = CPyDef__LRUCacheWrapper_trait_vtable_setup();
+    if (unlikely(cpy_r_r373 == 2)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", -1, CPyStatic_globals);
         goto CPyL172;
     }
-    cpy_r_r401 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__mypyc_attrs__' */
-    cpy_r_r402 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__module__' */
-    cpy_r_r403 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__name__' */
-    cpy_r_r404 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__qualname__' */
-    cpy_r_r405 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__doc__' */
-    cpy_r_r406 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__annotations__' */
-    cpy_r_r407 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__wrapped__' */
-    cpy_r_r408 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__instance' */
-    cpy_r_r409 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__wrapper' */
-    cpy_r_r410 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__dict__' */
-    cpy_r_r411 = PyTuple_Pack(9, cpy_r_r402, cpy_r_r403, cpy_r_r404, cpy_r_r405, cpy_r_r406, cpy_r_r407, cpy_r_r408, cpy_r_r409, cpy_r_r410);
+    cpy_r_r374 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__mypyc_attrs__' */
+    cpy_r_r375 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__module__' */
+    cpy_r_r376 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__name__' */
+    cpy_r_r377 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__qualname__' */
+    cpy_r_r378 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__doc__' */
+    cpy_r_r379 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__annotations__' */
+    cpy_r_r380 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__wrapped__' */
+    cpy_r_r381 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__maxsize' */
+    cpy_r_r382 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__typed' */
+    cpy_r_r383 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__ttl' */
+    cpy_r_r384 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__cache' */
+    cpy_r_r385 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__closed' */
+    cpy_r_r386 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__hits' */
+    cpy_r_r387 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__misses' */
+    cpy_r_r388 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__dict__' */
+    cpy_r_r389 = PyTuple_Pack(14, cpy_r_r375, cpy_r_r376, cpy_r_r377, cpy_r_r378, cpy_r_r379, cpy_r_r380, cpy_r_r381, cpy_r_r382, cpy_r_r383, cpy_r_r384, cpy_r_r385, cpy_r_r386, cpy_r_r387, cpy_r_r388);
+    if (unlikely(cpy_r_r389 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL172;
+    }
+    cpy_r_r390 = PyObject_SetAttr(cpy_r_r372, cpy_r_r374, cpy_r_r389);
+    CPy_DECREF(cpy_r_r389);
+    cpy_r_r391 = cpy_r_r390 >= 0;
+    if (unlikely(!cpy_r_r391)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL172;
+    }
+    CPyType__LRUCacheWrapper = (PyTypeObject *)cpy_r_r372;
+    CPy_INCREF(CPyType__LRUCacheWrapper);
+    cpy_r_r392 = CPyStatic_globals;
+    cpy_r_r393 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_LRUCacheWrapper' */
+    cpy_r_r394 = PyDict_SetItem(cpy_r_r392, cpy_r_r393, cpy_r_r372);
+    CPy_DECREF(cpy_r_r372);
+    cpy_r_r395 = cpy_r_r394 >= 0;
+    if (unlikely(!cpy_r_r395)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r396 = CPyStatic_globals;
+    cpy_r_r397 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'Generic' */
+    cpy_r_r398 = CPyDict_GetItem(cpy_r_r396, cpy_r_r397);
+    if (unlikely(cpy_r_r398 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r399 = CPyStatic_globals;
+    cpy_r_r400 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_R' */
+    cpy_r_r401 = CPyDict_GetItem(cpy_r_r399, cpy_r_r400);
+    if (unlikely(cpy_r_r401 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL173;
+    }
+    cpy_r_r402 = CPyStatic_globals;
+    cpy_r_r403 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_T' */
+    cpy_r_r404 = CPyDict_GetItem(cpy_r_r402, cpy_r_r403);
+    if (unlikely(cpy_r_r404 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL174;
+    }
+    cpy_r_r405.f0 = cpy_r_r401;
+    cpy_r_r405.f1 = cpy_r_r404;
+    cpy_r_r406 = PyTuple_New(2);
+    if (unlikely(cpy_r_r406 == NULL))
+        CPyError_OutOfMemory();
+    PyObject *__tmp57 = cpy_r_r405.f0;
+    PyTuple_SET_ITEM(cpy_r_r406, 0, __tmp57);
+    PyObject *__tmp58 = cpy_r_r405.f1;
+    PyTuple_SET_ITEM(cpy_r_r406, 1, __tmp58);
+    cpy_r_r407 = PyObject_GetItem(cpy_r_r398, cpy_r_r406);
+    CPy_DECREF(cpy_r_r398);
+    CPy_DECREF(cpy_r_r406);
+    if (unlikely(cpy_r_r407 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r408 = PyTuple_Pack(1, cpy_r_r407);
+    CPy_DECREF(cpy_r_r407);
+    if (unlikely(cpy_r_r408 == NULL)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL147;
+    }
+    cpy_r_r409 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'async_lru' */
+    cpy_r_r410 = (PyObject *)CPyType__LRUCacheWrapperInstanceMethod_template;
+    cpy_r_r411 = CPyType_FromTemplate(cpy_r_r410, cpy_r_r408, cpy_r_r409);
+    CPy_DECREF(cpy_r_r408);
     if (unlikely(cpy_r_r411 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL172;
+        goto CPyL147;
     }
-    cpy_r_r412 = PyObject_SetAttr(cpy_r_r399, cpy_r_r401, cpy_r_r411);
-    CPy_DECREF(cpy_r_r411);
-    cpy_r_r413 = cpy_r_r412 >= 0;
-    if (unlikely(!cpy_r_r413)) {
+    cpy_r_r412 = CPyDef__LRUCacheWrapperInstanceMethod_trait_vtable_setup();
+    if (unlikely(cpy_r_r412 == 2)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", -1, CPyStatic_globals);
+        goto CPyL175;
+    }
+    cpy_r_r413 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__mypyc_attrs__' */
+    cpy_r_r414 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__module__' */
+    cpy_r_r415 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__name__' */
+    cpy_r_r416 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__qualname__' */
+    cpy_r_r417 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__doc__' */
+    cpy_r_r418 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__annotations__' */
+    cpy_r_r419 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__wrapped__' */
+    cpy_r_r420 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__instance' */
+    cpy_r_r421 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__wrapper' */
+    cpy_r_r422 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__dict__' */
+    cpy_r_r423 = PyTuple_Pack(9, cpy_r_r414, cpy_r_r415, cpy_r_r416, cpy_r_r417, cpy_r_r418, cpy_r_r419, cpy_r_r420, cpy_r_r421, cpy_r_r422);
+    if (unlikely(cpy_r_r423 == NULL)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL172;
+        goto CPyL175;
     }
-    CPyType__LRUCacheWrapperInstanceMethod = (PyTypeObject *)cpy_r_r399;
+    cpy_r_r424 = PyObject_SetAttr(cpy_r_r411, cpy_r_r413, cpy_r_r423);
+    CPy_DECREF(cpy_r_r423);
+    cpy_r_r425 = cpy_r_r424 >= 0;
+    if (unlikely(!cpy_r_r425)) {
+        CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
+        goto CPyL175;
+    }
+    CPyType__LRUCacheWrapperInstanceMethod = (PyTypeObject *)cpy_r_r411;
     CPy_INCREF(CPyType__LRUCacheWrapperInstanceMethod);
-    cpy_r_r414 = CPyStatic_globals;
-    cpy_r_r415 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_LRUCacheWrapperInstanceMethod' */
-    cpy_r_r416 = PyDict_SetItem(cpy_r_r414, cpy_r_r415, cpy_r_r399);
-    CPy_DECREF(cpy_r_r399);
-    cpy_r_r417 = cpy_r_r416 >= 0;
-    if (unlikely(!cpy_r_r417)) {
+    cpy_r_r426 = CPyStatic_globals;
+    cpy_r_r427 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_LRUCacheWrapperInstanceMethod' */
+    cpy_r_r428 = PyDict_SetItem(cpy_r_r426, cpy_r_r427, cpy_r_r411);
+    CPy_DECREF(cpy_r_r411);
+    cpy_r_r429 = cpy_r_r428 >= 0;
+    if (unlikely(!cpy_r_r429)) {
         CPy_AddTraceback("async_lru/__init__.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_globals);
-        goto CPyL144;
+        goto CPyL147;
     }
     return 1;
-CPyL144: ;
-    cpy_r_r418 = 2;
-    return cpy_r_r418;
-CPyL145: ;
-    CPy_DecRef(cpy_r_r86);
-    goto CPyL144;
-CPyL146: ;
-    CPy_DecRef(cpy_r_r86);
-    CPy_DecRef(cpy_r_r89);
-    goto CPyL144;
 CPyL147: ;
-    CPy_DecRef(cpy_r_r86);
-    CPy_DecRef(cpy_r_r89);
-    CPy_DecRef(cpy_r_r92);
-    goto CPyL144;
+    cpy_r_r430 = 2;
+    return cpy_r_r430;
 CPyL148: ;
-    CPy_DecRef(cpy_r_r105);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r87);
+    goto CPyL147;
 CPyL149: ;
-    CPy_DecRef(cpy_r_r105);
-    CPy_DecRef(cpy_r_r109);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r87);
+    CPy_DecRef(cpy_r_r90);
+    goto CPyL147;
 CPyL150: ;
-    CPy_DecRef(cpy_r_r123);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r87);
+    CPy_DecRef(cpy_r_r90);
+    CPy_DecRef(cpy_r_r93);
+    goto CPyL147;
 CPyL151: ;
-    CPy_DecRef(cpy_r_r123);
-    CPy_DecRef(cpy_r_r126);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r106);
+    goto CPyL147;
 CPyL152: ;
-    CPy_DecRef(cpy_r_r123);
-    CPy_DecRef(cpy_r_r130);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r106);
+    CPy_DecRef(cpy_r_r110);
+    goto CPyL147;
 CPyL153: ;
-    CPy_DecRef(cpy_r_r123);
-    CPy_DecRef(cpy_r_r130);
-    CPy_DecRef(cpy_r_r133);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r124);
+    goto CPyL147;
 CPyL154: ;
-    CPy_DecRef(cpy_r_r123);
-    CPy_DecRef(cpy_r_r130);
-    CPy_DecRef(cpy_r_r133);
-    CPy_DecRef(cpy_r_r136);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r124);
+    CPy_DecRef(cpy_r_r127);
+    goto CPyL147;
 CPyL155: ;
-    CPy_DecRef(cpy_r_r123);
-    CPy_DecRef(cpy_r_r130);
-    CPy_DecRef(cpy_r_r141);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r124);
+    CPy_DecRef(cpy_r_r131);
+    goto CPyL147;
 CPyL156: ;
-    CPy_DecRef(cpy_r_r123);
-    CPy_DecRef(cpy_r_r130);
-    CPy_DecRef(cpy_r_r141);
-    CPy_DecRef(cpy_r_r144);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r124);
+    CPy_DecRef(cpy_r_r131);
+    CPy_DecRef(cpy_r_r134);
+    goto CPyL147;
 CPyL157: ;
-    CPy_DecRef(cpy_r_r123);
-    CPy_DecRef(cpy_r_r130);
-    CPy_DecRef(cpy_r_r141);
-    CPy_DecRef(cpy_r_r144);
-    CPy_DecRef(cpy_r_r147);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r124);
+    CPy_DecRef(cpy_r_r131);
+    CPy_DecRef(cpy_r_r134);
+    CPy_DecRef(cpy_r_r137);
+    goto CPyL147;
 CPyL158: ;
-    CPy_DecRef(cpy_r_r227);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r124);
+    CPy_DecRef(cpy_r_r131);
+    CPy_DecRef(cpy_r_r142);
+    goto CPyL147;
 CPyL159: ;
-    CPy_DecRef(cpy_r_r227);
-    CPy_DecRef(cpy_r_r237);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r124);
+    CPy_DecRef(cpy_r_r131);
+    CPy_DecRef(cpy_r_r142);
+    CPy_DecRef(cpy_r_r145);
+    goto CPyL147;
 CPyL160: ;
-    CPy_DecRef(cpy_r_r227);
-    CPy_DecRef(cpy_r_r237);
-    CPy_DecRef(cpy_r_r247);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r124);
+    CPy_DecRef(cpy_r_r131);
+    CPy_DecRef(cpy_r_r142);
+    CPy_DecRef(cpy_r_r145);
+    CPy_DecRef(cpy_r_r148);
+    goto CPyL147;
 CPyL161: ;
-    CPy_DecRef(cpy_r_r227);
-    CPy_DecRef(cpy_r_r237);
-    CPy_DecRef(cpy_r_r247);
-    CPy_DecRef(cpy_r_r249);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r239);
+    goto CPyL147;
 CPyL162: ;
-    CPy_DecRef(cpy_r_r227);
-    CPy_DecRef(cpy_r_r247);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r239);
+    CPy_DecRef(cpy_r_r249);
+    goto CPyL147;
 CPyL163: ;
-    CPy_DecRef(cpy_r_r280);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r239);
+    CPy_DecRef(cpy_r_r249);
+    CPy_DecRef(cpy_r_r259);
+    goto CPyL147;
 CPyL164: ;
-    CPy_DecRef(cpy_r_r294);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r239);
+    CPy_DecRef(cpy_r_r249);
+    CPy_DecRef(cpy_r_r259);
+    CPy_DecRef(cpy_r_r261);
+    goto CPyL147;
 CPyL165: ;
-    CPy_DecRef(cpy_r_r302);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r239);
+    CPy_DecRef(cpy_r_r259);
+    goto CPyL147;
 CPyL166: ;
-    CPy_DecRef(cpy_r_r302);
-    CPy_DecRef(cpy_r_r316);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r292);
+    goto CPyL147;
 CPyL167: ;
-    CPy_DecRef(cpy_r_r302);
-    CPy_DecRef(cpy_r_r316);
-    CPy_DecRef(cpy_r_r318);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r306);
+    goto CPyL147;
 CPyL168: ;
-    CPy_DecRef(cpy_r_r352);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r314);
+    goto CPyL147;
 CPyL169: ;
-    CPy_DecRef(cpy_r_r360);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r314);
+    CPy_DecRef(cpy_r_r328);
+    goto CPyL147;
 CPyL170: ;
-    CPy_DecRef(cpy_r_r386);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r314);
+    CPy_DecRef(cpy_r_r328);
+    CPy_DecRef(cpy_r_r330);
+    goto CPyL147;
 CPyL171: ;
-    CPy_DecRef(cpy_r_r386);
-    CPy_DecRef(cpy_r_r389);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r364);
+    goto CPyL147;
 CPyL172: ;
-    CPy_DecRef(cpy_r_r399);
-    goto CPyL144;
+    CPy_DecRef(cpy_r_r372);
+    goto CPyL147;
+CPyL173: ;
+    CPy_DecRef(cpy_r_r398);
+    goto CPyL147;
+CPyL174: ;
+    CPy_DecRef(cpy_r_r398);
+    CPy_DecRef(cpy_r_r401);
+    goto CPyL147;
+CPyL175: ;
+    CPy_DecRef(cpy_r_r411);
+    goto CPyL147;
 }
 
 int CPyGlobalsInit(void)
@@ -13713,6 +13755,7 @@ int CPyGlobalsInit(void)
     CPyModule_dataclasses = Py_None;
     CPyModule_functools = Py_None;
     CPyModule_inspect = Py_None;
+    CPyModule_logging = Py_None;
     CPyModule_os = Py_None;
     CPyModule_sys = Py_None;
     CPyModule_asyncio___coroutines = Py_None;
@@ -13729,23 +13772,23 @@ const char * const CPyLit_Str[] = {
     "\006\006cancel\n__module__\016AttributeError\f__qualname__\a__doc__\017__annotations__",
     "\006\b__dict__\fversion_info\vOrderedDict\004done\003pop\021return_exceptions",
     "\006\rGeneratorExit\rStopIteration\020_CacheParameters\amaxsize\005typed\005tasks",
-    "\006\006closed\vmove_to_end\tcancelled\texception\020get_running_loop\ncall_later",
+    "\006\006closed\vmove_to_end\tcancelled\n_exception\020get_running_loop\ncall_later",
     "\005\006shield\016CancelledError\031alru_cache is closed for \fRuntimeError\006result",
     "\005\v__wrapped__\vcreate_task\023_task_done_callback\021add_done_callback\apopitem",
     "\006\004last\020cache_invalidate\t__wrapper\004func\023iscoroutinefunction\aenviron",
     "\004\024ASYNC_LRU_ALLOW_SYNC\003get\000$Coroutine function is required, got ",
     "\004\a{!r:{}}\006format\024_make_unbound_method\bcallable",
     "\004\034 decorating is not supported\023NotImplementedError\bbuiltins\aasyncio",
-    "\a\vdataclasses\tfunctools\ainspect\002os\003sys\025async_lru/__init__.py\b<module>",
-    "\a\r_is_coroutine\022asyncio.coroutines\003Any\bCallable\tCoroutine\005Final\aGeneric",
-    "\t\bHashable\004List\bOptional\004Type\tTypedDict\aTypeVar\005Union\004cast\005final",
-    "\n\boverload\006typing\004Self\0052.0.5\v__version__\nalru_cache\a__all__\002_T\002_R\005_Coro",
-    "\a\003_CB\apartial\rpartialmethod\004_CBP\n_CacheInfo\t_make_key\006gather",
-    "\004\025markcoroutinefunction\n_TypedDict\016_TypedDictMeta\v__prepare__",
-    "\005\026mypyc filler docstring\tasync_lru\017__mypyc_attrs__\004task\nlater_call",
-    "\b\awaiters\n_CacheItem\004Task\tdataclass\b__name__\t__maxsize\a__typed\005__ttl",
-    "\006\a__cache\b__closed\006__hits\b__misses\020_LRUCacheWrapper\n__instance",
-    "\001\036_LRUCacheWrapperInstanceMethod",
+    "\a\vdataclasses\tfunctools\ainspect\alogging\002os\003sys\025async_lru/__init__.py",
+    "\006\b<module>\r_is_coroutine\022asyncio.coroutines\003Any\bCallable\tCoroutine",
+    "\t\005Final\aGeneric\bHashable\004List\bOptional\004Type\tTypedDict\aTypeVar\005Union",
+    "\t\004cast\005final\boverload\006typing\004Self\0052.0.5\v__version__\nalru_cache\a__all__",
+    "\t\002_T\002_R\005_Coro\003_CB\apartial\rpartialmethod\004_CBP\n_CacheInfo\t_make_key",
+    "\005\006gather\025markcoroutinefunction\024async_lru_threadsafe\tgetLogger\006logger",
+    "\004\n_TypedDict\016_TypedDictMeta\v__prepare__\026mypyc filler docstring",
+    "\a\tasync_lru\017__mypyc_attrs__\004task\nlater_call\awaiters\n_CacheItem\004Task",
+    "\b\tdataclass\b__name__\t__maxsize\a__typed\005__ttl\a__cache\b__closed\006__hits",
+    "\004\b__misses\020_LRUCacheWrapper\n__instance\036_LRUCacheWrapperInstanceMethod",
     "",
 };
 const char * const CPyLit_Bytes[] = {
@@ -13758,10 +13801,10 @@ const char * const CPyLit_Int[] = {
 const double CPyLit_Float[] = {0};
 const double CPyLit_Complex[] = {0};
 const int CPyLit_Tuple[] = {
-    12, 4, 18, 19, 20, 21, 1, 37, 3, 54, 54, 54, 3, 55, 55, 55, 3, 56,
-    56, 56, 3, 57, 57, 57, 3, 58, 58, 58, 3, 59, 59, 59, 6, 123, 124, 125,
-    126, 127, 128, 1, 62, 16, 64, 65, 66, 67, 68, 69, 70, 71, 11, 72, 73,
-    74, 75, 76, 77, 78, 1, 80
+    13, 4, 18, 19, 20, 21, 1, 37, 3, 54, 54, 54, 3, 55, 55, 55, 3, 56,
+    56, 56, 3, 57, 57, 57, 3, 58, 58, 58, 3, 59, 59, 59, 3, 60, 60, 60, 7,
+    127, 128, 129, 130, 131, 132, 133, 1, 63, 16, 65, 66, 67, 68, 69, 70,
+    71, 72, 11, 73, 74, 75, 76, 77, 78, 79, 1, 81
 };
 const int CPyLit_FrozenSet[] = {0};
 CPyModule *CPyModule_async_lru__internal = NULL;
@@ -13772,6 +13815,7 @@ CPyModule *CPyModule_asyncio;
 CPyModule *CPyModule_dataclasses;
 CPyModule *CPyModule_functools;
 CPyModule *CPyModule_inspect;
+CPyModule *CPyModule_logging;
 CPyModule *CPyModule_os;
 CPyModule *CPyModule_sys;
 CPyModule *CPyModule_asyncio___coroutines;
@@ -13784,6 +13828,7 @@ PyObject *CPyStatic_gather = NULL;
 PyObject *CPyStatic_get_running_loop = NULL;
 PyObject *CPyStatic_shield = NULL;
 PyObject *CPyStatic_markcoroutinefunction = NULL;
+PyObject *CPyStatic_logger = NULL;
 PyTypeObject *CPyType__CacheParameters;
 PyTypeObject *CPyType__CacheItem;
 PyObject *CPyDef__CacheItem(PyObject *cpy_r_args, PyObject *cpy_r_kwargs);
