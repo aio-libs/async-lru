@@ -98,6 +98,7 @@ typedef struct {
     char ___mypyc_generator_attribute__wait;
     int32_t ___mypyc_next_label__;
     PyObject *___mypyc_generator_attribute__tasks;
+    PyObject *___mypyc_generator_attribute__cancel_msg;
     PyObject *___mypyc_temp__0;
     int64_t ___mypyc_temp__1;
     PyObject *___mypyc_generator_attribute__task;
