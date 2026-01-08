@@ -178,7 +178,10 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__misses += 1
 
     def _task_done_callback(self, key: Hashable, task: "asyncio.Task[_R]") -> None:
-        if task.cancelled() or task.exception() is not None:
+        # We must use the private attribute instead of `exception()`
+        # so asyncio does not set `task.__log_traceback = False` on
+        # the false assumption that the caller read the task Exception
+        if task.cancelled() or task._exception is not None:
             self.__cache.pop(key, None)
             return
 
