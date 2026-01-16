@@ -1,10 +1,12 @@
 import asyncio
+import gc
+import logging
 from functools import partial
 from unittest import mock
 
 import pytest
 
-from async_lru import _LRUCacheWrapper
+from async_lru import _CacheItem, _LRUCacheWrapper
 
 
 async def test_done_callback_cancelled() -> None:
@@ -39,6 +41,34 @@ async def test_done_callback_exception() -> None:
     await asyncio.sleep(0)
 
     assert task not in wrapped._LRUCacheWrapper__tasks  # type: ignore[attr-defined]
+
+
+async def test_done_callback_exception_logs(caplog: pytest.LogCaptureFixture) -> None:
+    wrapped = _LRUCacheWrapper(mock.ANY, None, False, None)
+    loop = asyncio.get_running_loop()
+
+    async def boom() -> None:
+        await asyncio.sleep(0)
+        raise RuntimeError("boom")
+
+    key = object()
+    task = loop.create_task(boom())
+    wrapped._LRUCacheWrapper__cache[key] = _CacheItem(task, None, 1)  # type: ignore[attr-defined]
+    task.add_done_callback(partial(wrapped._task_done_callback, key))
+
+    await asyncio.sleep(0)
+
+    assert key not in wrapped._LRUCacheWrapper__cache  # type: ignore[attr-defined]
+
+    caplog.set_level(logging.ERROR, logger="asyncio")
+    caplog.clear()
+
+    task = None
+    gc.collect()
+    await asyncio.sleep(0)
+
+    assert "Task exception was never retrieved" in caplog.text
+    assert "RuntimeError: boom" in caplog.text
 
 
 async def test_cache_invalidate_typed() -> None:
