@@ -45,6 +45,8 @@ async def test_done_callback_exception() -> None:
 
 
 async def test_done_callback_exception_logs(caplog: pytest.LogCaptureFixture) -> None:
+    task: asyncio.Task[None] | None
+    
     caplog.set_level(logging.ERROR, logger="asyncio")
 
     wrapped = _LRUCacheWrapper(mock.ANY, None, False, None)
