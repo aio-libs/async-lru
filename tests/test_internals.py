@@ -1,4 +1,5 @@
 import asyncio
+import gc
 import logging
 from functools import partial
 from unittest import mock
@@ -63,7 +64,19 @@ async def test_done_callback_exception_logs(caplog: pytest.LogCaptureFixture) ->
 
     assert key not in wrapped._LRUCacheWrapper__cache  # type: ignore[attr-defined]
     # asyncio disables logging when exception() is called; keep logging enabled.
-    assert task._log_traceback
+    assert task._log_traceback  # type: ignore[attr-defined]
+
+    caplog.clear()
+
+    task = None
+    for _ in range(5):
+        gc.collect()
+        await asyncio.sleep(0)
+        if "Task exception was never retrieved" in caplog.text:
+            break
+
+    assert "Task exception was never retrieved" in caplog.text
+    assert "RuntimeError: boom" in caplog.text
 
 
 async def test_cache_invalidate_typed() -> None:
