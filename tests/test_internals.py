@@ -69,10 +69,10 @@ async def test_done_callback_exception_logs(caplog: pytest.LogCaptureFixture) ->
     caplog.clear()
 
     del task  # Remove reference so task get garbage collected.
-    for _ in range(5):
+    for _ in range(5):  # pragma: no branch
         gc.collect()
         await asyncio.sleep(0)
-        if "Task exception was never retrieved" in caplog.text:
+        if "Task exception was never retrieved" in caplog.text:  # pragma: no branch
             break
 
     assert "Task exception was never retrieved" in caplog.text
