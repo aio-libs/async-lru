@@ -63,7 +63,7 @@ async def test_done_callback_exception_logs(caplog: pytest.LogCaptureFixture) ->
 
     assert key not in wrapped._LRUCacheWrapper__cache  # type: ignore[attr-defined]
     # asyncio disables logging when exception() is called; keep logging enabled.
-    assert task._log_traceback  # type: ignore[attr-defined]
+    assert task._log_traceback
 
 
 async def test_cache_invalidate_typed() -> None:
