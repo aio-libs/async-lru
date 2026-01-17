@@ -65,3 +65,4 @@ target/
 .ropeproject
 
 .python-version
+.worktrees/
