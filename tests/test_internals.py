@@ -10,7 +10,7 @@ from async_lru import _CacheItem, _LRUCacheWrapper
 
 
 async def test_done_callback_cancelled() -> None:
-    wrapped = _LRUCacheWrapper(mock.ANY, None, False, None)
+    wrapped = _LRUCacheWrapper(mock.ANY, None, False, None, None)
     loop = asyncio.get_running_loop()
     task = loop.create_future()
 
@@ -26,7 +26,7 @@ async def test_done_callback_cancelled() -> None:
 
 
 async def test_done_callback_exception() -> None:
-    wrapped = _LRUCacheWrapper(mock.ANY, None, False, None)
+    wrapped = _LRUCacheWrapper(mock.ANY, None, False, None, None)
     loop = asyncio.get_running_loop()
     task = loop.create_future()
 
@@ -46,7 +46,7 @@ async def test_done_callback_exception() -> None:
 async def test_done_callback_exception_logs(caplog: pytest.LogCaptureFixture) -> None:
     caplog.set_level(logging.ERROR, logger="asyncio")
 
-    wrapped = _LRUCacheWrapper(mock.ANY, None, False, None)
+    wrapped = _LRUCacheWrapper(mock.ANY, None, False, None, None)
     loop = asyncio.get_running_loop()
 
     async def boom() -> None:
@@ -80,7 +80,7 @@ async def test_done_callback_exception_logs(caplog: pytest.LogCaptureFixture) ->
 
 
 async def test_cache_invalidate_typed() -> None:
-    wrapped = _LRUCacheWrapper(mock.AsyncMock(return_value=1), None, True, None)
+    wrapped = _LRUCacheWrapper(mock.AsyncMock(return_value=1), None, True, None, None)
 
     from_cache = wrapped.cache_invalidate(1, a=1)
 
@@ -105,7 +105,7 @@ async def test_cache_invalidate_typed() -> None:
 
 
 async def test_cache_invalidate_not_typed() -> None:
-    wrapped = _LRUCacheWrapper(mock.AsyncMock(return_value=1), None, False, None)
+    wrapped = _LRUCacheWrapper(mock.AsyncMock(return_value=1), None, False, None, None)
 
     from_cache = wrapped.cache_invalidate(1, a=1)
     assert not from_cache
@@ -126,7 +126,7 @@ async def test_cache_invalidate_not_typed() -> None:
 
 
 async def test_cache_clear() -> None:
-    wrapped = _LRUCacheWrapper(mock.AsyncMock(return_value=1), None, True, None)
+    wrapped = _LRUCacheWrapper(mock.AsyncMock(return_value=1), None, True, None, None)
 
     await wrapped(123)
 
@@ -150,7 +150,7 @@ async def test_cache_clear() -> None:
 
 
 def test_cache_info() -> None:
-    wrapped = _LRUCacheWrapper(mock.ANY, 3, True, None)
+    wrapped = _LRUCacheWrapper(mock.ANY, 3, True, None, None)
 
     assert (0, 0, 3, 0) == wrapped.cache_info()
 
@@ -166,7 +166,7 @@ def test_cache_info() -> None:
 
 
 async def test_cache_hit() -> None:
-    wrapped = _LRUCacheWrapper(mock.AsyncMock(return_value=1), None, True, None)
+    wrapped = _LRUCacheWrapper(mock.AsyncMock(return_value=1), None, True, None, None)
     await wrapped(1)
     assert wrapped.cache_info().hits == 0
     assert wrapped.cache_info().misses == 1
@@ -179,7 +179,7 @@ async def test_cache_hit() -> None:
 
 
 async def test_cache_miss() -> None:
-    wrapped = _LRUCacheWrapper(mock.AsyncMock(return_value=1), None, True, None)
+    wrapped = _LRUCacheWrapper(mock.AsyncMock(return_value=1), None, True, None, None)
     await wrapped(1)
     assert wrapped.cache_info().hits == 0
     assert wrapped.cache_info().misses == 1
@@ -192,7 +192,7 @@ async def test_cache_miss() -> None:
 
 
 async def test_forbid_call_closed() -> None:
-    wrapped = _LRUCacheWrapper(mock.AsyncMock(return_value=1), None, True, None)
+    wrapped = _LRUCacheWrapper(mock.AsyncMock(return_value=1), None, True, None, None)
     wrapped._LRUCacheWrapper__closed = True  # type: ignore[attr-defined]
     with pytest.raises(RuntimeError):
         await wrapped(123)
