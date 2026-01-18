@@ -3,6 +3,7 @@ import dataclasses
 import inspect
 import random
 import sys
+import threading
 from functools import _CacheInfo, _make_key, partial, partialmethod
 from typing import (
     Any,
@@ -112,6 +113,7 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__closed = False
         self.__hits = 0
         self.__misses = 0
+        self.__thread_id: Optional[int] = None
 
     @property
     def __tasks(self) -> List["asyncio.Task[_R]"]:
@@ -124,7 +126,19 @@ class _LRUCacheWrapper(Generic[_R]):
             }
         )
 
+    def _check_thread(self) -> None:
+        current_thread = threading.current_thread().ident
+        if self.__thread_id is None:
+            self.__thread_id = current_thread
+        elif self.__thread_id != current_thread:
+            raise RuntimeError(
+                f"alru_cache is not thread-safe: this cache instance was first used "
+                f"in thread {self.__thread_id} but is now being called from thread "
+                f"{current_thread}. Use separate cache instances per thread."
+            )
+
     def cache_invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
+        self._check_thread()
         key = _make_key(args, kwargs, self.__typed)
 
         cache_item = self.__cache.pop(key, None)
@@ -135,6 +149,7 @@ class _LRUCacheWrapper(Generic[_R]):
             return True
 
     def cache_clear(self) -> None:
+        self._check_thread()
         self.__hits = 0
         self.__misses = 0
 
@@ -144,6 +159,7 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__cache.clear()
 
     async def cache_close(self, *, wait: bool = False) -> None:
+        self._check_thread()
         self.__closed = True
 
         tasks = self.__tasks
@@ -220,6 +236,8 @@ class _LRUCacheWrapper(Generic[_R]):
     async def __call__(self, /, *fn_args: Any, **fn_kwargs: Any) -> _R:
         if self.__closed:
             raise RuntimeError(f"alru_cache is closed for {self}")
+
+        self._check_thread()
 
         loop = asyncio.get_running_loop()
 

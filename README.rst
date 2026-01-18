@@ -107,9 +107,8 @@ otherwise.
 Limitations
 -----------
 
-**Thread Safety**: ``alru_cache`` is **not thread-safe** when the same cached function instance
-is called from multiple event loops running on different threads. The cache uses an unsynchronized
-``OrderedDict`` which can lead to race conditions.
+**Thread Safety**: ``alru_cache`` is **not thread-safe**. If the same cached function instance
+is called from a different thread than where it was first used, a ``RuntimeError`` will be raised.
 
 For typical asyncio applications using a single event loop, this is not a concern. If your
 application runs multiple event loops on different threads, you have these options:
