@@ -34,7 +34,9 @@ def test_cross_thread_access_raises_error() -> None:
     thread.start()
     thread.join()
 
-    assert error_raised.is_set(), "RuntimeError should be raised for cross-thread access"
+    assert (
+        error_raised.is_set()
+    ), "RuntimeError should be raised for cross-thread access"
     assert "not thread-safe" in error_message[0]
 
 
@@ -85,7 +87,9 @@ def test_cross_thread_cache_invalidate_raises_error() -> None:
     thread.start()
     thread.join()
 
-    assert error_raised.is_set(), "RuntimeError should be raised for cross-thread cache_invalidate"
+    assert (
+        error_raised.is_set()
+    ), "RuntimeError should be raised for cross-thread cache_invalidate"
     assert "not thread-safe" in error_message[0]
 
 
@@ -115,7 +119,9 @@ def test_cross_thread_cache_clear_raises_error() -> None:
     thread.start()
     thread.join()
 
-    assert error_raised.is_set(), "RuntimeError should be raised for cross-thread cache_clear"
+    assert (
+        error_raised.is_set()
+    ), "RuntimeError should be raised for cross-thread cache_clear"
     assert "not thread-safe" in error_message[0]
 
 
@@ -149,5 +155,7 @@ def test_cross_thread_cache_close_raises_error() -> None:
     thread.start()
     thread.join()
 
-    assert error_raised.is_set(), "RuntimeError should be raised for cross-thread cache_close"
+    assert (
+        error_raised.is_set()
+    ), "RuntimeError should be raised for cross-thread cache_close"
     assert "not thread-safe" in error_message[0]
