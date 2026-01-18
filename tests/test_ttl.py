@@ -1,5 +1,8 @@
 import asyncio
 from typing import Callable
+from unittest import mock
+
+import pytest
 
 from async_lru import alru_cache
 
@@ -70,8 +73,6 @@ async def test_ttl_concurrent() -> None:
 
 
 async def test_ttl_with_jitter_basic(check_lru: Callable[..., None]) -> None:
-    from unittest import mock
-
     with mock.patch("async_lru.random.uniform", return_value=0.1):
 
         @alru_cache(maxsize=None, ttl=0.1, jitter=0.2)
@@ -101,14 +102,10 @@ async def test_ttl_with_jitter_zero(check_lru: Callable[..., None]) -> None:
 
 
 async def test_jitter_without_ttl_raises_error() -> None:
-    import pytest
-
     with pytest.raises(ValueError, match="jitter requires ttl to be set"):
         alru_cache(maxsize=None, jitter=1.0)
 
 
 async def test_jitter_negative_raises_error() -> None:
-    import pytest
-
     with pytest.raises(ValueError, match="jitter must be non-negative"):
         alru_cache(maxsize=None, ttl=1.0, jitter=-0.5)
