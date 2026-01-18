@@ -1,6 +1,7 @@
 import asyncio
 import dataclasses
 import inspect
+import random
 import sys
 from functools import _CacheInfo, _make_key, partial, partialmethod
 from typing import (
@@ -72,6 +73,7 @@ class _LRUCacheWrapper(Generic[_R]):
         maxsize: Optional[int],
         typed: bool,
         ttl: Optional[float],
+        jitter: Optional[float],
     ) -> None:
         try:
             self.__module__ = fn.__module__
@@ -105,6 +107,7 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__maxsize = maxsize
         self.__typed = typed
         self.__ttl = ttl
+        self.__jitter = jitter
         self.__cache: OrderedDict[Hashable, _CacheItem[_R]] = OrderedDict()
         self.__closed = False
         self.__hits = 0
@@ -187,9 +190,12 @@ class _LRUCacheWrapper(Generic[_R]):
 
         cache_item = self.__cache.get(key)
         if self.__ttl is not None and cache_item is not None:
+            effective_ttl = self.__ttl
+            if self.__jitter is not None:
+                effective_ttl += random.uniform(0, self.__jitter)
             loop = asyncio.get_running_loop()
             cache_item.later_call = loop.call_later(
-                self.__ttl, self.__cache.pop, key, None
+                effective_ttl, self.__cache.pop, key, None
             )
 
     async def _shield_and_handle_cancelled_error(
@@ -319,7 +325,13 @@ def _make_wrapper(
     maxsize: Optional[int],
     typed: bool,
     ttl: Optional[float] = None,
+    jitter: Optional[float] = None,
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
+    if jitter is not None and ttl is None:
+        raise ValueError("jitter requires ttl to be set")
+    if jitter is not None and jitter < 0:
+        raise ValueError("jitter must be non-negative")
+
     def wrapper(fn: _CBP[_R]) -> _LRUCacheWrapper[_R]:
         origin = fn
 
@@ -333,7 +345,7 @@ def _make_wrapper(
         if hasattr(fn, "_make_unbound_method"):
             fn = fn._make_unbound_method()
 
-        wrapper = _LRUCacheWrapper(cast(_CB[_R], fn), maxsize, typed, ttl)
+        wrapper = _LRUCacheWrapper(cast(_CB[_R], fn), maxsize, typed, ttl, jitter)
         if sys.version_info >= (3, 12):
             wrapper = inspect.markcoroutinefunction(wrapper)
         return wrapper
@@ -347,6 +359,7 @@ def alru_cache(
     typed: bool = False,
     *,
     ttl: Optional[float] = None,
+    jitter: Optional[float] = None,
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
     ...
 
@@ -364,13 +377,14 @@ def alru_cache(
     typed: bool = False,
     *,
     ttl: Optional[float] = None,
+    jitter: Optional[float] = None,
 ) -> Union[Callable[[_CBP[_R]], _LRUCacheWrapper[_R]], _LRUCacheWrapper[_R]]:
     if maxsize is None or isinstance(maxsize, int):
-        return _make_wrapper(maxsize, typed, ttl)
+        return _make_wrapper(maxsize, typed, ttl, jitter)
     else:
         fn = cast(_CB[_R], maxsize)
 
         if callable(fn) or hasattr(fn, "_make_unbound_method"):
-            return _make_wrapper(128, False, None)(fn)
+            return _make_wrapper(128, False, None, None)(fn)
 
         raise NotImplementedError(f"{fn!r} decorating is not supported")

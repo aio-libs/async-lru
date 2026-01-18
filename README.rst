@@ -77,6 +77,18 @@ parameter (off by default):
     async def func(arg):
         return arg * 2
 
+To prevent thundering herd issues when many cache entries expire simultaneously,
+you can add ``jitter`` to randomize the TTL for each entry:
+
+.. code-block:: python
+
+    @alru_cache(ttl=3600, jitter=1800)
+    async def func(arg):
+        return arg * 2
+
+With ``ttl=3600, jitter=1800``, each cache entry will have a random TTL
+between 3600 and 5400 seconds, spreading out invalidations over time.
+
 
 The library supports explicit invalidation for specific function call by
 `cache_invalidate()`:

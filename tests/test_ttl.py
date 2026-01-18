@@ -67,3 +67,53 @@ async def test_ttl_concurrent() -> None:
 
     results = await asyncio.gather(*(coro(i) for i in range(2)))
     assert results == list(range(2))
+
+
+async def test_ttl_with_jitter_basic(check_lru: Callable[..., None]) -> None:
+    import random as rng
+    rng.seed(42)
+
+    @alru_cache(maxsize=None, ttl=0.1, jitter=0.2)
+    async def coro(val: int) -> int:
+        return val
+
+    assert await coro(1) == 1
+    check_lru(coro, hits=0, misses=1, cache=1, tasks=0, maxsize=None)
+
+    await asyncio.sleep(0.05)
+    check_lru(coro, hits=0, misses=1, cache=1, tasks=0, maxsize=None)
+
+    await asyncio.sleep(0.35)
+    check_lru(coro, hits=0, misses=1, cache=0, tasks=0, maxsize=None)
+
+
+async def test_ttl_with_jitter_zero(check_lru: Callable[..., None]) -> None:
+    @alru_cache(maxsize=None, ttl=0.1, jitter=0)
+    async def coro(val: int) -> int:
+        return val
+
+    assert await coro(1) == 1
+    check_lru(coro, hits=0, misses=1, cache=1, tasks=0, maxsize=None)
+
+    await asyncio.sleep(0.15)
+    check_lru(coro, hits=0, misses=1, cache=0, tasks=0, maxsize=None)
+
+
+async def test_jitter_without_ttl_raises_error() -> None:
+    import pytest
+
+    with pytest.raises(ValueError, match="jitter requires ttl to be set"):
+
+        @alru_cache(maxsize=None, jitter=1.0)
+        async def coro(val: int) -> int:
+            return val
+
+
+async def test_jitter_negative_raises_error() -> None:
+    import pytest
+
+    with pytest.raises(ValueError, match="jitter must be non-negative"):
+
+        @alru_cache(maxsize=None, ttl=1.0, jitter=-0.5)
+        async def coro(val: int) -> int:
+            return val
