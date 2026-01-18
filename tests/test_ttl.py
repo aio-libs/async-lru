@@ -70,21 +70,22 @@ async def test_ttl_concurrent() -> None:
 
 
 async def test_ttl_with_jitter_basic(check_lru: Callable[..., None]) -> None:
-    import random as rng
-    rng.seed(42)
+    from unittest import mock
 
-    @alru_cache(maxsize=None, ttl=0.1, jitter=0.2)
-    async def coro(val: int) -> int:
-        return val
+    with mock.patch("async_lru.random.uniform", return_value=0.1):
 
-    assert await coro(1) == 1
-    check_lru(coro, hits=0, misses=1, cache=1, tasks=0, maxsize=None)
+        @alru_cache(maxsize=None, ttl=0.1, jitter=0.2)
+        async def coro(val: int) -> int:
+            return val
 
-    await asyncio.sleep(0.05)
-    check_lru(coro, hits=0, misses=1, cache=1, tasks=0, maxsize=None)
+        assert await coro(1) == 1
+        check_lru(coro, hits=0, misses=1, cache=1, tasks=0, maxsize=None)
 
-    await asyncio.sleep(0.35)
-    check_lru(coro, hits=0, misses=1, cache=0, tasks=0, maxsize=None)
+        await asyncio.sleep(0.15)
+        check_lru(coro, hits=0, misses=1, cache=1, tasks=0, maxsize=None)
+
+        await asyncio.sleep(0.1)
+        check_lru(coro, hits=0, misses=1, cache=0, tasks=0, maxsize=None)
 
 
 async def test_ttl_with_jitter_zero(check_lru: Callable[..., None]) -> None:
@@ -105,8 +106,8 @@ async def test_jitter_without_ttl_raises_error() -> None:
     with pytest.raises(ValueError, match="jitter requires ttl to be set"):
 
         @alru_cache(maxsize=None, jitter=1.0)
-        async def coro(val: int) -> int:
-            return val
+        async def coro(val: int) -> int:  # type: ignore[empty-body]
+            ...
 
 
 async def test_jitter_negative_raises_error() -> None:
@@ -115,5 +116,5 @@ async def test_jitter_negative_raises_error() -> None:
     with pytest.raises(ValueError, match="jitter must be non-negative"):
 
         @alru_cache(maxsize=None, ttl=1.0, jitter=-0.5)
-        async def coro(val: int) -> int:
-            return val
+        async def coro(val: int) -> int:  # type: ignore[empty-body]
+            ...
