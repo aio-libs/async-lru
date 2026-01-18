@@ -104,6 +104,48 @@ The library supports explicit invalidation for specific function call by
 The method returns `True` if corresponding arguments set was cached already, `False`
 otherwise.
 
+Limitations
+-----------
+
+**Thread Safety**: ``alru_cache`` is **not thread-safe** when the same cached function instance
+is called from multiple event loops running on different threads. The cache uses an unsynchronized
+``OrderedDict`` which can lead to race conditions.
+
+For typical asyncio applications using a single event loop, this is not a concern. If your
+application runs multiple event loops on different threads, you have these options:
+
+**Option 1: Per-thread caching** - Each thread gets its own cache instance (recommended):
+
+.. code-block:: python
+
+    # Example: Per-thread caching using threading.local()
+    import threading
+
+    _local = threading.local()
+
+    def get_cached_fetcher():
+        if not hasattr(_local, 'fetcher'):
+            @alru_cache(maxsize=100)
+            async def fetch_data(key):
+                # ... implementation
+                pass
+            _local.fetcher = fetch_data
+        return _local.fetcher
+
+    # Usage: each thread gets its own cache instance
+    async def worker():
+        fetcher = get_cached_fetcher()
+        result = await fetcher("some_key")
+        return result
+
+**Option 2: External synchronization** - Use ``threading.Lock`` around all cache operations
+(impacts performance).
+
+**Option 3: Single-threaded design** - Keep cached functions within a single event loop
+(simplest if feasible).
+
+See issue `#611 <https://github.com/aio-libs/async-lru/issues/611>`_ for more details.
+
 Benchmarks
 ----------
 
