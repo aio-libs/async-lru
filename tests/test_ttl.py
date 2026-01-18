@@ -104,17 +104,11 @@ async def test_jitter_without_ttl_raises_error() -> None:
     import pytest
 
     with pytest.raises(ValueError, match="jitter requires ttl to be set"):
-
-        @alru_cache(maxsize=None, jitter=1.0)
-        async def coro(val: int) -> int:  # type: ignore[empty-body]
-            ...
+        alru_cache(maxsize=None, jitter=1.0)
 
 
 async def test_jitter_negative_raises_error() -> None:
     import pytest
 
     with pytest.raises(ValueError, match="jitter must be non-negative"):
-
-        @alru_cache(maxsize=None, ttl=1.0, jitter=-0.5)
-        async def coro(val: int) -> int:  # type: ignore[empty-body]
-            ...
+        alru_cache(maxsize=None, ttl=1.0, jitter=-0.5)
