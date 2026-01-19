@@ -5,7 +5,7 @@ from async_lru import alru_cache
 
 
 def test_cross_thread_access_raises_error() -> None:
-    @alru_cache(maxsize=100)
+    @alru_cache(maxsize=100, check_thread=True)
     async def cached_func(key: str) -> str:
         return f"data_{key}"
 
@@ -62,7 +62,7 @@ def test_same_thread_access_works() -> None:
 
 
 def test_cross_thread_cache_invalidate_raises_error() -> None:
-    @alru_cache(maxsize=100)
+    @alru_cache(maxsize=100, check_thread=True)
     async def cached_func(key: str) -> str:
         return f"data_{key}"
 
@@ -94,7 +94,7 @@ def test_cross_thread_cache_invalidate_raises_error() -> None:
 
 
 def test_cross_thread_cache_clear_raises_error() -> None:
-    @alru_cache(maxsize=100)
+    @alru_cache(maxsize=100, check_thread=True)
     async def cached_func(key: str) -> str:
         return f"data_{key}"
 
@@ -126,7 +126,7 @@ def test_cross_thread_cache_clear_raises_error() -> None:
 
 
 def test_cross_thread_cache_close_raises_error() -> None:
-    @alru_cache(maxsize=100)
+    @alru_cache(maxsize=100, check_thread=True)
     async def cached_func(key: str) -> str:
         return f"data_{key}"
 

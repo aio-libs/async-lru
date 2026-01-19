@@ -107,17 +107,27 @@ otherwise.
 Limitations
 -----------
 
-**Thread Safety**: ``alru_cache`` is **not thread-safe**. If the same cached function instance
-is called from a different thread than where it was first used, a ``RuntimeError`` will be raised.
+**Thread Safety**: ``alru_cache`` is **not thread-safe**. The cache uses an unsynchronized
+``OrderedDict`` which can lead to race conditions when accessed from multiple threads.
 
 For typical asyncio applications using a single event loop, this is not a concern. If your
 application runs multiple event loops on different threads, you have these options:
 
-**Option 1: Per-thread caching** - Each thread gets its own cache instance (recommended):
+**Option 1: Enable thread checking** (recommended for debugging):
 
 .. code-block:: python
 
-    # Example: Per-thread caching using threading.local()
+    @alru_cache(maxsize=100, check_thread=True)
+    async def fetch_data(key):
+        ...
+
+This will raise a ``RuntimeError`` if the cache is accessed from a different thread than
+where it was first used, making thread-safety violations explicit and diagnosable.
+
+**Option 2: Per-thread caching** - Each thread gets its own cache instance:
+
+.. code-block:: python
+
     import threading
 
     _local = threading.local()
@@ -126,19 +136,9 @@ application runs multiple event loops on different threads, you have these optio
         if not hasattr(_local, 'fetcher'):
             @alru_cache(maxsize=100)
             async def fetch_data(key):
-                # ... implementation
-                pass
+                ...
             _local.fetcher = fetch_data
         return _local.fetcher
-
-    # Usage: each thread gets its own cache instance
-    async def worker():
-        fetcher = get_cached_fetcher()
-        result = await fetcher("some_key")
-        return result
-
-**Option 2: External synchronization** - Use ``threading.Lock`` around all cache operations
-(impacts performance).
 
 **Option 3: Single-threaded design** - Keep cached functions within a single event loop
 (simplest if feasible).

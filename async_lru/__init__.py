@@ -75,6 +75,7 @@ class _LRUCacheWrapper(Generic[_R]):
         typed: bool,
         ttl: Optional[float],
         jitter: Optional[float],
+        check_thread: bool = False,
     ) -> None:
         try:
             self.__module__ = fn.__module__
@@ -113,6 +114,7 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__closed = False
         self.__hits = 0
         self.__misses = 0
+        self.__check_thread = check_thread
         self.__thread_id: Optional[int] = None
 
     @property
@@ -127,7 +129,7 @@ class _LRUCacheWrapper(Generic[_R]):
         )
 
     def _check_thread(self) -> None:
-        current_thread = threading.current_thread().ident
+        current_thread = threading.get_ident()
         if self.__thread_id is None:
             self.__thread_id = current_thread
         elif self.__thread_id != current_thread:
@@ -138,7 +140,8 @@ class _LRUCacheWrapper(Generic[_R]):
             )
 
     def cache_invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
-        self._check_thread()
+        if self.__check_thread:
+            self._check_thread()
         key = _make_key(args, kwargs, self.__typed)
 
         cache_item = self.__cache.pop(key, None)
@@ -149,7 +152,8 @@ class _LRUCacheWrapper(Generic[_R]):
             return True
 
     def cache_clear(self) -> None:
-        self._check_thread()
+        if self.__check_thread:
+            self._check_thread()
         self.__hits = 0
         self.__misses = 0
 
@@ -159,7 +163,8 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__cache.clear()
 
     async def cache_close(self, *, wait: bool = False) -> None:
-        self._check_thread()
+        if self.__check_thread:
+            self._check_thread()
         self.__closed = True
 
         tasks = self.__tasks
@@ -237,7 +242,8 @@ class _LRUCacheWrapper(Generic[_R]):
         if self.__closed:
             raise RuntimeError(f"alru_cache is closed for {self}")
 
-        self._check_thread()
+        if self.__check_thread:
+            self._check_thread()
 
         loop = asyncio.get_running_loop()
 
@@ -344,6 +350,7 @@ def _make_wrapper(
     typed: bool,
     ttl: Optional[float] = None,
     jitter: Optional[float] = None,
+    check_thread: bool = False,
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
     if jitter is not None and ttl is None:
         raise ValueError("jitter requires ttl to be set")
@@ -363,7 +370,9 @@ def _make_wrapper(
         if hasattr(fn, "_make_unbound_method"):
             fn = fn._make_unbound_method()
 
-        wrapper = _LRUCacheWrapper(cast(_CB[_R], fn), maxsize, typed, ttl, jitter)
+        wrapper = _LRUCacheWrapper(
+            cast(_CB[_R], fn), maxsize, typed, ttl, jitter, check_thread
+        )
         if sys.version_info >= (3, 12):
             wrapper = inspect.markcoroutinefunction(wrapper)
         return wrapper
@@ -378,6 +387,7 @@ def alru_cache(
     *,
     ttl: Optional[float] = None,
     jitter: Optional[float] = None,
+    check_thread: bool = False,
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
     ...
 
@@ -396,13 +406,14 @@ def alru_cache(
     *,
     ttl: Optional[float] = None,
     jitter: Optional[float] = None,
+    check_thread: bool = False,
 ) -> Union[Callable[[_CBP[_R]], _LRUCacheWrapper[_R]], _LRUCacheWrapper[_R]]:
     if maxsize is None or isinstance(maxsize, int):
-        return _make_wrapper(maxsize, typed, ttl, jitter)
+        return _make_wrapper(maxsize, typed, ttl, jitter, check_thread)
     else:
         fn = cast(_CB[_R], maxsize)
 
         if callable(fn) or hasattr(fn, "_make_unbound_method"):
-            return _make_wrapper(128, False, None, None)(fn)
+            return _make_wrapper(128, False, None, None, False)(fn)
 
         raise NotImplementedError(f"{fn!r} decorating is not supported")
