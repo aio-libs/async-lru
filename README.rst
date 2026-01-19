@@ -107,24 +107,19 @@ otherwise.
 Limitations
 -----------
 
-**Thread Safety**: ``alru_cache`` is **not thread-safe**. The cache uses an unsynchronized
-``OrderedDict`` which can lead to race conditions when accessed from multiple threads.
+**Event Loop Affinity**: ``alru_cache`` enforces that a cache instance is used with only
+one event loop. If you attempt to use a cached function from a different event loop than
+where it was first called, a ``RuntimeError`` will be raised:
 
-For typical asyncio applications using a single event loop, this is not a concern. If your
-application runs multiple event loops on different threads, you have these options:
+.. code-block:: text
 
-**Option 1: Enable thread checking** (recommended for debugging):
+    RuntimeError: alru_cache is not safe to use across event loops: this cache
+    instance was first used with a different event loop.
+    Use separate cache instances per event loop.
 
-.. code-block:: python
-
-    @alru_cache(maxsize=100, check_thread=True)
-    async def fetch_data(key):
-        ...
-
-This will raise a ``RuntimeError`` if the cache is accessed from a different thread than
-where it was first used, making thread-safety violations explicit and diagnosable.
-
-**Option 2: Per-thread caching** - Each thread gets its own cache instance:
+For typical asyncio applications using a single event loop, this is automatic and requires
+no configuration. If your application uses multiple event loops, create separate cache
+instances per loop:
 
 .. code-block:: python
 
@@ -139,11 +134,6 @@ where it was first used, making thread-safety violations explicit and diagnosabl
                 ...
             _local.fetcher = fetch_data
         return _local.fetcher
-
-**Option 3: Single-threaded design** - Keep cached functions within a single event loop
-(simplest if feasible).
-
-See issue `#611 <https://github.com/aio-libs/async-lru/issues/611>`_ for more details.
 
 Benchmarks
 ----------

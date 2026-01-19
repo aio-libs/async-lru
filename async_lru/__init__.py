@@ -3,7 +3,6 @@ import dataclasses
 import inspect
 import random
 import sys
-import threading
 from functools import _CacheInfo, _make_key, partial, partialmethod
 from typing import (
     Any,
@@ -75,7 +74,6 @@ class _LRUCacheWrapper(Generic[_R]):
         typed: bool,
         ttl: Optional[float],
         jitter: Optional[float],
-        check_thread: bool = False,
     ) -> None:
         try:
             self.__module__ = fn.__module__
@@ -114,12 +112,12 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__closed = False
         self.__hits = 0
         self.__misses = 0
-        self.__check_thread = check_thread
-        self.__thread_id: Optional[int] = None
+        self.__first_loop: Optional[asyncio.AbstractEventLoop] = None
 
     @property
     def __tasks(self) -> List["asyncio.Task[_R]"]:
-        # NOTE: I don't think we need to form a set first here but not too sure we want it for guarantees
+        # NOTE: I don't think we need to form a set first here but not
+        # too sure we want it for guarantees
         return list(
             {
                 cache_item.task
@@ -128,20 +126,17 @@ class _LRUCacheWrapper(Generic[_R]):
             }
         )
 
-    def _check_thread(self) -> None:
-        current_thread = threading.get_ident()
-        if self.__thread_id is None:
-            self.__thread_id = current_thread
-        elif self.__thread_id != current_thread:
+    def _check_loop(self, loop: asyncio.AbstractEventLoop) -> None:
+        if self.__first_loop is None:
+            self.__first_loop = loop
+        elif self.__first_loop is not loop:
             raise RuntimeError(
-                f"alru_cache is not thread-safe: this cache instance was first used "
-                f"in thread {self.__thread_id} but is now being called from thread "
-                f"{current_thread}. Use separate cache instances per thread."
+                "alru_cache is not safe to use across event loops: this cache "
+                "instance was first used with a different event loop. "
+                "Use separate cache instances per event loop."
             )
 
     def cache_invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
-        if self.__check_thread:
-            self._check_thread()
         key = _make_key(args, kwargs, self.__typed)
 
         cache_item = self.__cache.pop(key, None)
@@ -152,8 +147,6 @@ class _LRUCacheWrapper(Generic[_R]):
             return True
 
     def cache_clear(self) -> None:
-        if self.__check_thread:
-            self._check_thread()
         self.__hits = 0
         self.__misses = 0
 
@@ -163,8 +156,8 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__cache.clear()
 
     async def cache_close(self, *, wait: bool = False) -> None:
-        if self.__check_thread:
-            self._check_thread()
+        loop = asyncio.get_running_loop()
+        self._check_loop(loop)
         self.__closed = True
 
         tasks = self.__tasks
@@ -242,10 +235,8 @@ class _LRUCacheWrapper(Generic[_R]):
         if self.__closed:
             raise RuntimeError(f"alru_cache is closed for {self}")
 
-        if self.__check_thread:
-            self._check_thread()
-
         loop = asyncio.get_running_loop()
+        self._check_loop(loop)
 
         key = _make_key(fn_args, fn_kwargs, self.__typed)
 
@@ -350,7 +341,6 @@ def _make_wrapper(
     typed: bool,
     ttl: Optional[float] = None,
     jitter: Optional[float] = None,
-    check_thread: bool = False,
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
     if jitter is not None and ttl is None:
         raise ValueError("jitter requires ttl to be set")
@@ -366,13 +356,10 @@ def _make_wrapper(
         if not inspect.iscoroutinefunction(origin):
             raise RuntimeError(f"Coroutine function is required, got {fn!r}")
 
-        # functools.partialmethod support
         if hasattr(fn, "_make_unbound_method"):
             fn = fn._make_unbound_method()
 
-        wrapper = _LRUCacheWrapper(
-            cast(_CB[_R], fn), maxsize, typed, ttl, jitter, check_thread
-        )
+        wrapper = _LRUCacheWrapper(cast(_CB[_R], fn), maxsize, typed, ttl, jitter)
         if sys.version_info >= (3, 12):
             wrapper = inspect.markcoroutinefunction(wrapper)
         return wrapper
@@ -387,7 +374,6 @@ def alru_cache(
     *,
     ttl: Optional[float] = None,
     jitter: Optional[float] = None,
-    check_thread: bool = False,
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
     ...
 
@@ -406,14 +392,13 @@ def alru_cache(
     *,
     ttl: Optional[float] = None,
     jitter: Optional[float] = None,
-    check_thread: bool = False,
 ) -> Union[Callable[[_CBP[_R]], _LRUCacheWrapper[_R]], _LRUCacheWrapper[_R]]:
     if maxsize is None or isinstance(maxsize, int):
-        return _make_wrapper(maxsize, typed, ttl, jitter, check_thread)
+        return _make_wrapper(maxsize, typed, ttl, jitter)
     else:
         fn = cast(_CB[_R], maxsize)
 
         if callable(fn) or hasattr(fn, "_make_unbound_method"):
-            return _make_wrapper(128, False, None, None, False)(fn)
+            return _make_wrapper(128, False, None, None)(fn)
 
         raise NotImplementedError(f"{fn!r} decorating is not supported")
