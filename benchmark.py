@@ -17,10 +17,17 @@ else:
 
 @pytest.fixture
 def loop():
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    yield loop
-    loop.close()
+    # Save current loop to restore after the test
+    try:
+        old_loop = asyncio.get_running_loop()
+    except RuntimeError:
+        old_loop = None
+    new_loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(new_loop)
+    yield new_loop
+    new_loop.close()
+    if old_loop is not None:
+        asyncio.set_event_loop(old_loop)
 
 
 @pytest.fixture
@@ -38,43 +45,73 @@ def run_loop(loop):
 
 
 # Bounded cache (LRU)
-@alru_cache(maxsize=128)
-async def cached_func(x):
+async def _cached_func(x):
     return x
 
 
-@alru_cache(maxsize=16, ttl=0.01)
-async def cached_func_ttl(x):
+def create_cached_func():
+    return alru_cache(maxsize=128)(_cached_func)
+
+
+async def _cached_func_ttl(x):
     return x
+
+
+def create_cached_func_ttl():
+    return alru_cache(maxsize=16, ttl=0.01)(_cached_func_ttl)
 
 
 # Unbounded cache (no maxsize)
-@alru_cache()
-async def cached_func_unbounded(x):
+async def _cached_func_unbounded(x):
     return x
 
 
-@alru_cache(ttl=0.01)
-async def cached_func_unbounded_ttl(x):
+def create_cached_func_unbounded():
+    return alru_cache()(_cached_func_unbounded)
+
+
+async def _cached_func_unbounded_ttl(x):
     return x
 
 
-class Methods:
-    @alru_cache(maxsize=128)
-    async def cached_meth(self, x):
-        return x
+def create_cached_func_unbounded_ttl():
+    return alru_cache(ttl=0.01)(_cached_func_unbounded_ttl)
 
-    @alru_cache(maxsize=16, ttl=0.01)
-    async def cached_meth_ttl(self, x):
-        return x
 
-    @alru_cache()
-    async def cached_meth_unbounded(self, x):
-        return x
+def create_cached_meth():
+    class MethodsInstance:
+        @alru_cache(maxsize=128)
+        async def cached_meth(self, x):
+            return x
 
-    @alru_cache(ttl=0.01)
-    async def cached_meth_unbounded_ttl(self, x):
-        return x
+    return MethodsInstance().cached_meth
+
+
+def create_cached_meth_ttl():
+    class MethodsInstance:
+        @alru_cache(maxsize=16, ttl=0.01)
+        async def cached_meth_ttl(self, x):
+            return x
+
+    return MethodsInstance().cached_meth_ttl
+
+
+def create_cached_meth_unbounded():
+    class MethodsInstance:
+        @alru_cache()
+        async def cached_meth_unbounded(self, x):
+            return x
+
+    return MethodsInstance().cached_meth_unbounded
+
+
+def create_cached_meth_unbounded_ttl():
+    class MethodsInstance:
+        @alru_cache(ttl=0.01)
+        async def cached_meth_unbounded_ttl(self, x):
+            return x
+
+    return MethodsInstance().cached_meth_unbounded_ttl
 
 
 async def uncached_func(x):
@@ -82,10 +119,10 @@ async def uncached_func(x):
 
 
 funcs_no_ttl = [
-    cached_func,
-    cached_func_unbounded,
-    Methods.cached_meth,
-    Methods.cached_meth_unbounded,
+    create_cached_func,
+    create_cached_func_unbounded,
+    create_cached_meth,
+    create_cached_meth_unbounded,
 ]
 no_ttl_ids = [
     "func-bounded",
@@ -95,10 +132,10 @@ no_ttl_ids = [
 ]
 
 funcs_ttl = [
-    cached_func_ttl,
-    cached_func_unbounded_ttl,
-    Methods.cached_meth_ttl,
-    Methods.cached_meth_unbounded_ttl,
+    create_cached_func_ttl,
+    create_cached_func_unbounded_ttl,
+    create_cached_meth_ttl,
+    create_cached_meth_unbounded_ttl,
 ]
 ttl_ids = [
     "func-bounded-ttl",
@@ -111,13 +148,13 @@ all_funcs = [*funcs_no_ttl, *funcs_ttl]
 all_ids = [*no_ttl_ids, *ttl_ids]
 
 
-@pytest.mark.parametrize("func", all_funcs, ids=all_ids)
+@pytest.mark.parametrize("factory", all_funcs, ids=all_ids)
 def test_cache_hit_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
-    func: _LRUCacheWrapper[Any],
+    factory: Callable[[], _LRUCacheWrapper[Any]],
 ) -> None:
-    # Populate cache
+    func = factory()
     keys = list(range(10))
     for key in keys:
         run_loop(func, key)
@@ -130,14 +167,15 @@ def test_cache_hit_benchmark(
     benchmark(run_loop, run)
 
 
-@pytest.mark.parametrize("func", all_funcs, ids=all_ids)
+@pytest.mark.parametrize("factory", all_funcs, ids=all_ids)
 def test_cache_miss_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
-    func: _LRUCacheWrapper[Any],
+    factory: Callable[[], _LRUCacheWrapper[Any]],
 ) -> None:
-    unique_objects = [object() for _ in range(128)]
-    func.cache_clear()
+    func = factory()
+    # Use 2048 objects (16x maxsize=128) to force evictions and measure actual misses
+    unique_objects = [object() for _ in range(2048)]
 
     async def run() -> None:
         for obj in unique_objects:
@@ -146,37 +184,39 @@ def test_cache_miss_benchmark(
     benchmark(run_loop, run)
 
 
-@pytest.mark.parametrize("func", all_funcs, ids=all_ids)
+@pytest.mark.parametrize("factory", all_funcs, ids=all_ids)
 def test_cache_clear_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
-    func: _LRUCacheWrapper[Any],
+    factory: Callable[[], _LRUCacheWrapper[Any]],
 ) -> None:
+    func = factory()
     for i in range(100):
         run_loop(func, i)
 
     benchmark(func.cache_clear)
 
 
-@pytest.mark.parametrize("func_ttl", funcs_ttl, ids=ttl_ids)
+@pytest.mark.parametrize("factory", funcs_ttl, ids=ttl_ids)
 def test_cache_ttl_expiry_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
-    func_ttl: _LRUCacheWrapper[Any],
+    factory: Callable[[], _LRUCacheWrapper[Any]],
 ) -> None:
+    func_ttl = factory()
     run_loop(func_ttl, 99)
     run_loop(asyncio.sleep, 0.02)
 
     benchmark(run_loop, func_ttl, 99)
 
 
-@pytest.mark.parametrize("func", all_funcs, ids=all_ids)
+@pytest.mark.parametrize("factory", all_funcs, ids=all_ids)
 def test_cache_invalidate_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
-    func: _LRUCacheWrapper[Any],
+    factory: Callable[[], _LRUCacheWrapper[Any]],
 ) -> None:
-    # Populate cache
+    func = factory()
     keys = list(range(123, 321))
     for i in keys:
         run_loop(func, i)
@@ -189,13 +229,13 @@ def test_cache_invalidate_benchmark(
             invalidate(i)
 
 
-@pytest.mark.parametrize("func", all_funcs, ids=all_ids)
+@pytest.mark.parametrize("factory", all_funcs, ids=all_ids)
 def test_cache_info_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
-    func: _LRUCacheWrapper[Any],
+    factory: Callable[[], _LRUCacheWrapper[Any]],
 ) -> None:
-    # Populate cache
+    func = factory()
     keys = list(range(1000))
     for i in keys:
         run_loop(func, i)
@@ -208,13 +248,13 @@ def test_cache_info_benchmark(
             cache_info()
 
 
-@pytest.mark.parametrize("func", all_funcs, ids=all_ids)
+@pytest.mark.parametrize("factory", all_funcs, ids=all_ids)
 def test_concurrent_cache_hit_benchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
-    func: _LRUCacheWrapper[Any],
+    factory: Callable[[], _LRUCacheWrapper[Any]],
 ) -> None:
-    # Populate cache
+    func = factory()
     keys = list(range(600, 700))
     for key in keys:
         run_loop(func, key)
@@ -222,7 +262,7 @@ def test_concurrent_cache_hit_benchmark(
     async def gather_coros():
         gather = asyncio.gather
         for _ in range(10):
-            return await gather(*map(func, keys))
+            _ = await gather(*map(func, keys))
 
     benchmark(run_loop, gather_coros)
 
@@ -230,15 +270,15 @@ def test_concurrent_cache_hit_benchmark(
 def test_cache_fill_eviction_benchmark(
     benchmark: BenchmarkFixture, run_loop: Callable[..., Any]
 ) -> None:
-    # Populate cache
+    func = create_cached_func()
     for i in range(-128, 0):
-        run_loop(cached_func, i)
+        run_loop(func, i)
 
     keys = list(range(5000))
 
     async def fill():
         for k in keys:
-            await cached_func(k)
+            await func(k)
 
     benchmark(run_loop, fill)
 
@@ -252,20 +292,20 @@ def test_cache_fill_eviction_benchmark(
 # The relevant internal methods do not exist on _LRUCacheWrapperInstanceMethod,
 # so we can skip methods for this part of the benchmark suite.
 # We also skip wrappers with ttl because it raises KeyError.
-only_funcs_no_ttl = all_funcs[:2]
-func_ids_no_ttl = all_ids[:2]
+only_funcs_no_ttl = funcs_no_ttl[:2]
+func_ids_no_ttl = no_ttl_ids[:2]
 
 
-@pytest.mark.parametrize("func", only_funcs_no_ttl, ids=func_ids_no_ttl)
+@pytest.mark.parametrize("factory", only_funcs_no_ttl, ids=func_ids_no_ttl)
 def test_internal_cache_hit_microbenchmark(
     benchmark: BenchmarkFixture,
     run_loop: Callable[..., Any],
-    func: _LRUCacheWrapper[Any],
+    factory: Callable[[], _LRUCacheWrapper[Any]],
 ) -> None:
     """Directly benchmark _cache_hit (internal, sync) using parameterized funcs."""
+    func = factory()
     cache_hit = func._cache_hit
 
-    # Populate cache
     keys = list(range(128))
     for i in keys:
         run_loop(func, i)
@@ -276,11 +316,12 @@ def test_internal_cache_hit_microbenchmark(
             cache_hit(i)
 
 
-@pytest.mark.parametrize("func", only_funcs_no_ttl, ids=func_ids_no_ttl)
+@pytest.mark.parametrize("factory", only_funcs_no_ttl, ids=func_ids_no_ttl)
 def test_internal_cache_miss_microbenchmark(
-    benchmark: BenchmarkFixture, func: _LRUCacheWrapper[Any]
+    benchmark: BenchmarkFixture, factory: Callable[[], _LRUCacheWrapper[Any]]
 ) -> None:
     """Directly benchmark _cache_miss (internal, sync) using parameterized funcs."""
+    func = factory()
     cache_miss = func._cache_miss
 
     @benchmark
@@ -289,17 +330,17 @@ def test_internal_cache_miss_microbenchmark(
             cache_miss(i)
 
 
-@pytest.mark.parametrize("func", only_funcs_no_ttl, ids=func_ids_no_ttl)
+@pytest.mark.parametrize("factory", only_funcs_no_ttl, ids=func_ids_no_ttl)
 @pytest.mark.parametrize("task_state", ["finished", "cancelled", "exception"])
 def test_internal_task_done_callback_microbenchmark(
     benchmark: BenchmarkFixture,
     loop: asyncio.BaseEventLoop,
-    func: _LRUCacheWrapper[Any],
+    factory: Callable[[], _LRUCacheWrapper[Any]],
     task_state: str,
 ) -> None:
     """Directly benchmark _task_done_callback (internal, sync) using parameterized funcs and task states."""
+    func = factory()
 
-    # Create a dummy coroutine and task
     async def dummy_coro():
         if task_state == "exception":
             raise ValueError("test exception")
