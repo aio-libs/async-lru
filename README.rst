@@ -135,6 +135,22 @@ instances per loop:
             _local.fetcher = fetch_data
         return _local.fetcher
 
+You can also reuse the logic of an already decorated function in a new loop by accessing ``__wrapped__``:
+
+.. code-block:: python
+
+    @alru_cache(maxsize=32)
+    async def my_task(x):
+        ...
+
+    # In Loop 1:
+    # my_task() uses the default global cache instance
+
+    # In Loop 2 (or a new thread):
+    # Create a fresh cache instance for the same logic
+    cached_task_loop2 = alru_cache(maxsize=32)(my_task.__wrapped__)
+    await cached_task_loop2(x)
+
 Benchmarks
 ----------
 
