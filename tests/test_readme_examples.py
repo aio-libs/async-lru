@@ -21,6 +21,10 @@ def test_readme_example_per_thread_caching() -> None:
 
     async def worker() -> tuple[str, Any]:
         fetcher = get_cached_fetcher()
+        # Call again to ensure the pattern handles the "already exists" case
+        fetcher_retry = get_cached_fetcher()
+        assert fetcher is fetcher_retry
+
         result = await fetcher("some_key")
         return result, fetcher.cache_info()
 
