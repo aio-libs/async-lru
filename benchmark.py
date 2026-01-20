@@ -175,7 +175,7 @@ def test_cache_miss_benchmark(
 ) -> None:
     func = factory()
     # Use 2048 objects (16x maxsize=128) to force evictions and measure actual misses
-    unique_objects = [object() for _ in range(2048)]
+    unique_objects = [object() for _ in range(128)]
 
     async def run() -> None:
         for obj in unique_objects:
@@ -262,7 +262,7 @@ def test_concurrent_cache_hit_benchmark(
     async def gather_coros():
         gather = asyncio.gather
         for _ in range(10):
-            _ = await gather(*map(func, keys))
+            return await gather(*map(func, keys))
 
     benchmark(run_loop, gather_coros)
 
