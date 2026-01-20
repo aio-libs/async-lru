@@ -112,10 +112,12 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__closed = False
         self.__hits = 0
         self.__misses = 0
+        self.__first_loop: Optional[asyncio.AbstractEventLoop] = None
 
     @property
     def __tasks(self) -> List["asyncio.Task[_R]"]:
-        # NOTE: I don't think we need to form a set first here but not too sure we want it for guarantees
+        # NOTE: I don't think we need to form a set first here but not
+        # too sure we want it for guarantees
         return list(
             {
                 cache_item.task
@@ -123,6 +125,16 @@ class _LRUCacheWrapper(Generic[_R]):
                 if not cache_item.task.done()
             }
         )
+
+    def _check_loop(self, loop: asyncio.AbstractEventLoop) -> None:
+        if self.__first_loop is None:
+            self.__first_loop = loop
+        elif self.__first_loop is not loop:
+            raise RuntimeError(
+                "alru_cache is not safe to use across event loops: this cache "
+                "instance was first used with a different event loop. "
+                "Use separate cache instances per event loop."
+            )
 
     def cache_invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
         key = _make_key(args, kwargs, self.__typed)
@@ -144,6 +156,8 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__cache.clear()
 
     async def cache_close(self, *, wait: bool = False) -> None:
+        loop = asyncio.get_running_loop()
+        self._check_loop(loop)
         self.__closed = True
 
         tasks = self.__tasks
@@ -222,6 +236,7 @@ class _LRUCacheWrapper(Generic[_R]):
             raise RuntimeError(f"alru_cache is closed for {self}")
 
         loop = asyncio.get_running_loop()
+        self._check_loop(loop)
 
         key = _make_key(fn_args, fn_kwargs, self.__typed)
 
@@ -341,7 +356,6 @@ def _make_wrapper(
         if not inspect.iscoroutinefunction(origin):
             raise RuntimeError(f"Coroutine function is required, got {fn!r}")
 
-        # functools.partialmethod support
         if hasattr(fn, "_make_unbound_method"):
             fn = fn._make_unbound_method()
 
