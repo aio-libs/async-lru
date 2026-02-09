@@ -1,4 +1,4 @@
 -e .
 -r requirements-test.txt
 
-pytest-codspeed==4.2.0
+pytest-codspeed==4.3.0
