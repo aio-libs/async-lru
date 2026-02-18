@@ -237,10 +237,12 @@ class _LRUCacheWrapper(Generic[_R]):
 
         loop = asyncio.get_running_loop()
         key = _make_key(fn_args, fn_kwargs, self.__typed)
-        hash(key)
+        try:
+            cache_item = self.__cache.get(key)
+        except TypeError:
+            # Avoid binding loop affinity for invalid keys.
+            raise
         self._check_loop(loop)
-
-        cache_item = self.__cache.get(key)
 
         if cache_item is not None:
             self._cache_hit(key)
