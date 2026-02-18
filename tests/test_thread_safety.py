@@ -27,6 +27,31 @@ def test_cross_loop_access_raises_error() -> None:
     assert "event loop" in error_message.lower()
 
 
+def test_invalid_key_does_not_bind_loop() -> None:
+    @alru_cache(maxsize=100)
+    async def cached_func(key: object) -> str:
+        return f"data_{key}"
+
+    loop1 = asyncio.new_event_loop()
+    error_raised = False
+    try:
+        loop1.run_until_complete(cached_func([]))
+    except TypeError:
+        error_raised = True
+    finally:
+        loop1.close()
+
+    assert error_raised, "TypeError should be raised for unhashable key"
+
+    loop2 = asyncio.new_event_loop()
+    try:
+        result = loop2.run_until_complete(cached_func("ok"))
+    finally:
+        loop2.close()
+
+    assert result == "data_ok"
+
+
 def test_same_loop_access_works() -> None:
     @alru_cache(maxsize=100)
     async def cached_func(key: str) -> str:
