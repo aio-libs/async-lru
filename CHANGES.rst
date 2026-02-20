@@ -5,6 +5,13 @@ CHANGES
 .. towncrier release notes start
 
 
+2.2.0 (2026-02-20)
+==================
+
+- Added a ``jitter`` parameter to randomise TTL.
+- Raise ``RuntimeError`` when cache is used by different loop.
+
+
 2.1.0 (2026-01-17)
 ==================
 
