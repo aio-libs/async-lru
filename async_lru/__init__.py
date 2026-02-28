@@ -130,11 +130,10 @@ class _LRUCacheWrapper(Generic[_R]):
         if self.__first_loop is None:
             self.__first_loop = loop
         elif self.__first_loop is not loop:
-            raise RuntimeError(
-                "alru_cache is not safe to use across event loops: this cache "
-                "instance was first used with a different event loop. "
-                "Use separate cache instances per event loop."
-            )
+            # Old cache entries hold tasks/handles bound to the previous
+            # loop and are invalid here.  Clear and rebind.
+            self.cache_clear()
+            self.__first_loop = loop
 
     def cache_invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
         key = _make_key(args, kwargs, self.__typed)
@@ -156,8 +155,6 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__cache.clear()
 
     async def cache_close(self, *, wait: bool = False) -> None:
-        loop = asyncio.get_running_loop()
-        self._check_loop(loop)
         self.__closed = True
 
         tasks = self.__tasks
@@ -236,9 +233,10 @@ class _LRUCacheWrapper(Generic[_R]):
             raise RuntimeError(f"alru_cache is closed for {self}")
 
         loop = asyncio.get_running_loop()
+        self._check_loop(loop)
+
         key = _make_key(fn_args, fn_kwargs, self.__typed)
         cache_item = self.__cache.get(key)
-        self._check_loop(loop)
 
         if cache_item is not None:
             self._cache_hit(key)
