@@ -3,6 +3,7 @@ import dataclasses
 import inspect
 import random
 import sys
+import warnings
 from functools import _CacheInfo, _make_key, partial, partialmethod
 from typing import (
     Any,
@@ -34,7 +35,7 @@ if sys.version_info < (3, 14):
 
 __version__ = "2.2.0"
 
-__all__ = ("alru_cache",)
+__all__ = ("AlruCacheLoopResetWarning", "alru_cache")
 
 
 _T = TypeVar("_T")
@@ -42,6 +43,10 @@ _R = TypeVar("_R")
 _Coro = Coroutine[Any, Any, _R]
 _CB = Callable[..., _Coro[_R]]
 _CBP = Union[_CB[_R], "partial[_Coro[_R]]", "partialmethod[_Coro[_R]]"]
+
+
+class AlruCacheLoopResetWarning(UserWarning):
+    """Emitted once per cache instance when a loop change triggers an auto-reset."""
 
 
 @final
@@ -113,6 +118,7 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__hits = 0
         self.__misses = 0
         self.__first_loop: Optional[asyncio.AbstractEventLoop] = None
+        self.__warned_loop_reset = False
 
     @property
     def __tasks(self) -> List["asyncio.Task[_R]"]:
@@ -130,6 +136,15 @@ class _LRUCacheWrapper(Generic[_R]):
         if self.__first_loop is None:
             self.__first_loop = loop
         elif self.__first_loop is not loop:
+            if not self.__warned_loop_reset:
+                warnings.warn(
+                    "alru_cache detected event loop change and auto-cleared "
+                    "stale entries. This is safe but unusual outside of "
+                    "tests (pytest-anyio, etc.).",
+                    AlruCacheLoopResetWarning,
+                    stacklevel=3,
+                )
+                self.__warned_loop_reset = True
             # Old cache entries hold tasks/handles bound to the previous
             # loop and are invalid here.  Clear and rebind.
             self.cache_clear()

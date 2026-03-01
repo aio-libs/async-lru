@@ -1,8 +1,12 @@
 import asyncio
+import warnings
 
-from async_lru import alru_cache
+import pytest
+
+from async_lru import AlruCacheLoopResetWarning, alru_cache
 
 
+@pytest.mark.filterwarnings("ignore::async_lru.AlruCacheLoopResetWarning")
 def test_cross_loop_auto_resets_cache() -> None:
     @alru_cache(maxsize=100)
     async def cached_func(key: str) -> str:
@@ -25,6 +29,7 @@ def test_cross_loop_auto_resets_cache() -> None:
     assert cached_func.cache_info().misses == 1
 
 
+@pytest.mark.filterwarnings("ignore::async_lru.AlruCacheLoopResetWarning")
 def test_cross_loop_preserves_stats_reset() -> None:
     @alru_cache(maxsize=100)
     async def cached_func(key: str) -> str:
@@ -47,6 +52,7 @@ def test_cross_loop_preserves_stats_reset() -> None:
     assert cached_func.cache_info().misses == 1
 
 
+@pytest.mark.filterwarnings("ignore::async_lru.AlruCacheLoopResetWarning")
 def test_invalid_key_does_not_bind_loop() -> None:
     @alru_cache(maxsize=100)
     async def cached_func(key: object) -> str:
@@ -140,6 +146,7 @@ def test_concurrent_same_loop_works() -> None:
     assert cached_func.cache_info().hits == 2
 
 
+@pytest.mark.filterwarnings("ignore::async_lru.AlruCacheLoopResetWarning")
 def test_multiple_loop_transitions() -> None:
     @alru_cache(maxsize=100)
     async def cached_func(key: str) -> str:
@@ -150,3 +157,43 @@ def test_multiple_loop_transitions() -> None:
         result = loop.run_until_complete(cached_func("test"))
         loop.close()
         assert result == "data_test"
+
+
+def test_loop_change_emits_warning() -> None:
+    @alru_cache(maxsize=100)
+    async def cached_func(key: str) -> str:
+        return f"data_{key}"
+
+    loop1 = asyncio.new_event_loop()
+    loop1.run_until_complete(cached_func("test"))
+    loop1.close()
+
+    loop2 = asyncio.new_event_loop()
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        loop2.run_until_complete(cached_func("test"))
+    loop2.close()
+
+    assert len(w) == 1
+    assert issubclass(w[0].category, AlruCacheLoopResetWarning)
+    assert "event loop change" in str(w[0].message)
+
+
+def test_loop_change_warns_only_once() -> None:
+    @alru_cache(maxsize=100)
+    async def cached_func(key: str) -> str:
+        return f"data_{key}"
+
+    all_warnings: list[warnings.WarningMessage] = []
+    for _ in range(4):
+        loop = asyncio.new_event_loop()
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            loop.run_until_complete(cached_func("test"))
+        loop.close()
+        all_warnings.extend(w)
+
+    reset_warnings = [
+        w for w in all_warnings if issubclass(w.category, AlruCacheLoopResetWarning)
+    ]
+    assert len(reset_warnings) == 1
