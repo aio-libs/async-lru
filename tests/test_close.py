@@ -42,3 +42,29 @@ async def test_cache_close(check_lru: Callable[..., None]) -> None:
 
     # double call is no-op
     await coro.cache_close()
+
+
+async def test_cache_close_wait_bound_method(check_lru: Callable[..., None]) -> None:
+    class Foo:
+        @alru_cache()
+        async def coro(self, val: int) -> int:
+            await asyncio.sleep(0.02)
+            return val
+
+    foo = Foo()
+    inputs = [1, 2, 3]
+
+    coros = [foo.coro(v) for v in inputs]
+    gather = asyncio.gather(*coros)
+
+    # Yield to loop to start tasks
+    await asyncio.sleep(0)
+
+    # wait=True should allow tasks to finish (no cancellation)
+    await foo.coro.cache_close(wait=True)
+
+    results = await gather
+    assert results == inputs
+
+    check_lru(foo.coro, hits=0, misses=3, cache=3, tasks=0)
+    assert foo.coro.cache_parameters()["closed"]

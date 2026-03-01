@@ -333,9 +333,20 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
         self.__wrapper.cache_clear()
 
     async def cache_close(
-        self, *, cancel: bool = False, return_exceptions: bool = True
+        self,
+        *,
+        wait: bool = False,
+        cancel: bool = False,
+        return_exceptions: bool = True,
     ) -> None:
-        await self.__wrapper.cache_close()
+        if cancel or return_exceptions is not True:
+            warnings.warn(
+                "cancel/return_exceptions are deprecated; use wait=True to allow tasks "
+                "to finish and wait=False to cancel pending tasks.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        await self.__wrapper.cache_close(wait=wait)
 
     def cache_info(self) -> _CacheInfo:
         return self.__wrapper.cache_info()
