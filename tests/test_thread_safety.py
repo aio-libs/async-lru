@@ -5,6 +5,7 @@ import pytest
 
 from async_lru import AlruCacheLoopResetWarning, alru_cache
 
+
 @pytest.mark.filterwarnings("ignore::async_lru.AlruCacheLoopResetWarning")
 def test_cross_loop_auto_resets_cache() -> None:
     @alru_cache(maxsize=100)
@@ -48,6 +49,7 @@ def test_cross_loop_preserves_stats_reset() -> None:
     # Stats were reset on loop change (cache_clear resets hits/misses)
     assert cached_func.cache_info().hits == 0
     assert cached_func.cache_info().misses == 1
+
 
 @pytest.mark.filterwarnings("ignore::async_lru.AlruCacheLoopResetWarning")
 def test_invalid_key_does_not_bind_loop() -> None:
@@ -142,6 +144,7 @@ def test_concurrent_same_loop_works() -> None:
     assert results == ["data_test"] * 3
     assert cached_func.cache_info().hits == 2
 
+
 @pytest.mark.filterwarnings("ignore::async_lru.AlruCacheLoopResetWarning")
 def test_multiple_loop_transitions() -> None:
     @alru_cache(maxsize=100)
@@ -190,8 +193,6 @@ def test_loop_change_warns_only_once() -> None:
         all_warnings.extend(w)
 
     reset_warnings = [
-        w for w in all_warnings
-        if issubclass(w.category, AlruCacheLoopResetWarning)
+        w for w in all_warnings if issubclass(w.category, AlruCacheLoopResetWarning)
     ]
     assert len(reset_warnings) == 1
-
