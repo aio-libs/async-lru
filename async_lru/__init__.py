@@ -48,6 +48,7 @@ _CBP = Union[_CB[_R], "partial[_Coro[_R]]", "partialmethod[_Coro[_R]]"]
 class AlruCacheLoopResetWarning(UserWarning):
     """Emitted once per cache instance when a loop change triggers an auto-reset."""
 
+
 @final
 class _CacheParameters(TypedDict):
     typed: bool

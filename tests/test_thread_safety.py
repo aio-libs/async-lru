@@ -28,6 +28,7 @@ def test_cross_loop_auto_resets_cache() -> None:
     assert cached_func.cache_info().hits == 0
     assert cached_func.cache_info().misses == 1
 
+
 @pytest.mark.filterwarnings("ignore::async_lru.AlruCacheLoopResetWarning")
 def test_cross_loop_preserves_stats_reset() -> None:
     @alru_cache(maxsize=100)
