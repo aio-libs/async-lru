@@ -48,7 +48,7 @@ async def test_cache_close_wait_bound_method(check_lru: Callable[..., None]) -> 
     class Foo:
         @alru_cache()
         async def coro(self, val: int) -> int:
-            await asyncio.sleep(0.05)
+            await asyncio.sleep(0.02)
             return val
 
     foo = Foo()
@@ -57,7 +57,8 @@ async def test_cache_close_wait_bound_method(check_lru: Callable[..., None]) -> 
     coros = [foo.coro(v) for v in inputs]
     gather = asyncio.gather(*coros)
 
-    await asyncio.sleep(0.01)
+    # Yield to loop to start tasks
+    await asyncio.sleep(0)
 
     # wait=True should allow tasks to finish (no cancellation)
     await foo.coro.cache_close(wait=True)
