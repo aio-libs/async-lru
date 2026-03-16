@@ -6,7 +6,7 @@ from async_lru import alru_cache
 
 async def test_cache_contains_basic(check_lru: Callable[..., None]) -> None:
     @alru_cache(maxsize=4)
-    async def coro(val):
+    async def coro(val: int) -> int:
         return val
 
     assert coro.cache_contains(1) is False
@@ -20,7 +20,7 @@ async def test_cache_contains_does_not_affect_counters(
     check_lru: Callable[..., None],
 ) -> None:
     @alru_cache(maxsize=4)
-    async def coro(val):
+    async def coro(val: int) -> int:
         return val
 
     await coro(1)
@@ -34,7 +34,7 @@ async def test_cache_contains_does_not_affect_counters(
 
 async def test_cache_contains_does_not_change_lru_order() -> None:
     @alru_cache(maxsize=2)
-    async def coro(val):
+    async def coro(val: int) -> int:
         return val
 
     await coro(1)
@@ -53,7 +53,7 @@ async def test_cache_contains_does_not_change_lru_order() -> None:
 
 async def test_cache_contains_after_invalidate_and_clear() -> None:
     @alru_cache(maxsize=4)
-    async def coro(val):
+    async def coro(val: int) -> int:
         return val
 
     await coro(1)
@@ -69,7 +69,7 @@ async def test_cache_contains_after_invalidate_and_clear() -> None:
 
 async def test_cache_contains_with_kwargs() -> None:
     @alru_cache(maxsize=4)
-    async def coro(a, b=10):
+    async def coro(a: int, b: int = 10) -> int:
         return a + b
 
     await coro(1, b=20)
@@ -80,7 +80,7 @@ async def test_cache_contains_with_kwargs() -> None:
 
 async def test_cache_contains_respects_typed_flag() -> None:
     @alru_cache(maxsize=4, typed=True)
-    async def coro(val):
+    async def coro(val: int) -> int:
         return val
 
     await coro(1)
@@ -92,7 +92,7 @@ async def test_cache_contains_pending_task() -> None:
     event = asyncio.Event()
 
     @alru_cache(maxsize=4)
-    async def coro(val):
+    async def coro(val: int) -> int:
         await event.wait()
         return val
 
@@ -108,7 +108,7 @@ async def test_cache_contains_pending_task() -> None:
 
 async def test_cache_contains_after_ttl_expiry() -> None:
     @alru_cache(maxsize=4, ttl=0.05)
-    async def coro(val):
+    async def coro(val: int) -> int:
         return val
 
     await coro(1)
@@ -121,7 +121,7 @@ async def test_cache_contains_after_ttl_expiry() -> None:
 async def test_cache_contains_on_method() -> None:
     class MyService:
         @alru_cache(maxsize=4)
-        async def fetch(self, key):
+        async def fetch(self, key: int) -> int:
             return key * 2
 
     svc = MyService()
