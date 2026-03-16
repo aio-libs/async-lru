@@ -1,8 +1,10 @@
 import asyncio
+from typing import Callable
+
 from async_lru import alru_cache
 
 
-async def test_cache_contains_basic(check_lru):
+async def test_cache_contains_basic(check_lru: Callable[..., None]) -> None:
     @alru_cache(maxsize=4)
     async def coro(val):
         return val
@@ -14,7 +16,9 @@ async def test_cache_contains_basic(check_lru):
     check_lru(coro, hits=0, misses=1, cache=1, tasks=0, maxsize=4)
 
 
-async def test_cache_contains_does_not_affect_counters(check_lru):
+async def test_cache_contains_does_not_affect_counters(
+    check_lru: Callable[..., None],
+) -> None:
     @alru_cache(maxsize=4)
     async def coro(val):
         return val
@@ -28,7 +32,7 @@ async def test_cache_contains_does_not_affect_counters(check_lru):
     check_lru(coro, hits=0, misses=1, cache=1, tasks=0, maxsize=4)
 
 
-async def test_cache_contains_does_not_change_lru_order():
+async def test_cache_contains_does_not_change_lru_order() -> None:
     @alru_cache(maxsize=2)
     async def coro(val):
         return val
@@ -47,7 +51,7 @@ async def test_cache_contains_does_not_change_lru_order():
     assert coro.cache_contains(3) is True
 
 
-async def test_cache_contains_after_invalidate_and_clear():
+async def test_cache_contains_after_invalidate_and_clear() -> None:
     @alru_cache(maxsize=4)
     async def coro(val):
         return val
@@ -63,7 +67,7 @@ async def test_cache_contains_after_invalidate_and_clear():
     assert coro.cache_contains(2) is False
 
 
-async def test_cache_contains_with_kwargs():
+async def test_cache_contains_with_kwargs() -> None:
     @alru_cache(maxsize=4)
     async def coro(a, b=10):
         return a + b
@@ -74,8 +78,7 @@ async def test_cache_contains_with_kwargs():
     assert coro.cache_contains(1) is False
 
 
-async def test_cache_contains_respects_typed_flag():
-
+async def test_cache_contains_respects_typed_flag() -> None:
     @alru_cache(maxsize=4, typed=True)
     async def coro(val):
         return val
@@ -85,7 +88,7 @@ async def test_cache_contains_respects_typed_flag():
     assert coro.cache_contains(1.0) is False
 
 
-async def test_cache_contains_pending_task():
+async def test_cache_contains_pending_task() -> None:
     event = asyncio.Event()
 
     @alru_cache(maxsize=4)
@@ -103,7 +106,7 @@ async def test_cache_contains_pending_task():
     await task
 
 
-async def test_cache_contains_after_ttl_expiry():
+async def test_cache_contains_after_ttl_expiry() -> None:
     @alru_cache(maxsize=4, ttl=0.05)
     async def coro(val):
         return val
@@ -115,7 +118,7 @@ async def test_cache_contains_after_ttl_expiry():
     assert coro.cache_contains(1) is False
 
 
-async def test_cache_contains_on_method():
+async def test_cache_contains_on_method() -> None:
     class MyService:
         @alru_cache(maxsize=4)
         async def fetch(self, key):

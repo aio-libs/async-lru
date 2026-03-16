@@ -104,6 +104,23 @@ The library supports explicit invalidation for specific function call by
 The method returns `True` if corresponding arguments set was cached already, `False`
 otherwise.
 
+To check whether a specific set of arguments is present in the cache without
+affecting hit/miss counters or LRU ordering, use `cache_contains()`:
+
+.. code-block:: python
+
+    @alru_cache(maxsize=32)
+    async def func(arg1, arg2):
+        return arg1 + arg2
+
+    await func(1, arg2=2)
+
+    func.cache_contains(1, arg2=2)  # True
+    func.cache_contains(3, arg2=4)  # False
+
+The method returns `True` if the result for the given arguments is cached, `False`
+otherwise.
+
 Limitations
 -----------
 
