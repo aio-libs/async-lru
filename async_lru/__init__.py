@@ -150,6 +150,14 @@ class _LRUCacheWrapper(Generic[_R]):
             self.cache_clear()
             self.__first_loop = loop
 
+    def cache_contains(self, /, *args: Hashable, **kwargs: Any) -> bool:
+        """Check if the given arguments are in the cache.
+
+        Does not affect hit/miss counters or LRU ordering.
+        """
+        key = _make_key(args, kwargs, self.__typed)
+        return key in self.__cache
+
     def cache_invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
         key = _make_key(args, kwargs, self.__typed)
 
@@ -325,6 +333,9 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
         self.__wrapped__ = wrapper.__wrapped__
         self.__instance = instance
         self.__wrapper = wrapper
+
+    def cache_contains(self, /, *args: Hashable, **kwargs: Any) -> bool:
+        return self.__wrapper.cache_contains(self.__instance, *args, **kwargs)
 
     def cache_invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
         return self.__wrapper.cache_invalidate(self.__instance, *args, **kwargs)
