@@ -5,6 +5,15 @@ CHANGES
 .. towncrier release notes start
 
 
+2.3.0 (2026-03-18)
+==================
+
+- Added ``cache_contains()`` for read-only key lookup.
+- Changed cross-loop cache access to auto-reset and rebind to the current event loop.
+- Added ``AlruCacheLoopResetWarning`` when an auto-reset happens due to event loop change.
+- Forwarded ``cache_close(wait=...)`` for bound methods.
+
+
 2.2.0 (2026-02-20)
 ==================
 
