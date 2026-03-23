@@ -2,4 +2,4 @@
 -r requirements-test.txt
 
 coverage==7.13.5
-pytest-cov==7.0.0
+pytest-cov==7.1.0
