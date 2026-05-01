@@ -85,7 +85,7 @@ jobs:
         COLOR: 'yes'
     - run: python -m coverage xml
     - name: Upload coverage
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@v6
       with:
         file: ./coverage.xml
         flags: unit
