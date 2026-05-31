@@ -168,6 +168,40 @@ You can also reuse the logic of an already decorated function in a new loop by a
     cached_task_loop2 = alru_cache(maxsize=32)(my_task.__wrapped__)
     await cached_task_loop2(x)
 
+Security considerations
+-----------------------
+
+**Cache keys are built only from explicit arguments.** Like
+`functools.lru_cache <https://docs.python.org/3/library/functools.html#functools.lru_cache>`_,
+``alru_cache`` derives its cache key solely from the positional and keyword arguments
+passed to the wrapped function. Implicit, request-scoped context — such as
+authentication headers, the current user or tenant, ``contextvars``, thread/task
+locals, or module globals — is **not** part of the key and therefore **not** isolated
+between callers.
+
+Because concurrent calls with the same key also share a single in-flight result (see
+the Usage section above), a value computed for one caller can be returned to another whenever
+their arguments are equal. In multi-tenant or multi-user services this can lead to
+cross-tenant data exposure if the cached coroutine's result depends on anything other
+than its explicit arguments.
+
+To use ``alru_cache`` safely in these contexts:
+
+- **Make the cached coroutine a pure function of its arguments.** Any value that
+  affects the result — ``user_id``, ``tenant_id``, role, locale, feature flags, etc. —
+  must be passed as an argument so it becomes part of the cache key, or use a separate
+  cache instance per security domain.
+- **Avoid caching context-dependent functions.** If a function reads request-scoped
+  state from ``contextvars``/globals rather than from its arguments, either refactor it
+  to take that state explicitly or do not cache it.
+- **Consider** ``typed=True`` **when callers may pass multiple types.** With the default
+  ``typed=False``, arguments that compare and hash equal share an entry (for example
+  ``1`` and ``1.0``, or ``True`` and ``1``). Pass ``typed=True`` to key such arguments
+  distinctly.
+- **Be wary of attacker-controlled key arguments.** Objects with unusual ``__hash__`` /
+  ``__eq__`` semantics can collide unexpectedly; only use trusted, well-behaved values
+  as cache key components.
+
 Benchmarks
 ----------
 
