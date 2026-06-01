@@ -85,6 +85,8 @@ class _LRUCacheWrapper(Generic[_R]):
         "__first_loop",
         "__warned_loop_reset",
         "_is_coroutine",
+        "_is_coroutine_marker",
+        "__dict__",
     )
 
     def __init__(
