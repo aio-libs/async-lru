@@ -2,24 +2,10 @@ import asyncio
 import dataclasses
 import inspect
 import sys
+from collections import OrderedDict
+from collections.abc import Callable, Coroutine, Hashable
 from functools import _CacheInfo, _make_key, partial, partialmethod
-from typing import (
-    Any,
-    Callable,
-    Coroutine,
-    Generic,
-    Hashable,
-    Optional,
-    OrderedDict,
-    Set,
-    Type,
-    TypedDict,
-    TypeVar,
-    Union,
-    cast,
-    final,
-    overload,
-)
+from typing import Any, Generic, TypedDict, TypeVar, cast, final, overload
 
 
 if sys.version_info >= (3, 11):
@@ -40,13 +26,13 @@ _T = TypeVar("_T")
 _R = TypeVar("_R")
 _Coro = Coroutine[Any, Any, _R]
 _CB = Callable[..., _Coro[_R]]
-_CBP = Union[_CB[_R], "partial[_Coro[_R]]", "partialmethod[_Coro[_R]]"]
+_CBP = _CB[_R] | partial[_Coro[_R]] | partialmethod[_Coro[_R]]
 
 
 @final
 class _CacheParameters(TypedDict):
     typed: bool
-    maxsize: Optional[int]
+    maxsize: int | None
     tasks: int
     closed: bool
 
@@ -55,7 +41,7 @@ class _CacheParameters(TypedDict):
 @dataclasses.dataclass
 class _CacheItem(Generic[_R]):
     fut: "asyncio.Future[_R]"
-    later_call: Optional[asyncio.Handle]
+    later_call: asyncio.Handle | None
 
     def cancel(self) -> None:
         if self.later_call is not None:
@@ -68,9 +54,9 @@ class _LRUCacheWrapper(Generic[_R]):
     def __init__(
         self,
         fn: _CB[_R],
-        maxsize: Optional[int],
+        maxsize: int | None,
         typed: bool,
-        ttl: Optional[float],
+        ttl: float | None,
     ) -> None:
         try:
             self.__module__ = fn.__module__
@@ -108,7 +94,7 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__closed = False
         self.__hits = 0
         self.__misses = 0
-        self.__tasks: Set["asyncio.Task[_R]"] = set()
+        self.__tasks: set["asyncio.Task[_R]"] = set()
 
     def cache_invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
         key = _make_key(args, kwargs, self.__typed)
@@ -225,8 +211,8 @@ class _LRUCacheWrapper(Generic[_R]):
         return await asyncio.shield(fut)
 
     def __get__(
-        self, instance: _T, owner: Optional[Type[_T]]
-    ) -> Union[Self, "_LRUCacheWrapperInstanceMethod[_R, _T]"]:
+        self, instance: _T, owner: type[_T] | None
+    ) -> Self | "_LRUCacheWrapperInstanceMethod[_R, _T]":
         if owner is None:
             return self
         else:
@@ -294,9 +280,9 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
 
 
 def _make_wrapper(
-    maxsize: Optional[int],
+    maxsize: int | None,
     typed: bool,
-    ttl: Optional[float] = None,
+    ttl: float | None = None,
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
     def wrapper(fn: _CBP[_R]) -> _LRUCacheWrapper[_R]:
         origin = fn
@@ -321,10 +307,10 @@ def _make_wrapper(
 
 @overload
 def alru_cache(
-    maxsize: Optional[int] = 128,
+    maxsize: int | None = 128,
     typed: bool = False,
     *,
-    ttl: Optional[float] = None,
+    ttl: float | None = None,
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
     ...
 
@@ -338,11 +324,11 @@ def alru_cache(
 
 
 def alru_cache(
-    maxsize: Union[Optional[int], _CBP[_R]] = 128,
+    maxsize: int | None | _CBP[_R] = 128,
     typed: bool = False,
     *,
-    ttl: Optional[float] = None,
-) -> Union[Callable[[_CBP[_R]], _LRUCacheWrapper[_R]], _LRUCacheWrapper[_R]]:
+    ttl: float | None = None,
+) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]] | _LRUCacheWrapper[_R]:
     if maxsize is None or isinstance(maxsize, int):
         return _make_wrapper(maxsize, typed, ttl)
     else:

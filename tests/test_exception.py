@@ -1,7 +1,7 @@
 import asyncio
 import gc
 import sys
-from typing import Callable
+from collections.abc import Callable
 
 import pytest
 

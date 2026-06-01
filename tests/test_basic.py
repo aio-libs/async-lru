@@ -2,8 +2,8 @@ import asyncio
 import inspect
 import platform
 import sys
+from collections.abc import Callable
 from functools import _CacheInfo, partial
-from typing import Callable
 
 import pytest
 
