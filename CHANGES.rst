@@ -4,6 +4,29 @@ CHANGES
 
 .. towncrier release notes start
 
+
+2.3.0 (2026-03-18)
+==================
+
+- Added ``cache_contains()`` for read-only key lookup.
+- Changed cross-loop cache access to auto-reset and rebind to the current event loop.
+- Added ``AlruCacheLoopResetWarning`` when an auto-reset happens due to event loop change.
+- Forwarded ``cache_close(wait=...)`` for bound methods.
+
+
+2.2.0 (2026-02-20)
+==================
+
+- Added a ``jitter`` parameter to randomise TTL.
+- Raise ``RuntimeError`` when cache is used by different loop.
+
+
+2.1.0 (2026-01-17)
+==================
+
+- Fixed cancelling of task when all tasks waiting on it have been cancelled.
+- Fixed DeprecationWarning from asyncio.iscoroutinefunction.
+
 2.0.5 (2025-03-16)
 ==================
 
