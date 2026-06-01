@@ -52,7 +52,7 @@ class _CacheParameters(TypedDict):
 
 
 @final
-@dataclasses.dataclass
+@dataclasses.dataclass(slots=True)
 class _CacheItem(Generic[_R]):
     fut: "asyncio.Future[_R]"
     later_call: Optional[asyncio.Handle]
