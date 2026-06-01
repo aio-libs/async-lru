@@ -72,6 +72,20 @@ class _CacheItem(Generic[_R]):
 
 @final
 class _LRUCacheWrapper(Generic[_R]):
+    __slots__ = (
+        "__wrapped__",
+        "__maxsize",
+        "__typed",
+        "__ttl",
+        "__jitter",
+        "__cache",
+        "__closed",
+        "__hits",
+        "__misses",
+        "__first_loop",
+        "__warned_loop_reset",
+    )
+
     def __init__(
         self,
         fn: _CB[_R],
