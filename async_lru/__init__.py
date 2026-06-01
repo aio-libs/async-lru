@@ -314,6 +314,14 @@ class _LRUCacheWrapper(Generic[_R]):
 
 @final
 class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
+    __slots__ = (
+        "__dict__",
+        "_is_coroutine",
+        "__wrapped__",
+        "__instance",
+        "__wrapper",
+    )
+
     def __init__(
         self,
         wrapper: _LRUCacheWrapper[_R],
