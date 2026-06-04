@@ -30,7 +30,7 @@ async def test_alru_exception(check_lru: Callable[..., None]) -> None:
 
 
 @pytest.mark.xfail(
-    reason="Memory leak is not fixed for PyPy3.9",
+    reason="Memory leak is not fixed for PyPy",
     condition=sys.implementation.name == "pypy",
 )
 async def test_alru_exception_reference_cleanup(check_lru: Callable[..., None]) -> None:
