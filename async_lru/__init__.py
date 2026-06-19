@@ -3,6 +3,7 @@ import dataclasses
 import inspect
 import random
 import sys
+import warnings
 from collections import OrderedDict
 from collections.abc import Callable, Coroutine, Hashable
 from functools import _CacheInfo, _make_key, partial, partialmethod
@@ -119,7 +120,7 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__closed = False
         self.__hits = 0
         self.__misses = 0
-        self.__first_loop: asyncio.AbstractEventLoop | Nond = None
+        self.__first_loop: asyncio.AbstractEventLoop | None = None
         self.__warned_loop_reset = False
 
     @property
@@ -435,7 +436,7 @@ def alru_cache(
     *,
     ttl: float | None = None,
     jitter: float | None = None,
-) -> Union[Callable[[_CBP[_R]], _LRUCacheWrapper[_R]], _LRUCacheWrapper[_R]]:
+) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]] | _LRUCacheWrapper[_R]:
     if maxsize is None or isinstance(maxsize, int):
         return _make_wrapper(maxsize, typed, ttl, jitter)
     else:
