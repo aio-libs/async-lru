@@ -43,7 +43,7 @@ class _CacheParameters(TypedDict):
 
 
 @final
-@dataclasses.dataclass
+@dataclasses.dataclass(slots=True)
 class _CacheItem(Generic[_R]):
     task: "asyncio.Task[_R]"
     later_call: asyncio.Handle | None
@@ -57,6 +57,23 @@ class _CacheItem(Generic[_R]):
 
 @final
 class _LRUCacheWrapper(Generic[_R]):
+    __slots__ = (
+        "__wrapped__",
+        "__maxsize",
+        "__typed",
+        "__ttl",
+        "__jitter",
+        "__cache",
+        "__closed",
+        "__hits",
+        "__misses",
+        "__first_loop",
+        "__warned_loop_reset",
+        "_is_coroutine",
+        "_is_coroutine_marker",
+        "__dict__",
+    )
+
     def __init__(
         self,
         fn: _CB[_R],
@@ -282,6 +299,14 @@ class _LRUCacheWrapper(Generic[_R]):
 
 @final
 class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
+    __slots__ = (
+        "__dict__",
+        "_is_coroutine",
+        "__wrapped__",
+        "__instance",
+        "__wrapper",
+    )
+
     def __init__(
         self,
         wrapper: _LRUCacheWrapper[_R],
