@@ -1,5 +1,5 @@
+from collections.abc import Callable
 from functools import _CacheInfo
-from typing import Callable
 
 import pytest
 

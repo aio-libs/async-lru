@@ -4,24 +4,10 @@ import inspect
 import random
 import sys
 import warnings
+from collections import OrderedDict
+from collections.abc import Callable, Coroutine, Hashable
 from functools import _CacheInfo, _make_key, partial, partialmethod
-from typing import (
-    Any,
-    Callable,
-    Coroutine,
-    Generic,
-    Hashable,
-    List,
-    Optional,
-    OrderedDict,
-    Type,
-    TypedDict,
-    TypeVar,
-    Union,
-    cast,
-    final,
-    overload,
-)
+from typing import Any, Generic, TypedDict, TypeVar, cast, final, overload
 
 
 if sys.version_info >= (3, 11):
@@ -42,7 +28,7 @@ _T = TypeVar("_T")
 _R = TypeVar("_R")
 _Coro = Coroutine[Any, Any, _R]
 _CB = Callable[..., _Coro[_R]]
-_CBP = Union[_CB[_R], "partial[_Coro[_R]]", "partialmethod[_Coro[_R]]"]
+_CBP = _CB[_R] | partial[_Coro[_R]] | partialmethod[_Coro[_R]]
 
 
 class AlruCacheLoopResetWarning(UserWarning):
@@ -52,7 +38,7 @@ class AlruCacheLoopResetWarning(UserWarning):
 @final
 class _CacheParameters(TypedDict):
     typed: bool
-    maxsize: Optional[int]
+    maxsize: int | None
     tasks: int
     closed: bool
 
@@ -61,7 +47,7 @@ class _CacheParameters(TypedDict):
 @dataclasses.dataclass(slots=True)
 class _CacheItem(Generic[_R]):
     task: "asyncio.Task[_R]"
-    later_call: Optional[asyncio.Handle]
+    later_call: asyncio.Handle | None
     waiters: int
 
     def cancel(self) -> None:
@@ -92,10 +78,10 @@ class _LRUCacheWrapper(Generic[_R]):
     def __init__(
         self,
         fn: _CB[_R],
-        maxsize: Optional[int],
+        maxsize: int | None,
         typed: bool,
-        ttl: Optional[float],
-        jitter: Optional[float],
+        ttl: float | None,
+        jitter: float | None,
     ) -> None:
         try:
             self.__module__ = fn.__module__
@@ -134,11 +120,11 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__closed = False
         self.__hits = 0
         self.__misses = 0
-        self.__first_loop: Optional[asyncio.AbstractEventLoop] = None
+        self.__first_loop: asyncio.AbstractEventLoop | None = None
         self.__warned_loop_reset = False
 
     @property
-    def __tasks(self) -> List["asyncio.Task[_R]"]:
+    def __tasks(self) -> list["asyncio.Task[_R]"]:
         # NOTE: I don't think we need to form a set first here but not
         # too sure we want it for guarantees
         return list(
@@ -304,8 +290,8 @@ class _LRUCacheWrapper(Generic[_R]):
         return await self._shield_and_handle_cancelled_error(cache_item, key)
 
     def __get__(
-        self, instance: _T, owner: Optional[Type[_T]]
-    ) -> Union[Self, "_LRUCacheWrapperInstanceMethod[_R, _T]"]:
+        self, instance: _T, owner: type[_T] | None
+    ) -> Self | "_LRUCacheWrapperInstanceMethod[_R, _T]":
         if owner is None:
             return self
         else:
@@ -395,10 +381,10 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
 
 
 def _make_wrapper(
-    maxsize: Optional[int],
+    maxsize: int | None,
     typed: bool,
-    ttl: Optional[float] = None,
-    jitter: Optional[float] = None,
+    ttl: float | None = None,
+    jitter: float | None = None,
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
     if jitter is not None and ttl is None:
         raise ValueError("jitter requires ttl to be set")
@@ -427,11 +413,11 @@ def _make_wrapper(
 
 @overload
 def alru_cache(
-    maxsize: Optional[int] = 128,
+    maxsize: int | None = 128,
     typed: bool = False,
     *,
-    ttl: Optional[float] = None,
-    jitter: Optional[float] = None,
+    ttl: float | None = None,
+    jitter: float | None = None,
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
     ...
 
@@ -445,12 +431,12 @@ def alru_cache(
 
 
 def alru_cache(
-    maxsize: Union[Optional[int], _CBP[_R]] = 128,
+    maxsize: int | _CBP[_R] | None = 128,
     typed: bool = False,
     *,
-    ttl: Optional[float] = None,
-    jitter: Optional[float] = None,
-) -> Union[Callable[[_CBP[_R]], _LRUCacheWrapper[_R]], _LRUCacheWrapper[_R]]:
+    ttl: float | None = None,
+    jitter: float | None = None,
+) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]] | _LRUCacheWrapper[_R]:
     if maxsize is None or isinstance(maxsize, int):
         return _make_wrapper(maxsize, typed, ttl, jitter)
     else:

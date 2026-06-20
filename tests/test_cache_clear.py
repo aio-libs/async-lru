@@ -1,5 +1,5 @@
 import asyncio
-from typing import Callable
+from collections.abc import Callable
 
 from async_lru import alru_cache
 

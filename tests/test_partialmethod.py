@@ -1,6 +1,6 @@
 import asyncio
+from collections.abc import Callable
 from functools import partial, partialmethod
-from typing import Callable
 
 from async_lru import alru_cache
 
