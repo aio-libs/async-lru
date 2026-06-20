@@ -431,7 +431,7 @@ def alru_cache(
 
 
 def alru_cache(
-    maxsize: int | None | _CBP[_R] = 128,
+    maxsize: int | _CBP[_R] | None = 128,
     typed: bool = False,
     *,
     ttl: float | None = None,
