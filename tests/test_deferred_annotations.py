@@ -9,7 +9,7 @@ a name defined after the decorated function, a pattern that works with
 
 import inspect
 import sys
-from functools import lru_cache
+from functools import lru_cache, partial
 
 import pytest
 
@@ -49,6 +49,8 @@ async def test_annotations_stay_lazy_like_lru_cache() -> None:
     class Foo:
         pass
 
+    assert isinstance(await get_foo_async(), Foo)
+    assert isinstance(get_foo_sync(), Foo)
     assert (
         inspect.get_annotations(get_foo_async)
         == inspect.get_annotations(get_foo_sync)
@@ -64,6 +66,21 @@ async def test_unresolvable_annotation_raises_only_on_access() -> None:
 
     with pytest.raises(NameError):
         inspect.get_annotations(broken)
+
+
+async def test_method_wrapping_partial_without_annotation_attributes() -> None:
+    """A wrapped ``partial`` carries neither ``__annotate__`` nor
+    ``__annotations__``; binding it as a method copies neither."""
+
+    async def impl(self: object) -> int:
+        return 42
+
+    class Api:
+        meth = alru_cache(partial(impl))
+
+    api = Api()
+    assert await api.meth() == 42
+    assert not hasattr(api.meth, "__annotations__")
 
 
 @py314
