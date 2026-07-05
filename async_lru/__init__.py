@@ -64,6 +64,7 @@ class _LRUCacheWrapper(Generic[_R]):
         "__typed",
         "__ttl",
         "__jitter",
+        "__key",
         "__cache",
         "__closed",
         "__hits",
@@ -82,6 +83,7 @@ class _LRUCacheWrapper(Generic[_R]):
         typed: bool,
         ttl: float | None,
         jitter: float | None,
+        key: Callable[..., Hashable] | None = None,
     ) -> None:
         try:
             self.__module__ = fn.__module__
@@ -116,6 +118,7 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__typed = typed
         self.__ttl = ttl
         self.__jitter = jitter
+        self.__key = key
         self.__cache: OrderedDict[Hashable, _CacheItem[_R]] = OrderedDict()
         self.__closed = False
         self.__hits = 0
@@ -153,16 +156,23 @@ class _LRUCacheWrapper(Generic[_R]):
             self.cache_clear()
             self.__first_loop = loop
 
+    def _make_cache_key(
+        self, fn_args: tuple[Any, ...], fn_kwargs: dict[str, Any]
+    ) -> Hashable:
+        if self.__key is not None:
+            return self.__key(*fn_args, **fn_kwargs)
+        return _make_key(fn_args, fn_kwargs, self.__typed)
+
     def cache_contains(self, /, *args: Hashable, **kwargs: Any) -> bool:
         """Check if the given arguments are in the cache.
 
         Does not affect hit/miss counters or LRU ordering.
         """
-        key = _make_key(args, kwargs, self.__typed)
+        key = self._make_cache_key(args, kwargs)
         return key in self.__cache
 
     def cache_invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
-        key = _make_key(args, kwargs, self.__typed)
+        key = self._make_cache_key(args, kwargs)
 
         cache_item = self.__cache.pop(key, None)
         if cache_item is None:
@@ -261,7 +271,7 @@ class _LRUCacheWrapper(Generic[_R]):
         loop = asyncio.get_running_loop()
         self._check_loop(loop)
 
-        key = _make_key(fn_args, fn_kwargs, self.__typed)
+        key = self._make_cache_key(fn_args, fn_kwargs)
         cache_item = self.__cache.get(key)
 
         if cache_item is not None:
@@ -385,11 +395,16 @@ def _make_wrapper(
     typed: bool,
     ttl: float | None = None,
     jitter: float | None = None,
+    key: Callable[..., Hashable] | None = None,
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
     if jitter is not None and ttl is None:
         raise ValueError("jitter requires ttl to be set")
     if jitter is not None and jitter < 0:
         raise ValueError("jitter must be non-negative")
+    if key is not None and not callable(key):
+        raise TypeError("key must be callable")
+    if key is not None and typed:
+        raise ValueError("typed is ignored when a custom key callable is provided")
 
     def wrapper(fn: _CBP[_R]) -> _LRUCacheWrapper[_R]:
         origin = fn
@@ -403,7 +418,7 @@ def _make_wrapper(
         if hasattr(fn, "_make_unbound_method"):
             fn = fn._make_unbound_method()
 
-        wrapper = _LRUCacheWrapper(cast(_CB[_R], fn), maxsize, typed, ttl, jitter)
+        wrapper = _LRUCacheWrapper(cast(_CB[_R], fn), maxsize, typed, ttl, jitter, key)
         if sys.version_info >= (3, 12):
             wrapper = inspect.markcoroutinefunction(wrapper)
         return wrapper
@@ -418,6 +433,7 @@ def alru_cache(
     *,
     ttl: float | None = None,
     jitter: float | None = None,
+    key: Callable[..., Hashable] | None = None,
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]]:
     ...
 
@@ -436,9 +452,10 @@ def alru_cache(
     *,
     ttl: float | None = None,
     jitter: float | None = None,
+    key: Callable[..., Hashable] | None = None,
 ) -> Callable[[_CBP[_R]], _LRUCacheWrapper[_R]] | _LRUCacheWrapper[_R]:
     if maxsize is None or isinstance(maxsize, int):
-        return _make_wrapper(maxsize, typed, ttl, jitter)
+        return _make_wrapper(maxsize, typed, ttl, jitter, key)
     else:
         fn = cast(_CB[_R], maxsize)
 
