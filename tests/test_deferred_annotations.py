@@ -16,13 +16,13 @@ import pytest
 from async_lru import alru_cache
 
 
-py314 = pytest.mark.skipif(
+requires_py314 = pytest.mark.skipif(
     sys.version_info < (3, 14),
     reason="deferred annotation evaluation requires Python 3.14",
 )
 
 
-@py314
+@requires_py314
 async def test_deco_with_annotation_defined_after() -> None:
     @alru_cache(maxsize=1)
     async def get_foo() -> Foo:
@@ -36,7 +36,7 @@ async def test_deco_with_annotation_defined_after() -> None:
     assert await get_foo() is first
 
 
-@py314
+@requires_py314
 async def test_annotations_stay_lazy_like_lru_cache() -> None:
     @alru_cache(maxsize=1)
     async def get_foo_async() -> Foo:
@@ -58,7 +58,7 @@ async def test_annotations_stay_lazy_like_lru_cache() -> None:
     )
 
 
-@py314
+@requires_py314
 async def test_unresolvable_annotation_raises_only_on_access() -> None:
     @alru_cache(maxsize=1)
     async def broken() -> Missing:  # type: ignore[name-defined]  # noqa: F821
@@ -83,7 +83,7 @@ async def test_method_wrapping_partial_without_annotation_attributes() -> None:
     assert not hasattr(api.meth, "__annotations__")
 
 
-@py314
+@requires_py314
 async def test_method_annotations_stay_lazy() -> None:
     class Api:
         @alru_cache(maxsize=1)
