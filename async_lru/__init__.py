@@ -118,7 +118,12 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__typed = typed
         self.__ttl = ttl
         self.__jitter = jitter
-        self.__key = key
+        if key is not None:
+            self.__key = key
+        else:
+            # Default: pack the call arguments the way functools._make_key
+            # expects, so __key is always callable.
+            self.__key = lambda *args, **kwargs: _make_key(args, kwargs, typed)
         self.__cache: OrderedDict[Hashable, _CacheItem[_R]] = OrderedDict()
         self.__closed = False
         self.__hits = 0
@@ -161,19 +166,10 @@ class _LRUCacheWrapper(Generic[_R]):
 
         Does not affect hit/miss counters or LRU ordering.
         """
-        # Inlined instead of a shared helper: an extra method call is
-        # measurable on these short code paths (CodSpeed).
-        if self.__key is not None:
-            key = self.__key(*args, **kwargs)
-        else:
-            key = _make_key(args, kwargs, self.__typed)
-        return key in self.__cache
+        return self.__key(*args, **kwargs) in self.__cache
 
     def cache_invalidate(self, /, *args: Hashable, **kwargs: Any) -> bool:
-        if self.__key is not None:
-            key = self.__key(*args, **kwargs)
-        else:
-            key = _make_key(args, kwargs, self.__typed)
+        key = self.__key(*args, **kwargs)
 
         cache_item = self.__cache.pop(key, None)
         if cache_item is None:
@@ -272,10 +268,7 @@ class _LRUCacheWrapper(Generic[_R]):
         loop = asyncio.get_running_loop()
         self._check_loop(loop)
 
-        if self.__key is not None:
-            key: Hashable = self.__key(*fn_args, **fn_kwargs)
-        else:
-            key = _make_key(fn_args, fn_kwargs, self.__typed)
+        key = self.__key(*fn_args, **fn_kwargs)
         cache_item = self.__cache.get(key)
 
         if cache_item is not None:
