@@ -99,12 +99,8 @@ class _LRUCacheWrapper(Generic[_R]):
             self.__doc__ = fn.__doc__
         except AttributeError:
             pass
-        # Python 3.14+ (PEP 649): copy the lazy __annotate__ function the
-        # way functools.update_wrapper does; reading fn.__annotations__
-        # would force evaluation of deferred annotations and fail on
-        # names that are not defined yet. The version gate keeps older
-        # interpreters on the plain __annotations__ copy with no
-        # try/except overhead for a missing __annotate__.
+        # Copy the lazy __annotate__ function; reading fn.__annotations__
+        # would force evaluation of deferred annotations (PEP 649).
         if sys.version_info >= (3, 14):
             try:
                 self.__annotate__ = fn.__annotate__
@@ -344,8 +340,8 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
             self.__doc__ = wrapper.__doc__
         except AttributeError:
             pass
-        # Python 3.14+ (PEP 649): prefer the lazy __annotate__ function,
-        # see the matching logic in _LRUCacheWrapper.__init__.
+        # Prefer the lazy __annotate__ function, see the matching logic
+        # in _LRUCacheWrapper.__init__.
         if sys.version_info >= (3, 14):
             try:
                 self.__annotate__ = wrapper.__annotate__
