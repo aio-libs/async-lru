@@ -273,7 +273,7 @@ class _LRUCacheWrapper(Generic[_R]):
         self._check_loop(loop)
 
         if self.__key is not None:
-            key: Hashable = self.__key(*fn_args, **fn_kwargs)
+            key = self.__key(*fn_args, **fn_kwargs)
         else:
             key = _make_key(fn_args, fn_kwargs, self.__typed)
         cache_item = self.__cache.get(key)
