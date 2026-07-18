@@ -99,10 +99,21 @@ class _LRUCacheWrapper(Generic[_R]):
             self.__doc__ = fn.__doc__
         except AttributeError:
             pass
-        try:
-            self.__annotations__ = fn.__annotations__
-        except AttributeError:
-            pass
+        # Copy the lazy __annotate__ function; reading fn.__annotations__
+        # would force evaluation of deferred annotations (PEP 649).
+        if sys.version_info >= (3, 14):
+            try:
+                self.__annotate__ = fn.__annotate__
+            except AttributeError:
+                try:
+                    self.__annotations__ = fn.__annotations__
+                except AttributeError:
+                    pass
+        else:
+            try:
+                self.__annotations__ = fn.__annotations__
+            except AttributeError:
+                pass
         try:
             self.__dict__.update(fn.__dict__)
         except AttributeError:
@@ -329,10 +340,21 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
             self.__doc__ = wrapper.__doc__
         except AttributeError:
             pass
-        try:
-            self.__annotations__ = wrapper.__annotations__
-        except AttributeError:
-            pass
+        # Prefer the lazy __annotate__ function, see the matching logic
+        # in _LRUCacheWrapper.__init__.
+        if sys.version_info >= (3, 14):
+            try:
+                self.__annotate__ = wrapper.__annotate__
+            except AttributeError:
+                try:
+                    self.__annotations__ = wrapper.__annotations__
+                except AttributeError:
+                    pass
+        else:
+            try:
+                self.__annotations__ = wrapper.__annotations__
+            except AttributeError:
+                pass
         try:
             self.__dict__.update(wrapper.__dict__)
         except AttributeError:
