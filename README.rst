@@ -121,6 +121,32 @@ affecting hit/miss counters or LRU ordering, use `cache_contains()`:
 The method returns `True` if the result for the given arguments is cached, `False`
 otherwise.
 
+Custom cache keys
+-----------------
+
+By default the cache key is built from all arguments, like
+``functools.lru_cache`` does. The ``key`` parameter accepts a callable that
+receives the same arguments as the wrapped function and returns the cache key,
+so arguments that do not affect the result can be excluded from it. This is an
+async-lru extension beyond the ``functools.lru_cache`` interface:
+
+.. code-block:: python
+
+    @alru_cache(key=lambda db, query: query)
+    async def query_db(db, query):
+        return await db.execute(query)
+
+    # Both calls share one cache entry despite the different connections.
+    await query_db(conn1, "SELECT ...")
+    await query_db(conn2, "SELECT ...")
+
+The returned key must be hashable. ``cache_invalidate()`` and
+``cache_contains()`` compute the key the same way, so they accept the full
+argument list as usual. For decorated methods the key callable receives the
+instance as its first argument. Passing ``typed=True`` together with ``key``
+raises ``ValueError``, since ``typed`` only affects the default key
+computation.
+
 Limitations
 -----------
 
