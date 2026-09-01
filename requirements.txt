@@ -1,5 +1,5 @@
 -e .
 -r requirements-test.txt
 
-coverage==7.15.4
+coverage==7.16.0
 pytest-cov==7.1.0
