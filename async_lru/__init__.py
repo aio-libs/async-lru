@@ -240,6 +240,10 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__misses += 1
 
     def _task_done_callback(self, key: Hashable, task: "asyncio.Task[_R]") -> None:
+        cache_item = self.__cache.get(key)
+        if cache_item is None or cache_item.task is not task:
+            return
+
         # We must use the private attribute instead of `exception()`
         # so asyncio does not set `task.__log_traceback = False` on
         # the false assumption that the caller read the task Exception
@@ -247,8 +251,7 @@ class _LRUCacheWrapper(Generic[_R]):
             self.__cache.pop(key, None)
             return
 
-        cache_item = self.__cache.get(key)
-        if self.__ttl is not None and cache_item is not None:
+        if self.__ttl is not None:
             effective_ttl = self.__ttl
             if self.__jitter is not None:
                 effective_ttl += random.uniform(0, self.__jitter)
@@ -270,7 +273,8 @@ class _LRUCacheWrapper(Generic[_R]):
             if cache_item.waiters == 1 and not task.done():
                 cache_item.cancel()  # Cancel TTL expiration
                 task.cancel()  # Cancel the running coroutine
-                self.__cache.pop(key, None)  # Remove from cache
+                if self.__cache.get(key) is cache_item:
+                    self.__cache.pop(key, None)  # Remove from cache
             raise
         finally:
             # Each logical waiter decrements waiters on exit (normal or cancelled).
