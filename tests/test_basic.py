@@ -218,6 +218,25 @@ async def test_alru_cache_classmethod() -> None:
     )
 
 
+def test_alru_cache_method_is_coroutine_function() -> None:
+    class A:
+        @alru_cache
+        async def coro(self, val: int) -> int:
+            return val
+
+        @classmethod
+        @alru_cache
+        async def cls_coro(cls, val: int) -> int:
+            return val
+
+    if sys.version_info >= (3, 12):
+        assert inspect.iscoroutinefunction(A().coro)
+        assert inspect.iscoroutinefunction(A.cls_coro)
+    if sys.version_info < (3, 14):
+        assert asyncio.iscoroutinefunction(A().coro)
+        assert asyncio.iscoroutinefunction(A.cls_coro)
+
+
 async def test_invalidate_cache_for_method() -> None:
     class A:
         @alru_cache

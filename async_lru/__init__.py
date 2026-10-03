@@ -58,6 +58,8 @@ class _CacheItem(Generic[_R]):
 
 @final
 class _LRUCacheWrapper(Generic[_R]):
+    # No slot for _is_coroutine_marker: inspect.markcoroutinefunction() must
+    # store it in __dict__, which _LRUCacheWrapperInstanceMethod copies.
     __slots__ = (
         "__wrapped__",
         "__maxsize",
@@ -72,7 +74,6 @@ class _LRUCacheWrapper(Generic[_R]):
         "__first_loop",
         "__warned_loop_reset",
         "_is_coroutine",
-        "_is_coroutine_marker",
         "__dict__",
         "__weakref__",
     )
