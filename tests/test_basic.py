@@ -1,6 +1,7 @@
 import asyncio
 import inspect
 import sys
+import weakref
 from collections.abc import Callable
 from functools import _CacheInfo, partial
 
@@ -231,3 +232,21 @@ async def test_invalidate_cache_for_method() -> None:
     a.coro.cache_invalidate(42)
 
     assert a.coro.cache_info() == _CacheInfo(0, 1, 128, 0)
+
+
+def test_alru_cache_weakref() -> None:
+    @alru_cache
+    async def coro(val: int) -> int:
+        return val
+
+    assert weakref.ref(coro)() is coro
+
+
+def test_alru_cache_method_weakref() -> None:
+    class A:
+        @alru_cache
+        async def coro(self, val: int) -> int:
+            return val
+
+    method = A().coro
+    assert weakref.ref(method)() is method

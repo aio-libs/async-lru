@@ -74,6 +74,7 @@ class _LRUCacheWrapper(Generic[_R]):
         "_is_coroutine",
         "_is_coroutine_marker",
         "__dict__",
+        "__weakref__",
     )
 
     def __init__(
@@ -327,6 +328,7 @@ class _LRUCacheWrapper(Generic[_R]):
 class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
     __slots__ = (
         "__dict__",
+        "__weakref__",
         "_is_coroutine",
         "__wrapped__",
         "__instance",
