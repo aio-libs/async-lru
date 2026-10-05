@@ -1,6 +1,7 @@
 import asyncio
 import inspect
 import sys
+import weakref
 from collections.abc import Callable
 from functools import _CacheInfo, partial
 
@@ -217,6 +218,27 @@ async def test_alru_cache_classmethod() -> None:
     )
 
 
+async def test_alru_cache_method_is_coroutine_function() -> None:
+    class A:
+        @alru_cache
+        async def coro(self, val: int) -> int:
+            return val
+
+        @classmethod
+        @alru_cache
+        async def cls_coro(cls, val: int) -> int:
+            return val
+
+    if sys.version_info >= (3, 12):
+        assert inspect.iscoroutinefunction(A().coro)
+        assert inspect.iscoroutinefunction(A.cls_coro)
+    if sys.version_info < (3, 14):
+        assert asyncio.iscoroutinefunction(A().coro)
+        assert asyncio.iscoroutinefunction(A.cls_coro)
+    assert await A().coro(1) == 1
+    assert await A.cls_coro(2) == 2
+
+
 async def test_invalidate_cache_for_method() -> None:
     class A:
         @alru_cache
@@ -231,3 +253,23 @@ async def test_invalidate_cache_for_method() -> None:
     a.coro.cache_invalidate(42)
 
     assert a.coro.cache_info() == _CacheInfo(0, 1, 128, 0)
+
+
+async def test_alru_cache_weakref() -> None:
+    @alru_cache
+    async def coro(val: int) -> int:
+        return val
+
+    assert weakref.ref(coro)() is coro
+    assert await coro(1) == 1
+
+
+async def test_alru_cache_method_weakref() -> None:
+    class A:
+        @alru_cache
+        async def coro(self, val: int) -> int:
+            return val
+
+    method = A().coro
+    assert weakref.ref(method)() is method
+    assert await method(1) == 1
