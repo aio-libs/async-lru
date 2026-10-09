@@ -157,6 +157,7 @@ rebinds to the new loop, and a single ``AlruCacheLoopResetWarning`` is emitted.
 
 .. code-block:: python
 
+    import asyncio
     import warnings
     from async_lru import AlruCacheLoopResetWarning, alru_cache
 
