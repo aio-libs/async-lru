@@ -150,19 +150,53 @@ computation.
 Limitations
 -----------
 
-**Event Loop Affinity**: ``alru_cache`` enforces that a cache instance is used with only
-one event loop. If you attempt to use a cached function from a different event loop than
-where it was first called, a ``RuntimeError`` will be raised:
+**Event Loop Affinity**: ``alru_cache`` binds a cache instance to the event loop where it
+is first used. If the same cache instance is later accessed from a different event loop,
+it **auto-resets**: the cache is cleared (including hit/miss statistics), the instance
+rebinds to the new loop, and a single ``AlruCacheLoopResetWarning`` is emitted.
 
-.. code-block:: text
+.. code-block:: python
 
-    RuntimeError: alru_cache is not safe to use across event loops: this cache
-    instance was first used with a different event loop.
-    Use separate cache instances per event loop.
+    import warnings
+    from async_lru import AlruCacheLoopResetWarning, alru_cache
+
+    @alru_cache(maxsize=32)
+    async def cached_func(x):
+        return x * 2
+
+    # First loop
+    loop1 = asyncio.new_event_loop()
+    loop1.run_until_complete(cached_func(1))
+    loop1.close()
+
+    # Second loop — auto-reset happens here
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        loop2 = asyncio.new_event_loop()
+        loop2.run_until_complete(cached_func(1))
+        loop2.close()
+
+    # Warning was emitted exactly once
+    assert len(w) == 1
+    assert issubclass(w[0].category, AlruCacheLoopResetWarning)
+    # Stats were reset: hits=0, misses=1 (fresh call on new loop)
+    assert cached_func.cache_info().hits == 0
+    assert cached_func.cache_info().misses == 1
 
 For typical asyncio applications using a single event loop, this is automatic and requires
-no configuration. If your application uses multiple event loops, create separate cache
-instances per loop:
+no configuration. The warning fires at most once per cache instance, so it is safe to
+ignore in test suites that use multiple loops (e.g., ``pytest-asyncio`` with
+``loop_scope="function"``):
+
+.. code-block:: python
+
+    import pytest
+
+    @pytest.mark.filterwarnings("ignore::async_lru.AlruCacheLoopResetWarning")
+    async def test_my_cached_function():
+        ...
+
+If you prefer explicit per-loop cache instances, the traditional patterns still work:
 
 .. code-block:: python
 
