@@ -5,6 +5,17 @@ CHANGES
 .. towncrier release notes start
 
 
+2.4.0 (2026-10-11)
+==================
+
+- Added a ``key`` parameter for custom cache key computation.
+- Fixed a ``NameError`` when decorating a function whose annotations refer to names
+  defined later, on Python 3.14.
+- On Python 3.14, cached functions expose ``__annotate__`` instead of
+  ``__annotations__``, as ``functools.lru_cache`` wrappers do; read their annotations
+  with ``annotationlib.get_annotations()``.
+
+
 2.3.0 (2026-03-18)
 ==================
 
