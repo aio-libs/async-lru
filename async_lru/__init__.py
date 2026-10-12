@@ -19,7 +19,7 @@ if sys.version_info < (3, 14):
     from asyncio.coroutines import _is_coroutine  # type: ignore[attr-defined]
 
 
-__version__ = "2.3.0"
+__version__ = "2.4.0"
 
 __all__ = ("AlruCacheLoopResetWarning", "alru_cache")
 
