@@ -1,4 +1,6 @@
 import asyncio
+import gc
+import weakref
 from collections.abc import Callable
 
 import pytest
@@ -115,6 +117,7 @@ async def test_cache_close_detached_task(removal: str, wait: bool) -> None:
 
         await asyncio.wait_for(close, timeout=5)
         assert coro.cache_parameters()["tasks"] == 0
+        assert not coro._LRUCacheWrapper__pending_tasks  # type: ignore[attr-defined]
         assert coro.cache_parameters()["closed"]
         await coro.cache_close(wait=wait)
     finally:
@@ -123,6 +126,79 @@ async def test_cache_close_detached_task(removal: str, wait: bool) -> None:
         if close is not None:
             await close
         await coro.cache_close()
+
+
+@pytest.mark.parametrize("cancel_source", ("caller", "close"))
+@pytest.mark.parametrize("wait", (False, True))
+async def test_cache_close_during_cancelled_task_cleanup(
+    cancel_source: str, wait: bool
+) -> None:
+    started = asyncio.Event()
+    cleanup_started = asyncio.Event()
+    release_cleanup = asyncio.Event()
+    cleanup_finished = asyncio.Event()
+    cleanup_interrupted = asyncio.Event()
+
+    @alru_cache()
+    async def coro() -> None:
+        started.set()
+        try:
+            await asyncio.Event().wait()
+        finally:
+            cleanup_started.set()
+            try:
+                await release_cleanup.wait()
+            except asyncio.CancelledError:
+                cleanup_interrupted.set()
+                raise
+            cleanup_finished.set()
+
+    caller = asyncio.create_task(coro())
+    closes: list[asyncio.Task[None]] = []
+    try:
+        await asyncio.wait_for(started.wait(), timeout=5)
+        if cancel_source == "caller":
+            caller.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await caller
+        else:
+            closes.append(asyncio.create_task(coro.cache_close()))
+
+        await asyncio.wait_for(cleanup_started.wait(), timeout=5)
+        closes.append(asyncio.create_task(coro.cache_close(wait=wait)))
+        await asyncio.sleep(0)
+        await asyncio.sleep(0)
+        assert not cleanup_interrupted.is_set()
+        assert not cleanup_finished.is_set()
+        assert all(not close.done() for close in closes)
+
+        release_cleanup.set()
+        await asyncio.wait_for(asyncio.gather(*closes), timeout=5)
+        assert cleanup_finished.is_set()
+        with pytest.raises(asyncio.CancelledError):
+            await caller
+        assert coro.cache_parameters()["tasks"] == 0
+    finally:
+        release_cleanup.set()
+        await asyncio.gather(caller, *closes, return_exceptions=True)
+        await coro.cache_close()
+
+
+async def test_completed_uncached_call_releases_result() -> None:
+    class Result:
+        pass
+
+    @alru_cache(maxsize=0)
+    async def coro() -> Result:
+        return Result()
+
+    result_ref = weakref.ref(await coro())
+    await asyncio.sleep(0)
+    gc.collect()
+    assert coro.cache_parameters()["tasks"] == 0
+    assert result_ref() is None
+    assert not coro._LRUCacheWrapper__pending_tasks  # type: ignore[attr-defined]
+    await coro.cache_close()
 
 
 def test_cache_close_after_loop_reset_with_pending_task() -> None:
