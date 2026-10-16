@@ -1,5 +1,6 @@
 import asyncio
 import gc
+import sys
 import weakref
 from collections.abc import Callable
 
@@ -179,6 +180,78 @@ async def test_cache_close_during_cancelled_task_cleanup(
             await caller
         assert coro.cache_parameters()["tasks"] == 0
     finally:
+        release_cleanup.set()
+        await asyncio.gather(caller, *closes, return_exceptions=True)
+        await coro.cache_close()
+
+
+@pytest.mark.parametrize("cancel_source", ("caller", "close"))
+@pytest.mark.parametrize("wait", (False, True))
+async def test_cache_close_after_task_uncancel(cancel_source: str, wait: bool) -> None:
+    if sys.version_info < (3, 11):
+        pytest.skip("Task.uncancel() requires Python 3.11")
+
+    started = asyncio.Event()
+    resumed = asyncio.Event()
+    release = asyncio.Event()
+    cleanup_started = asyncio.Event()
+    release_cleanup = asyncio.Event()
+    cleanup_finished = asyncio.Event()
+
+    @alru_cache()
+    async def coro() -> None:
+        task = asyncio.current_task()
+        assert task is not None
+        started.set()
+        try:
+            await release.wait()
+        except asyncio.CancelledError:
+            assert task.uncancel() == 0
+            resumed.set()
+            try:
+                await release.wait()
+            finally:
+                cleanup_started.set()
+                await release_cleanup.wait()
+                cleanup_finished.set()
+
+    caller = asyncio.create_task(coro())
+    closes: list[asyncio.Task[None]] = []
+    try:
+        await asyncio.wait_for(started.wait(), timeout=5)
+        if cancel_source == "caller":
+            caller.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await caller
+        else:
+            closes.append(asyncio.create_task(coro.cache_close()))
+
+        await asyncio.wait_for(resumed.wait(), timeout=5)
+        closes.append(asyncio.create_task(coro.cache_close(wait=wait)))
+        if wait:
+            await asyncio.sleep(0)
+            assert not cleanup_started.is_set()
+            assert all(not close.done() for close in closes)
+            release.set()
+        await asyncio.wait_for(cleanup_started.wait(), timeout=5)
+
+        # A fresh cancellation must not allow later closes to interrupt cleanup.
+        closes.append(asyncio.create_task(coro.cache_close(wait=wait)))
+        await asyncio.sleep(0)
+        await asyncio.sleep(0)
+        assert not cleanup_finished.is_set()
+        assert all(not close.done() for close in closes)
+        release_cleanup.set()
+        await asyncio.wait_for(asyncio.gather(*closes), timeout=5)
+        assert cleanup_finished.is_set()
+        if cancel_source == "caller" or not wait:
+            with pytest.raises(asyncio.CancelledError):
+                await caller
+        else:
+            await caller
+        assert coro.cache_parameters()["tasks"] == 0
+    finally:
+        release.set()
         release_cleanup.set()
         await asyncio.gather(caller, *closes, return_exceptions=True)
         await coro.cache_close()

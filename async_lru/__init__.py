@@ -57,10 +57,16 @@ class _CacheItem(Generic[_R]):
             self.later_call = None
 
     def cancel_task(self) -> None:
+        if self.task.done():
+            return
         # Repeated cancellation can interrupt asynchronous finally cleanup.
-        if not self.cancel_requested and not self.task.done():
-            self.cancel_requested = True
-            self.task.cancel()
+        # On Python 3.11+, uncancel() can clear the request and resume work.
+        if self.cancel_requested and (
+            sys.version_info < (3, 11) or self.task.cancelling()
+        ):
+            return
+        self.cancel_requested = True
+        self.task.cancel()
 
 
 @final
