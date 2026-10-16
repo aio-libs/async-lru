@@ -49,11 +49,24 @@ class _CacheItem(Generic[_R]):
     task: "asyncio.Task[_R]"
     later_call: asyncio.Handle | None
     waiters: int
+    cancel_requested: bool = False
 
     def cancel(self) -> None:
         if self.later_call is not None:
             self.later_call.cancel()
             self.later_call = None
+
+    def cancel_task(self) -> None:
+        if self.task.done():
+            return
+        # Repeated cancellation can interrupt asynchronous finally cleanup.
+        # On Python 3.11+, uncancel() can clear the request and resume work.
+        if self.cancel_requested and (
+            sys.version_info < (3, 11) or self.task.cancelling()
+        ):
+            return
+        self.cancel_requested = True
+        self.task.cancel()
 
 
 @final
@@ -68,6 +81,7 @@ class _LRUCacheWrapper(Generic[_R]):
         "__jitter",
         "__key",
         "__cache",
+        "__pending_tasks",
         "__closed",
         "__hits",
         "__misses",
@@ -133,6 +147,8 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__jitter = jitter
         self.__key = key
         self.__cache: OrderedDict[Hashable, _CacheItem[_R]] = OrderedDict()
+        # Pending calls can outlive their entries after invalidation or eviction.
+        self.__pending_tasks: dict[asyncio.Task[_R], _CacheItem[_R]] = {}
         self.__closed = False
         self.__hits = 0
         self.__misses = 0
@@ -141,15 +157,7 @@ class _LRUCacheWrapper(Generic[_R]):
 
     @property
     def __tasks(self) -> list["asyncio.Task[_R]"]:
-        # NOTE: I don't think we need to form a set first here but not
-        # too sure we want it for guarantees
-        return list(
-            {
-                cache_item.task
-                for cache_item in self.__cache.values()
-                if not cache_item.task.done()
-            }
-        )
+        return [task for task in self.__pending_tasks if not task.done()]
 
     def _check_loop(self, loop: asyncio.AbstractEventLoop) -> None:
         if self.__first_loop is None:
@@ -167,6 +175,7 @@ class _LRUCacheWrapper(Generic[_R]):
             # Old cache entries hold tasks/handles bound to the previous
             # loop and are invalid here.  Clear and rebind.
             self.cache_clear()
+            self.__pending_tasks.clear()
             self.__first_loop = loop
 
     def cache_contains(self, /, *args: Hashable, **kwargs: Any) -> bool:
@@ -213,8 +222,7 @@ class _LRUCacheWrapper(Generic[_R]):
 
         if not wait:
             for task in tasks:
-                if not task.done():
-                    task.cancel()
+                self.__pending_tasks[task].cancel_task()
 
         await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -242,6 +250,7 @@ class _LRUCacheWrapper(Generic[_R]):
         self.__misses += 1
 
     def _task_done_callback(self, key: Hashable, task: "asyncio.Task[_R]") -> None:
+        self.__pending_tasks.pop(task, None)
         # We must use the private attribute instead of `exception()`
         # so asyncio does not set `task.__log_traceback = False` on
         # the false assumption that the caller read the task Exception
@@ -271,7 +280,7 @@ class _LRUCacheWrapper(Generic[_R]):
             # cancel the underlying task and remove the cache entry.
             if cache_item.waiters == 1 and not task.done():
                 cache_item.cancel()  # Cancel TTL expiration
-                task.cancel()  # Cancel the running coroutine
+                cache_item.cancel_task()  # Cancel the running coroutine once
                 self.__cache.pop(key, None)  # Remove from cache
             raise
         finally:
@@ -303,9 +312,10 @@ class _LRUCacheWrapper(Generic[_R]):
 
         coro = self.__wrapped__(*fn_args, **fn_kwargs)
         task: asyncio.Task[_R] = loop.create_task(coro)
+        cache_item = _CacheItem(task, None, 1)
+        self.__pending_tasks[task] = cache_item
         task.add_done_callback(partial(self._task_done_callback, key))
 
-        cache_item = _CacheItem(task, None, 1)
         self.__cache[key] = cache_item
 
         if self.__maxsize is not None and len(self.__cache) > self.__maxsize:
