@@ -2,8 +2,9 @@ import asyncio
 import inspect
 import sys
 import weakref
-from collections.abc import Callable
-from functools import _CacheInfo, partial
+from collections.abc import Callable, Coroutine
+from functools import _CacheInfo, partial, wraps
+from typing import Any
 
 import pytest
 
@@ -237,6 +238,41 @@ async def test_alru_cache_method_is_coroutine_function() -> None:
         assert asyncio.iscoroutinefunction(A.cls_coro)
     assert await A().coro(1) == 1
     assert await A.cls_coro(2) == 2
+
+
+async def test_alru_cache_functools_wraps_is_coroutine_function() -> None:
+    @alru_cache
+    async def coro(val: int) -> int:
+        return val
+
+    @wraps(coro)
+    def wrapper(val: int) -> Coroutine[Any, Any, int]:
+        return coro(val)
+
+    if sys.version_info >= (3, 12):
+        assert inspect.iscoroutinefunction(wrapper)
+    if sys.version_info < (3, 14):
+        assert asyncio.iscoroutinefunction(wrapper)
+    assert await wrapper(1) == 1
+
+
+async def test_alru_cache_method_functools_wraps_is_coroutine_function() -> None:
+    class A:
+        @alru_cache
+        async def coro(self, val: int) -> int:
+            return val
+
+    method = A().coro
+
+    @wraps(method)
+    def wrapper(val: int) -> Coroutine[Any, Any, int]:
+        return method(val)
+
+    if sys.version_info >= (3, 12):
+        assert inspect.iscoroutinefunction(wrapper)
+    if sys.version_info < (3, 14):
+        assert asyncio.iscoroutinefunction(wrapper)
+    assert await wrapper(1) == 1
 
 
 async def test_invalidate_cache_for_method() -> None:
