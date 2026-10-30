@@ -7,13 +7,8 @@ import warnings
 from collections import OrderedDict
 from collections.abc import Callable, Coroutine, Hashable
 from functools import _CacheInfo, _make_key, partial, partialmethod
-from typing import Any, Generic, TypedDict, TypeVar, cast, final, overload
+from typing import Any, Generic, Self, TypedDict, TypeVar, cast, final, overload
 
-
-if sys.version_info >= (3, 11):
-    from typing import Self
-else:
-    from typing_extensions import Self
 
 if sys.version_info < (3, 14):
     from asyncio.coroutines import _is_coroutine  # type: ignore[attr-defined]
