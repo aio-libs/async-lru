@@ -1,6 +1,8 @@
 import inspect
 from functools import partial
 
+import pytest
+
 from async_lru import alru_cache
 
 
@@ -16,6 +18,45 @@ async def test_bound_method_signature() -> None:
     assert signature == inspect.signature(service.plain)
     arguments = signature.bind(7, enabled=False)
     assert await service.cached(*arguments.args, **arguments.kwargs) == 0
+
+
+@pytest.mark.parametrize("signature_on_wrapper", [False, True])
+async def test_bound_method_explicit_signature(signature_on_wrapper: bool) -> None:
+    class Service:
+        async def plain(self, value: int, /, *, enabled: bool = True) -> int:
+            return value if enabled else 0
+
+        explicit_signature = inspect.signature(plain).replace(return_annotation=str)
+        if not signature_on_wrapper:
+            plain.__signature__ = explicit_signature  # type: ignore[attr-defined]
+        cached = alru_cache(plain)
+        if signature_on_wrapper:
+            cached.__signature__ = explicit_signature  # type: ignore[attr-defined]
+
+    service = Service()
+    signature = inspect.signature(service.cached)
+    assert signature == inspect.signature(service.plain).replace(return_annotation=str)
+    assert inspect.signature(Service.__dict__["cached"]) == Service.explicit_signature
+    arguments = signature.bind(7, enabled=False)
+    assert await service.cached(*arguments.args, **arguments.kwargs) == 0
+    assert inspect.signature(service.cached.__wrapped__) == inspect.signature(
+        service.plain
+    )
+
+
+async def test_bound_method_variadic_explicit_signature() -> None:
+    class Service:
+        async def plain(*args: object) -> int:
+            return len(args)
+
+        plain.__signature__ = inspect.signature(plain)  # type: ignore[attr-defined]
+        cached = alru_cache(plain)
+
+    service = Service()
+    signature = inspect.signature(service.cached)
+    assert signature == inspect.signature(service.plain)
+    arguments = signature.bind(7)
+    assert await service.cached(*arguments.args, **arguments.kwargs) == 2
 
 
 async def test_bound_method_wrapped() -> None:

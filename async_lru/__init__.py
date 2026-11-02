@@ -387,6 +387,10 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
             if instance is not None
             else wrapper.__wrapped__
         )
+        if instance is not None and isinstance(
+            self.__dict__.get("__signature__"), inspect.Signature
+        ):
+            self.__signature__ = inspect.signature(MethodType(wrapper, instance))
         self.__instance = instance
         self.__wrapper = wrapper
 
