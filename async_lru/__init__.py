@@ -390,7 +390,11 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
         if instance is not None and isinstance(
             self.__dict__.get("__signature__"), inspect.Signature
         ):
-            self.__signature__ = inspect.signature(MethodType(wrapper, instance))
+            try:
+                self.__signature__ = inspect.signature(MethodType(wrapper, instance))
+            except ValueError:
+                # Invalid signature metadata must not prevent method access.
+                pass
         self.__instance = instance
         self.__wrapper = wrapper
 

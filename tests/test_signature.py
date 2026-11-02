@@ -59,6 +59,42 @@ async def test_bound_method_variadic_explicit_signature() -> None:
     assert await service.cached(*arguments.args, **arguments.kwargs) == 2
 
 
+@pytest.mark.parametrize("signature_on_wrapper", [False, True])
+@pytest.mark.parametrize(
+    "explicit_signature",
+    [
+        inspect.Signature(),
+        inspect.Signature([inspect.Parameter("value", inspect.Parameter.KEYWORD_ONLY)]),
+        inspect.Signature([inspect.Parameter("kwargs", inspect.Parameter.VAR_KEYWORD)]),
+    ],
+    ids=["empty", "keyword-only", "variadic-keyword"],
+)
+async def test_bound_method_invalid_explicit_signature(
+    explicit_signature: inspect.Signature, signature_on_wrapper: bool
+) -> None:
+    class Service:
+        async def plain(self, value: int) -> int:
+            return value
+
+        if not signature_on_wrapper:
+            plain.__signature__ = explicit_signature  # type: ignore[attr-defined]
+        cached = alru_cache(plain)
+        if signature_on_wrapper:
+            cached.__signature__ = explicit_signature  # type: ignore[attr-defined]
+
+    service = Service()
+    cached = service.cached
+    assert inspect.signature(cached) == explicit_signature
+    assert cached.cache_info().currsize == 0
+    assert await cached(value=7) == 7
+    assert await service.cached(value=7) == 7
+    assert service.cached.cache_info().hits == 1
+    assert service.cached.cache_contains(value=7)
+    assert await service.cached.__wrapped__(7) == 7
+    service.cached.cache_clear()
+    assert service.cached.cache_info().currsize == 0
+
+
 async def test_bound_method_wrapped() -> None:
     class Service:
         @alru_cache
