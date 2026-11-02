@@ -7,6 +7,7 @@ import warnings
 from collections import OrderedDict
 from collections.abc import Callable, Coroutine, Hashable
 from functools import _CacheInfo, _make_key, partial, partialmethod
+from types import MethodType
 from typing import Any, Generic, TypedDict, TypeVar, cast, final, overload
 
 
@@ -380,7 +381,20 @@ class _LRUCacheWrapperInstanceMethod(Generic[_R, _T]):
         # from the wrapped function when updating __dict__
         if sys.version_info < (3, 14):
             self._is_coroutine = _is_coroutine
-        self.__wrapped__ = wrapper.__wrapped__
+        # Expose the same instance binding as __call__ when unwrapping.
+        self.__wrapped__ = (
+            MethodType(wrapper.__wrapped__, instance)
+            if instance is not None
+            else wrapper.__wrapped__
+        )
+        if instance is not None and isinstance(
+            self.__dict__.get("__signature__"), inspect.Signature
+        ):
+            try:
+                self.__signature__ = inspect.signature(MethodType(wrapper, instance))
+            except ValueError:
+                # Invalid signature metadata must not prevent method access.
+                pass
         self.__instance = instance
         self.__wrapper = wrapper
 
