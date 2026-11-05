@@ -319,7 +319,7 @@ class _LRUCacheWrapper(Generic[_R]):
     def __get__(
         self, instance: _T, owner: type[_T] | None
     ) -> Self | "_LRUCacheWrapperInstanceMethod[_R, _T]":
-        if owner is None:
+        if instance is None:
             return self
         else:
             return _LRUCacheWrapperInstanceMethod(self, instance)
