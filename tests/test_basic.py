@@ -201,6 +201,28 @@ async def test_alru_cache_method() -> None:
     )
 
 
+async def test_alru_cache_unbound_method() -> None:
+    calls = 0
+
+    class A:
+        @alru_cache
+        async def coro(self, val: int) -> int:
+            nonlocal calls
+            calls += 1
+            return val
+
+    a = A()
+    assert await A.coro(a, 42) == 42
+    assert await a.coro(42) == 42
+    assert calls == 1
+    assert A.coro.cache_info() == _CacheInfo(1, 1, 128, 1)
+    assert A.coro.cache_contains(a, 42)
+    assert A.coro.cache_invalidate(a, 42)
+    assert not a.coro.cache_contains(42)
+    assert await a.coro(42) == 42
+    assert calls == 2
+
+
 async def test_alru_cache_classmethod() -> None:
     class A:
         offset = 3
